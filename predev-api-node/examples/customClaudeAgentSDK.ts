@@ -3,13 +3,19 @@
  * 
  * This example demonstrates how to:
  * 1. Generate a specification using Pre.dev API
- * 2. Use Claude Agent SDK to implement the spec automatically
+ * 2. Use Claude Agent SDK to autonomously implement the spec
  * 
- * Requires: npm install @anthropic-ai/claude-agent-sdk
+ * The Claude Agent SDK has built-in file system access and can:
+ * - Create/edit files directly
+ * - Run bash commands
+ * - Install dependencies
+ * - Execute code
+ * 
+ * Requires: npm install claude-agent-sdk
  */
 
 import { PredevAPI } from '../src/index';
-import { ClaudeClient } from '@anthropic-ai/claude-agent-sdk';
+import { query } from 'claude-agent-sdk';
 
 // Get API keys from environment
 const PREDEV_API_KEY = process.env.PREDEV_API_KEY || 'your_predev_api_key';
@@ -22,49 +28,41 @@ process.env.ANTHROPIC_API_KEY = ANTHROPIC_API_KEY;
 const predevClient = new PredevAPI({ apiKey: PREDEV_API_KEY });
 
 /**
- * Download the markdown spec from the URL
+ * Use Claude Agent SDK to autonomously implement a spec.
+ * 
+ * Claude will:
+ * 1. Download and read the spec from the URL
+ * 2. Create all necessary files and folder structure
+ * 3. Write complete implementation code
+ * 4. Run any setup commands if needed
  */
-async function getSpecContent(specUrl: string): Promise<string> {
-  // Add .md extension to get raw markdown
-  const markdownUrl = `${specUrl}.md`;
-  const response = await fetch(markdownUrl);
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch spec: ${response.statusText}`);
+async function implementSpecWithClaude(specUrl: string, projectDir: string): Promise<void> {
+  const prompt = `I have a project specification at: ${specUrl}
+
+Please implement this project completely:
+
+1. Download the spec by fetching ${specUrl}.md (add .md extension to get raw markdown)
+2. Read and understand all requirements, architecture, and acceptance criteria
+3. Create the project in the directory: ${projectDir}
+4. Implement ALL files needed according to the spec
+5. Follow the exact folder structure and file organization specified
+6. Write complete, production-ready code with error handling
+7. Add comments explaining key decisions
+8. Create any config files needed (package.json, requirements.txt, etc.)
+9. Report progress as you create each file
+
+Work through the spec milestone by milestone. Create all files for each milestone before moving to the next.`;
+
+  console.log(`🤖 Claude Agent SDK is now implementing the spec...`);
+  console.log(`📁 Project directory: ${projectDir}`);
+  console.log('-'.repeat(70));
+  console.log();
+
+  // Query the agent - it will autonomously create files and implement
+  for await (const message of query({ prompt })) {
+    // Print progress messages from Claude as it works
+    console.log(message);
   }
-  
-  return response.text();
-}
-
-/**
- * Use Claude Agent SDK to implement code based on the spec
- */
-async function implementWithClaude(
-  specContent: string,
-  task: string
-): Promise<string> {
-  const client = new ClaudeClient();
-
-  const prompt = `You are an expert software developer implementing a project based on this specification:
-
-${specContent}
-
-Task: ${task}
-
-Please implement this following the specification exactly. Include:
-- All necessary files and folder structure
-- Complete, working code with proper error handling
-- Comments explaining key decisions
-- Any setup/installation instructions
-
-Provide the implementation as complete, ready-to-use code.`;
-
-  const response = await client.query({
-    prompt: prompt,
-    model: 'claude-sonnet-4-20250514' // Claude Sonnet 4.5
-  });
-
-  return response;
 }
 
 // Main execution
@@ -88,51 +86,27 @@ Provide the implementation as complete, ready-to-use code.`;
     console.log(`✓ Spec generated: ${specUrl}`);
     console.log();
 
-    // Step 2: Get the spec content
-    console.log('Step 2: Downloading specification content...');
+    // Step 2: Define project directory
+    const projectDir = './todo-app-implementation';
+    console.log('Step 2: Setting up implementation...');
     console.log('-'.repeat(70));
-
-    const specContent = await getSpecContent(specUrl);
-    console.log(`✓ Spec downloaded (${specContent.length} characters)`);
+    console.log(`Project will be created in: ${projectDir}`);
     console.log();
 
-    // Step 3: Use Claude Agent SDK to implement
-    console.log('Step 3: Using Claude Agent SDK to implement...');
+    // Step 3: Let Claude Agent SDK implement everything
+    console.log('Step 3: Claude Agent SDK implementing the specification...');
     console.log('-'.repeat(70));
-
-    const implementation = await implementWithClaude(
-      specContent,
-      'Implement the first milestone: Basic todo CRUD operations with HTML/CSS/JS'
-    );
-
-    console.log('✓ Implementation complete!');
     console.log();
-    console.log("Claude's Implementation:");
+
+    await implementSpecWithClaude(specUrl, projectDir);
+
+    console.log();
     console.log('='.repeat(70));
-    console.log(implementation);
+    console.log('✓ Implementation complete!');
+    console.log('='.repeat(70));
     console.log();
-
-    // Save implementation to file
-    const fs = await import('fs/promises');
-    const outputFile = 'claude_agent_implementation.md';
-    const content = `# Todo App Implementation by Claude Agent SDK
-
-**Spec URL**: ${specUrl}
-
-## Implementation
-
-${implementation}`;
-
-    await fs.writeFile(outputFile, content);
-
-    console.log(`✓ Implementation saved to: ${outputFile}`);
-    console.log();
-    console.log('Next steps:');
-    console.log('- Review the implementation');
-    console.log('- Extract the code files');
-    console.log('- Test the application');
-    console.log('- Update spec tasks: [ ] → [→] → [✓]');
-    console.log(`- View spec at: ${specUrl}`);
+    console.log(`Check the ${projectDir} directory for all generated files.`);
+    console.log(`View the original spec at: ${specUrl}`);
 
   } catch (error) {
     console.error('✗ Error:', error instanceof Error ? error.message : error);

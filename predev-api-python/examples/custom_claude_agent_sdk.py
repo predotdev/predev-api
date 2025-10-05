@@ -3,16 +3,21 @@ Example: Custom Claude Agent SDK Integration
 
 This example demonstrates how to:
 1. Generate a specification using Pre.dev API
-2. Use Claude Agent SDK to implement the spec automatically
+2. Use Claude Agent SDK to autonomously implement the spec
+
+The Claude Agent SDK has built-in file system access and can:
+- Create/edit files directly
+- Run bash commands
+- Install dependencies
+- Execute code
 
 Requires: pip install claude-agent-sdk
 """
 
 import os
-import asyncio
-import requests
+import anyio
 from predev_api import PredevAPI
-from claude_agent_sdk import ClaudeSDKClient
+from claude_agent_sdk import query
 
 # Get API keys from environment
 PREDEV_API_KEY = os.environ.get("PREDEV_API_KEY", "your_predev_api_key")
@@ -25,44 +30,45 @@ os.environ["ANTHROPIC_API_KEY"] = ANTHROPIC_API_KEY
 predev_client = PredevAPI(api_key=PREDEV_API_KEY)
 
 
-def get_spec_content(spec_url: str) -> str:
-    """Download the markdown spec from the URL"""
-    # Add .md extension to get raw markdown
-    markdown_url = f"{spec_url}.md"
-    response = requests.get(markdown_url)
-    response.raise_for_status()
-    return response.text
-
-
-async def implement_with_claude(spec_content: str, task: str) -> str:
-    """Use Claude Agent SDK to implement code based on the spec"""
+async def implement_spec_with_claude(spec_url: str, project_dir: str):
+    """
+    Use Claude Agent SDK to autonomously implement a spec.
     
-    client = ClaudeSDKClient()
+    Claude will:
+    1. Download and read the spec from the URL
+    2. Create all necessary files and folder structure
+    3. Write complete implementation code
+    4. Run any setup commands if needed
+    """
     
-    prompt = f"""You are an expert software developer implementing a project based on this specification:
+    prompt = f"""I have a project specification at: {spec_url}
 
-{spec_content}
+Please implement this project completely:
 
-Task: {task}
+1. Download the spec by fetching {spec_url}.md (add .md extension to get raw markdown)
+2. Read and understand all requirements, architecture, and acceptance criteria
+3. Create the project in the directory: {project_dir}
+4. Implement ALL files needed according to the spec
+5. Follow the exact folder structure and file organization specified
+6. Write complete, production-ready code with error handling
+7. Add comments explaining key decisions
+8. Create any config files needed (package.json, requirements.txt, etc.)
+9. Report progress as you create each file
 
-Please implement this following the specification exactly. Include:
-- All necessary files and folder structure
-- Complete, working code with proper error handling
-- Comments explaining key decisions
-- Any setup/installation instructions
+Work through the spec milestone by milestone. Create all files for each milestone before moving to the next."""
 
-Provide the implementation as complete, ready-to-use code."""
-
-    response = await client.query(
-        prompt,
-        model="claude-sonnet-4-20250514"  # Claude Sonnet 4.5
-    )
+    print(f"🤖 Claude Agent SDK is now implementing the spec...")
+    print(f"📁 Project directory: {project_dir}")
+    print("-" * 70)
+    print()
     
-    return response
+    # Query the agent - it will autonomously create files and implement
+    async for message in query(prompt=prompt):
+        # Print progress messages from Claude as it works
+        print(message)
 
 
 async def main():
-    # Example: Build a todo app with Claude Agent SDK
     print("=" * 70)
     print("Claude Agent SDK Integration Example")
     print("=" * 70)
@@ -81,47 +87,28 @@ async def main():
     print(f"✓ Spec generated: {spec_url}")
     print()
 
-    # Step 2: Get the spec content
-    print("Step 2: Downloading specification content...")
+    # Step 2: Define project directory
+    project_dir = "./todo-app-implementation"
+    print("Step 2: Setting up implementation...")
     print("-" * 70)
-
-    spec_content = get_spec_content(spec_url)
-    print(f"✓ Spec downloaded ({len(spec_content)} characters)")
+    print(f"Project will be created in: {project_dir}")
     print()
 
-    # Step 3: Use Claude Agent SDK to implement
-    print("Step 3: Using Claude Agent SDK to implement...")
+    # Step 3: Let Claude Agent SDK implement everything
+    print("Step 3: Claude Agent SDK implementing the specification...")
     print("-" * 70)
-
-    implementation = await implement_with_claude(
-        spec_content=spec_content,
-        task="Implement the first milestone: Basic todo CRUD operations with HTML/CSS/JS"
-    )
-
-    print("✓ Implementation complete!")
     print()
-    print("Claude's Implementation:")
+
+    await implement_spec_with_claude(spec_url, project_dir)
+
+    print()
     print("=" * 70)
-    print(implementation)
+    print("✓ Implementation complete!")
+    print("=" * 70)
     print()
-
-    # Save implementation to file
-    output_file = "claude_agent_implementation.md"
-    with open(output_file, "w") as f:
-        f.write(f"# Todo App Implementation by Claude Agent SDK\n\n")
-        f.write(f"**Spec URL**: {spec_url}\n\n")
-        f.write(f"## Implementation\n\n")
-        f.write(implementation)
-
-    print(f"✓ Implementation saved to: {output_file}")
-    print()
-    print("Next steps:")
-    print("- Review the implementation")
-    print("- Extract the code files")
-    print("- Test the application")
-    print("- Update spec tasks: [ ] → [→] → [✓]")
-    print(f"- View spec at: {spec_url}")
+    print(f"Check the {project_dir} directory for all generated files.")
+    print(f"View the original spec at: {spec_url}")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    anyio.run(main)
