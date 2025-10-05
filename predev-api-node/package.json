@@ -1,0 +1,46 @@
+{
+  "name": "predev-api",
+  "version": "0.1.0",
+  "description": "TypeScript/Node.js client for the Pre.dev Architect API - Generate comprehensive software specifications",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "predev",
+    "api",
+    "specification",
+    "architect",
+    "ai",
+    "typescript"
+  ],
+  "author": "Pre.dev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/predev/predev-api-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/predev/predev-api-node/issues"
+  },
+  "homepage": "https://docs.pre.dev/api-reference/introduction",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}
