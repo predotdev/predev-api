@@ -1,4 +1,4 @@
-# Pre.dev API - Python Client
+# pre.dev Architect API - Python Client
 
 A Python client library for the [Pre.dev Architect API](https://docs.pre.dev/api-reference/introduction). Generate comprehensive software specifications using AI-powered analysis.
 

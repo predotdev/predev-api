@@ -1,4 +1,4 @@
-# Pre.dev API Client Libraries
+# pre.dev API Client Libraries
 
 Official client libraries for the [Pre.dev Architect API](https://docs.pre.dev/api-reference/introduction) in Python and Node.js/TypeScript.
 
