@@ -2,7 +2,7 @@
 Client for the Pre.dev Architect API
 """
 
-from typing import Optional, Dict, Any, Literal
+from typing import Optional, Dict, Any, Literal, List
 import requests
 from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
 
@@ -47,7 +47,10 @@ class PredevAPI:
     def fast_spec(
         self,
         input_text: str,
-        output_format: Literal["url", "json"] = "url"
+        output_format: Literal["url", "markdown"] = "url",
+        current_context: Optional[str] = None,
+        doc_urls: Optional[List[str]] = None,
+        async_mode: bool = False
     ) -> Dict[str, Any]:
         """
         Generate a fast specification for your project.
@@ -56,7 +59,11 @@ class PredevAPI:
         
         Args:
             input_text: Description of the project or feature to generate specs for
-            output_format: Format of the output - "url" or "json" (default: "url")
+            output_format: Format of the output - "url" or "markdown" (default: "url")
+            current_context: Existing project/codebase context. When omitted, generates 
+                           full new project spec. When provided, generates feature addition spec.
+            doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+            async_mode: If True, returns immediately with requestId for polling
         
         Returns:
             API response as a dictionary
@@ -69,20 +76,26 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.fast_spec(
-            ...     "Build a task management app with team collaboration",
+            ...     input_text="Build a task management app with team collaboration",
             ...     output_format="url"
             ... )
         """
         return self._make_request(
             endpoint="/api/fast-spec",
             input_text=input_text,
-            output_format=output_format
+            output_format=output_format,
+            current_context=current_context,
+            doc_urls=doc_urls,
+            async_mode=async_mode
         )
     
     def deep_spec(
         self,
         input_text: str,
-        output_format: Literal["url", "json"] = "url"
+        output_format: Literal["url", "markdown"] = "url",
+        current_context: Optional[str] = None,
+        doc_urls: Optional[List[str]] = None,
+        async_mode: bool = False
     ) -> Dict[str, Any]:
         """
         Generate a deep specification for your project.
@@ -92,7 +105,11 @@ class PredevAPI:
         
         Args:
             input_text: Description of the project or feature to generate specs for
-            output_format: Format of the output - "url" or "json" (default: "url")
+            output_format: Format of the output - "url" or "markdown" (default: "url")
+            current_context: Existing project/codebase context. When omitted, generates 
+                           full new project spec. When provided, generates feature addition spec.
+            doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+            async_mode: If True, returns immediately with requestId for polling
         
         Returns:
             API response as a dictionary
@@ -105,14 +122,17 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.deep_spec(
-            ...     "Build an enterprise resource planning system",
+            ...     input_text="Build an enterprise resource planning system",
             ...     output_format="url"
             ... )
         """
         return self._make_request(
             endpoint="/api/deep-spec",
             input_text=input_text,
-            output_format=output_format
+            output_format=output_format,
+            current_context=current_context,
+            doc_urls=doc_urls,
+            async_mode=async_mode
         )
     
     def get_spec_status(self, spec_id: str) -> Dict[str, Any]:
@@ -146,7 +166,10 @@ class PredevAPI:
         self,
         endpoint: str,
         input_text: str,
-        output_format: str
+        output_format: str,
+        current_context: Optional[str] = None,
+        doc_urls: Optional[List[str]] = None,
+        async_mode: bool = False
     ) -> Dict[str, Any]:
         """Make a POST request to the API."""
         url = f"{self.base_url}{endpoint}"
@@ -154,6 +177,15 @@ class PredevAPI:
             "input": input_text,
             "outputFormat": output_format
         }
+        
+        if current_context is not None:
+            payload["currentContext"] = current_context
+        
+        if doc_urls is not None:
+            payload["docURLs"] = doc_urls
+        
+        if async_mode:
+            payload["async"] = True
         
         try:
             response = requests.post(

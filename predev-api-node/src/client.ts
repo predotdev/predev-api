@@ -59,7 +59,10 @@ export class PredevAPI {
    * 
    * @param options - Options for generating the spec
    * @param options.input - Description of the project or feature to generate specs for
-   * @param options.outputFormat - Format of the output - "url" or "json" (default: "url")
+   * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
+   * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
+   * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
+   * @param options.async - If true, returns immediately with requestId for polling
    * @returns Promise resolving to the API response
    * 
    * @throws {AuthenticationError} If authentication fails
@@ -77,11 +80,17 @@ export class PredevAPI {
   async fastSpec(options: {
     input: string;
     outputFormat?: OutputFormat;
+    currentContext?: string;
+    docURLs?: string[];
+    async?: boolean;
   }): Promise<SpecResponse> {
     return this.makeRequest(
       '/api/fast-spec',
       options.input,
-      options.outputFormat || 'url'
+      options.outputFormat || 'url',
+      options.currentContext,
+      options.docURLs,
+      options.async
     );
   }
 
@@ -93,7 +102,10 @@ export class PredevAPI {
    * 
    * @param options - Options for generating the spec
    * @param options.input - Description of the project or feature to generate specs for
-   * @param options.outputFormat - Format of the output - "url" or "json" (default: "url")
+   * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
+   * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
+   * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
+   * @param options.async - If true, returns immediately with requestId for polling
    * @returns Promise resolving to the API response
    * 
    * @throws {AuthenticationError} If authentication fails
@@ -111,11 +123,17 @@ export class PredevAPI {
   async deepSpec(options: {
     input: string;
     outputFormat?: OutputFormat;
+    currentContext?: string;
+    docURLs?: string[];
+    async?: boolean;
   }): Promise<SpecResponse> {
     return this.makeRequest(
       '/api/deep-spec',
       options.input,
-      options.outputFormat || 'url'
+      options.outputFormat || 'url',
+      options.currentContext,
+      options.docURLs,
+      options.async
     );
   }
 
@@ -159,13 +177,28 @@ export class PredevAPI {
   private async makeRequest(
     endpoint: string,
     input: string,
-    outputFormat: OutputFormat
+    outputFormat: OutputFormat,
+    currentContext?: string,
+    docURLs?: string[],
+    asyncMode?: boolean
   ): Promise<SpecResponse> {
     const url = `${this.baseUrl}${endpoint}`;
-    const payload = {
+    const payload: Record<string, any> = {
       input,
       outputFormat,
     };
+
+    if (currentContext !== undefined) {
+      payload.currentContext = currentContext;
+    }
+
+    if (docURLs !== undefined) {
+      payload.docURLs = docURLs;
+    }
+
+    if (asyncMode) {
+      payload.async = true;
+    }
 
     try {
       const response = await fetch(url, {

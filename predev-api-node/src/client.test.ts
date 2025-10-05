@@ -50,8 +50,8 @@ describe('PredevAPI', () => {
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 
-    it('should generate fast spec with JSON format', async () => {
-      const mockResponse = { spec: 'data' };
+    it('should generate fast spec with markdown format', async () => {
+      const mockResponse = { markdown: '# Spec data' };
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -59,11 +59,11 @@ describe('PredevAPI', () => {
       });
 
       const client = new PredevAPI({ apiKey: 'test_key' });
-      await client.fastSpec({ input: 'Build a todo app', outputFormat: 'json' });
+      await client.fastSpec({ input: 'Build a todo app', outputFormat: 'markdown' });
 
       const fetchCall = (global.fetch as any).mock.calls[0];
       const body = JSON.parse(fetchCall[1].body);
-      expect(body.outputFormat).toBe('json');
+      expect(body.outputFormat).toBe('markdown');
     });
 
     it('should throw AuthenticationError on 401', async () => {
