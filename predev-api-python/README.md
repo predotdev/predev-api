@@ -226,7 +226,7 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
 
 **Returns:** Dictionary with same structure as `fast_spec()`
 
-**Cost:** 25 credits per request
+**Cost:** 50 credits per request
 
 **Use Cases:** Complex systems, enterprise applications, comprehensive planning
 
@@ -299,192 +299,80 @@ Returns the raw markdown content directly in the response:
 }
 ```
 
-**Markdown Example:**
+**Fast Spec Markdown Example:**
 ```markdown
-# Project Management Tool - Technical Specification
+### - [ ] **Milestone 1**: User authentication and profile management
 
-## Executive Summary
-A comprehensive project management SaaS platform designed for teams to collaborate 
-effectively, track tasks in real-time, manage projects, and log work hours with 
-role-based access control and secure authentication.
+- [ ] **User Registration** - (M): As a: new user, I want to: register an account with email and password, So that: I can access the platform
+  - **Acceptance Criteria:**
+    - [ ] User can register with valid email and password
+    - [ ] Email verification sent upon registration
+    - [ ] Duplicate emails handled gracefully
+    - [ ] Password strength requirements enforced
 
-## Core Features
+- [ ] **User Login** - (S): As a: registered user, I want to: log in securely, So that: I can access my account
+  - **Acceptance Criteria:**
+    - [ ] User can log in with correct credentials
+    - [ ] Invalid credentials rejected with clear message
+    - [ ] Session persists across browser tabs
+    - [ ] Password reset option available
 
-### 1. Authentication & User Management
-- [ ] User Registration & Login
-  - [→] Email/password authentication
-  - [✓] OAuth 2.0 integration (Google, GitHub)
-  - [ ] Two-factor authentication (2FA)
-  - [ ] Password reset functionality
-- [ ] Role-Based Access Control (RBAC)
-  - [ ] Admin, Project Manager, Team Member roles
-  - [ ] Permission management system
-  - [ ] Team invitation system
-
-### 2. Project Management
-- [ ] Project CRUD Operations
-  - [ ] Create, read, update, delete projects
-  - [ ] Project templates
-  - [ ] Project archiving
-- [ ] Project Dashboard
-  - [ ] Overview metrics and statistics
-  - [ ] Recent activity feed
-  - [ ] Team member list
-
-### 3. Task Tracking
-- [ ] Task Management
-  - [ ] Create and assign tasks
-  - [ ] Task priorities (Low, Medium, High, Critical)
-  - [ ] Due dates and reminders
-  - [ ] Task dependencies
-  - [ ] Subtasks and checklists
-- [ ] Task Views
-  - [ ] List view with filtering
-  - [ ] Board view (Kanban)
-  - [ ] Calendar view
-  - [ ] Gantt chart
-
-### 4. Real-Time Collaboration
-- [ ] Live Updates
-  - [ ] WebSocket connection for real-time sync
-  - [ ] Presence indicators (who's online)
-  - [ ] Live cursors and selections
-- [ ] Comments & Mentions
-  - [ ] Task comments with @mentions
-  - [ ] File attachments
-  - [ ] Emoji reactions
-- [ ] Notifications
-  - [ ] In-app notifications
-  - [ ] Email notifications
-  - [ ] Push notifications (PWA)
-
-### 5. Time Logging
-- [ ] Time Tracking
-  - [ ] Start/stop timer
-  - [ ] Manual time entry
-  - [ ] Time logs per task
-- [ ] Reporting
-  - [ ] Daily/weekly/monthly reports
-  - [ ] Time spent by user
-  - [ ] Time spent by project
-  - [ ] Exportable timesheets
-
-## Technical Architecture
-
-### Frontend
-- **Framework**: React 18 with TypeScript
-- **State Management**: Redux Toolkit + RTK Query
-- **Styling**: Tailwind CSS + Headless UI
-- **Real-time**: Socket.io-client
-- **Forms**: React Hook Form + Zod validation
-- **Charts**: Recharts for data visualization
-
-### Backend  
-- **Runtime**: Node.js 18+
-- **Framework**: Express.js
-- **Database**: PostgreSQL 14+ (primary), Redis (caching/sessions)
-- **ORM**: Prisma
-- **Real-time**: Socket.io
-- **Authentication**: JWT + Passport.js
-- **File Storage**: AWS S3 or similar
-
-### Infrastructure
-- **Hosting**: AWS (EC2/ECS) or Vercel/Railway
-- **Database**: AWS RDS or Supabase
-- **CDN**: CloudFront or Cloudflare
-- **Monitoring**: DataDog or New Relic
-- **CI/CD**: GitHub Actions
-
-## Implementation Milestones
-
-### Phase 1: MVP (Weeks 1-4) - 160 hours
-- [→] Authentication system setup
-- [ ] Basic project and task CRUD
-- [ ] Simple list view for tasks
-- [ ] Core API endpoints
-- [ ] Database schema and migrations
-- [ ] Basic frontend layouts
-
-### Phase 2: Core Features (Weeks 5-8) - 160 hours
-- [ ] Role-based access control
-- [ ] Real-time updates with WebSockets
-- [ ] Task assignment and status tracking
-- [ ] Comments and notifications
-- [ ] Board and calendar views
-
-### Phase 3: Advanced Features (Weeks 9-12) - 160 hours
-- [ ] Time tracking and logging
-- [ ] File attachments and storage
-- [ ] Advanced filtering and search
-- [ ] Reporting and analytics
-- [ ] Email notifications
-
-### Phase 4: Polish & Launch (Weeks 13-16) - 160 hours
-- [ ] Performance optimization
-- [ ] Security audit and hardening
-- [ ] Comprehensive testing (unit, integration, E2E)
-- [ ] Documentation
-- [ ] Deployment and monitoring setup
-- [ ] Beta testing and feedback incorporation
-
-**Total Estimated Effort**: 640 hours / 16 weeks
-
-## Acceptance Criteria
-
-### Must Have (P0)
-- ✅ Users can register, login, and manage their profiles
-- ✅ Projects can be created and managed by authorized users
-- ✅ Tasks can be created, assigned, and tracked through completion
-- ✅ Real-time updates show changes to all connected users
-- ✅ Time can be logged against tasks
-- ✅ Basic role-based permissions are enforced
-
-### Should Have (P1)
-- Multiple task views (list, board, calendar)
-- File attachments on tasks
-- Email notifications for key events
-- Reporting and time tracking exports
-
-### Nice to Have (P2)
-- Gantt chart view
-- Task dependencies
-- Project templates
-- Advanced analytics dashboard
-
-## Risk Analysis
-
-### Technical Risks
-- **Real-time scalability**: WebSocket connections may require load balancing
-  - *Mitigation*: Use Redis adapter for Socket.io, implement connection pooling
-- **Database performance**: Large projects with many tasks could slow queries
-  - *Mitigation*: Implement proper indexing, use pagination, add caching layer
-
-### Security Considerations
-- Implement rate limiting on all API endpoints
-- Use parameterized queries to prevent SQL injection
-- Encrypt sensitive data at rest
-- Implement CORS properly
-- Regular security audits and dependency updates
-- Add CSP headers and XSS protection
-
-## Task Status Legend
-- `[ ]` Not started
-- `[→]` In progress  
-- `[✓]` Completed
-- `[⊘]` Skipped/Descoped
-
-**Note**: Update task statuses as development progresses to track implementation.
+- [ ] **User Profile** - (M): As a: registered user, I want to: manage my profile, So that: I can update my information
+  - **Acceptance Criteria:**
+    - [ ] User can view and edit profile details
+    - [ ] Shipping addresses can be saved
+    - [ ] Password can be changed with re-authentication
+    - [ ] Account can be deactivated
 ```
+
+**Deep Spec Markdown Example (includes subtasks):**
+```markdown
+### - [ ] **Milestone 2**: User authentication and profile management
+
+- [ ] **User Registration** - (M): As a: new user, I want to: register an account with email and password, So that: I can access the platform
+  - **Acceptance Criteria:**
+    - [ ] User can register with valid email and password
+    - [ ] Email verification sent upon registration
+    - [ ] Duplicate emails handled gracefully
+    - [ ] Password strength requirements enforced
+  - [ ] DB: Create/verify table_users migration - (M)
+  - [ ] Infra: Configure Clerk (external_clerk) & auth settings - (M)
+  - [ ] FE: Implement /RegisterPage UI comp_registerPage_mainForm - (M)
+  - [ ] FE: Add client-side validation & reCAPTCHA on register form - (M)
+  - [ ] API: Implement registerWithEmail mutation in router_route_registerPage - (M)
+  - [ ] Backend: Create user record in table_users and auth_methods - (M)
+  - [ ] Integration: Connect API to Clerk for email confirmation/session - (M)
+  - [ ] QA: Write unit and integration tests for registration flow - (M)
+  - [ ] Docs: Document registration API and front-end behavior - (M)
+
+- [ ] **Password Reset** - (M): As a: registered user, I want to: reset my password securely, So that: I can regain access
+  - **Acceptance Criteria:**
+    - [ ] User can request password reset link via valid email
+    - [ ] Reset link expires after a defined period
+    - [ ] New password must meet strength requirements
+    - [ ] System invalidates existing sessions after password change
+  - [ ] DB: Create password_resets table migration - (M)
+  - [ ] API: Implement requestPasswordReset mutation (validate, create token) - (M)
+  - [ ] API: Implement verifyResetToken and finalizeReset mutation - (M)
+  - [ ] Frontend: Add Password Reset Request page (/auth/password-reset) - (M)
+  - [ ] Frontend: Add Password Reset Form page (/auth/reset?token=) - (M)
+  - [ ] Auth Integration: Wire Clerk for account lookup and session invalidation - (M)
+  - [ ] Infra: Email service integration and template for reset link - (M)
+  - [ ] Security: Add reCAPTCHA and rate limiting to request endpoint - (M)
+  - [ ] Testing: End-to-end tests for reset flow - (M)
+  - [ ] Docs: Document API, pages, and operational runbook - (M)
+```
+
+**Key Differences:**
+- **Fast Spec**: Milestones → User Stories with Acceptance Criteria
+- **Deep Spec**: Milestones → User Stories → Granular Subtasks (DB, API, FE, QA, Docs)
+- Complexity estimates: (XS, S, M, L, XL)
 
 ### Task Status Legend
 
-The generated specs use checkboxes to track implementation progress:
-- `[ ]` - Not started
-- `[→]` - In progress
-- `[✓]` - Completed
-- `[⊘]` - Skipped (with reason)
+Task status legend: `[ ]` → `[→]` → `[✓]` → `[⊘]`
 
-**Pro Tip:** Update task statuses as your AI agent implements features to keep everyone aligned on progress.
+Update as your agent completes work to keep both you and AI aligned on progress.
 
 ## Error Handling
 
