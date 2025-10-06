@@ -17,7 +17,6 @@ class PredevAPI:
 
     Args:
         api_key: Your API key from pre.dev settings
-        enterprise: Whether to use enterprise authentication (default: False)
         base_url: Base URL for the API (default: https://api.pre.dev)
 
     Example:
@@ -30,12 +29,10 @@ class PredevAPI:
     def __init__(
         self,
         api_key: str,
-        enterprise: bool = False,
         base_url: str = "https://api.pre.dev"
     ):
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
-        self.enterprise = enterprise
 
         # Set up headers with x-api-key
         self.headers = {

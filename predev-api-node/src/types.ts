@@ -3,29 +3,28 @@
  */
 
 export interface PredevAPIConfig {
-  apiKey: string;
-  enterprise?: boolean;
-  baseUrl?: string;
+	apiKey: string;
+	baseUrl?: string;
 }
 
-export type OutputFormat = 'url' | 'markdown';
+export type OutputFormat = "url" | "markdown";
 
 export interface FastSpecOptions {
-  input: string;
-  outputFormat?: OutputFormat;
-  currentContext?: string;
-  docURLs?: string[];
-  async?: boolean;
+	input: string;
+	outputFormat?: OutputFormat;
+	currentContext?: string;
+	docURLs?: string[];
+	async?: boolean;
 }
 
 export interface DeepSpecOptions {
-  input: string;
-  outputFormat?: OutputFormat;
-  currentContext?: string;
-  docURLs?: string[];
-  async?: boolean;
+	input: string;
+	outputFormat?: OutputFormat;
+	currentContext?: string;
+	docURLs?: string[];
+	async?: boolean;
 }
 
 export interface SpecResponse {
-  [key: string]: any;
+	[key: string]: any;
 }

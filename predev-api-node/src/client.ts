@@ -28,7 +28,6 @@ import {
 export class PredevAPI {
 	private apiKey: string;
 	private baseUrl: string;
-	private enterprise: boolean;
 	private headers: Record<string, string>;
 
 	/**
@@ -36,13 +35,11 @@ export class PredevAPI {
 	 *
 	 * @param config - Configuration options
 	 * @param config.apiKey - Your API key from pre.dev settings
-	 * @param config.enterprise - Whether to use enterprise authentication (default: false)
 	 * @param config.baseUrl - Base URL for the API (default: https://api.pre.dev)
 	 */
 	constructor(config: PredevAPIConfig) {
 		this.apiKey = config.apiKey;
 		this.baseUrl = config.baseUrl?.replace(/\/$/, "") || "https://api.pre.dev";
-		this.enterprise = config.enterprise || false;
 
 		// Set up headers with x-api-key
 		this.headers = {

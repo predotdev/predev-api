@@ -1,6 +1,6 @@
 # pre.dev API Client Libraries
 
-Official client libraries for the [Pre.dev Architect API](https://docs.pre.dev/api-reference/introduction) in Python and Node.js/TypeScript.
+Official client libraries for the [Pre.dev Architect API](https://docs.pre.dev) in Python and Node.js/TypeScript.
 
 Generate comprehensive software specifications using AI-powered analysis with a simple, consistent API across both languages.
 
@@ -50,12 +50,7 @@ Both libraries provide:
 
 ## 🔑 Authentication
 
-Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys.
-
-The API supports two authentication methods:
-
-1. **Solo Authentication**: Use your user ID for personal projects
-2. **Enterprise Authentication**: Use your organization's API key for team projects
+Get your API key from the [pre.dev dashboard](https://pre.dev/projects/playground)
 
 ## 📚 API Endpoints
 
@@ -115,7 +110,7 @@ const status = await client.getSpecStatus("spec_id");
 
 ## 📖 Documentation
 
-- [Pre.dev API Documentation](https://docs.pre.dev/api-reference/introduction)
+- [Pre.dev API Documentation](https://docs.pre.dev)
 - [Python Package README](./predev-api-python/README.md)
 - [Node.js Package README](./predev-api-node/README.md)
 
@@ -208,5 +203,5 @@ For issues, questions, or contributions:
 ## 🔗 Links
 
 - [Pre.dev Website](https://pre.dev)
-- [API Documentation](https://docs.pre.dev/api-reference/introduction)
+- [API Documentation](https://docs.pre.dev)
 - [Get API Key](https://pre.dev/settings)

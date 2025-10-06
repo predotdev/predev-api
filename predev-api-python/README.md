@@ -1,6 +1,6 @@
 # pre.dev Architect API - Python Client
 
-A Python client library for the [Pre.dev Architect API](https://docs.pre.dev/api-reference/introduction). Generate comprehensive software specifications using AI-powered analysis.
+A Python client library for the [Pre.dev Architect API](https://docs.pre.dev). Generate comprehensive software specifications using AI-powered analysis.
 
 ## Features
 
@@ -36,25 +36,11 @@ print(result)
 
 ## Authentication
 
-The Pre.dev API supports two authentication methods:
-
-### Solo Authentication
-
-Use your user ID from [pre.dev settings](https://pre.dev/settings):
+The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys:
 
 ```python
-client = PredevAPI(api_key="your_user_id")
+client = PredevAPI(api_key="your_api_key")
 ```
-
-### Enterprise Authentication
-
-Use your organization's API key:
-
-```python
-client = PredevAPI(api_key="your_org_api_key", enterprise=True)
-```
-
-Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys.
 
 ## Usage
 
@@ -433,7 +419,7 @@ Current test coverage: **94%**
 ## Documentation
 
 For more information about the Pre.dev Architect API, visit:
-- [API Documentation](https://docs.pre.dev/api-reference/introduction)
+- [API Documentation](https://docs.pre.dev)
 - [Pre.dev Website](https://pre.dev)
 
 ## License

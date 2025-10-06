@@ -1,6 +1,6 @@
 # pre.dev Architect API - Node.js/TypeScript Client
 
-A TypeScript/Node.js client library for the [Pre.dev Architect API](https://docs.pre.dev/api-reference/introduction). Generate comprehensive software specifications using AI-powered analysis.
+A TypeScript/Node.js client library for the [Pre.dev Architect API](https://docs.pre.dev). Generate comprehensive software specifications using AI-powered analysis.
 
 ## Features
 
@@ -37,28 +37,11 @@ console.log(result);
 
 ## Authentication
 
-The Pre.dev API supports two authentication methods:
-
-### Solo Authentication
-
-Use your user ID from [pre.dev settings](https://pre.dev/settings):
+The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys:
 
 ```typescript
-const client = new PredevAPI({ apiKey: 'your_user_id' });
+const client = new PredevAPI({ apiKey: 'your_api_key' });
 ```
-
-### Enterprise Authentication
-
-Use your organization's API key:
-
-```typescript
-const client = new PredevAPI({ 
-  apiKey: 'your_org_api_key',
-  enterprise: true 
-});
-```
-
-Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys.
 
 ## Usage
 
@@ -474,7 +457,7 @@ npm run build
 ## Documentation
 
 For more information about the Pre.dev Architect API, visit:
-- [API Documentation](https://docs.pre.dev/api-reference/introduction)
+- [API Documentation](https://docs.pre.dev)
 - [Pre.dev Website](https://pre.dev)
 
 ## License
