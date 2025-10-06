@@ -18,7 +18,7 @@ import { PredevAPI } from '../src/index';
 import { query } from 'claude-agent-sdk';
 
 // Get API keys from environment
-const PREDEV_API_KEY = process.env.PREDEV_API_KEY || 'your_predev_api_key';
+const PREDEV_API_KEY = process.env.PREDEV_API_KEY || 'your_api_key_here';
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || 'your_anthropic_api_key';
 
 // Set Anthropic API key for Claude SDK

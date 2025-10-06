@@ -20,7 +20,7 @@ from predev_api import PredevAPI
 from claude_agent_sdk import query
 
 # Get API keys from environment
-PREDEV_API_KEY = os.environ.get("PREDEV_API_KEY", "your_predev_api_key")
+PREDEV_API_KEY = os.environ.get("PREDEV_API_KEY", "your_api_key_here")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "your_anthropic_api_key")
 
 # Set Anthropic API key for Claude SDK

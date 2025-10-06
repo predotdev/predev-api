@@ -81,7 +81,7 @@ class PredevAPI:
             ... )
         """
         return self._make_request(
-            endpoint="/api/fast-spec",
+            endpoint="/fast-spec",
             input_text=input_text,
             output_format=output_format,
             current_context=current_context,
@@ -127,7 +127,7 @@ class PredevAPI:
             ... )
         """
         return self._make_request(
-            endpoint="/api/deep-spec",
+            endpoint="/deep-spec",
             input_text=input_text,
             output_format=output_format,
             current_context=current_context,
@@ -153,7 +153,7 @@ class PredevAPI:
             >>> client = PredevAPI(api_key="your_key")
             >>> status = client.get_spec_status("spec_123")
         """
-        url = f"{self.base_url}/api/spec-status/{spec_id}"
+        url = f"{self.base_url}/spec-status/{spec_id}"
         
         try:
             response = requests.get(url, headers=self.headers, timeout=30)

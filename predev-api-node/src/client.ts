@@ -85,7 +85,7 @@ export class PredevAPI {
     async?: boolean;
   }): Promise<SpecResponse> {
     return this.makeRequest(
-      '/api/fast-spec',
+      '/fast-spec',
       options.input,
       options.outputFormat || 'url',
       options.currentContext,
@@ -128,7 +128,7 @@ export class PredevAPI {
     async?: boolean;
   }): Promise<SpecResponse> {
     return this.makeRequest(
-      '/api/deep-spec',
+      '/deep-spec',
       options.input,
       options.outputFormat || 'url',
       options.currentContext,
@@ -153,7 +153,7 @@ export class PredevAPI {
    * ```
    */
   async getSpecStatus(specId: string): Promise<SpecResponse> {
-    const url = `${this.baseUrl}/api/spec-status/${specId}`;
+    const url = `${this.baseUrl}/spec-status/${specId}`;
 
     try {
       const response = await fetch(url, {
@@ -235,10 +235,11 @@ export class PredevAPI {
 
     let errorMessage = 'Unknown error';
     try {
-      const errorData = (await response.json()) as { error?: string };
-      errorMessage = errorData.error || errorMessage;
+      const errorData = (await response.json()) as { error?: string; message?: string };
+      errorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
     } catch {
-      errorMessage = (await response.text()) || errorMessage;
+      const textError = await response.text();
+      errorMessage = textError || errorMessage;
     }
 
     throw new PredevAPIError(
