@@ -152,7 +152,7 @@ class PredevAPI:
         url = f"{self.base_url}/spec-status/{spec_id}"
 
         try:
-            response = requests.get(url, headers=self.headers, timeout=30)
+            response = requests.get(url, headers=self.headers, timeout=60)
             self._handle_response(response)
             return response.json()
         except requests.RequestException as e:
@@ -188,7 +188,7 @@ class PredevAPI:
                 url,
                 headers=self.headers,
                 json=payload,
-                timeout=30
+                timeout=300  # 5 minutes for spec generation
             )
             self._handle_response(response)
             return response.json()
