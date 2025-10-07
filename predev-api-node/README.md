@@ -405,29 +405,6 @@ Get the status of a specification generation request (for async requests).
 - `AuthenticationError`: If authentication fails
 - `PredevAPIError`: For other API errors
 
-### Async Mode
-
-For long-running requests, you can use async mode to avoid timeouts:
-
-```typescript
-// Start async request
-const asyncResponse = await predev.fastSpec({
-  input: 'Build a complex system',
-  async: true
-});
-
-console.log(asyncResponse.specId); // "spec_abc123"
-
-// Poll for status
-const status = await predev.getSpecStatus(asyncResponse.specId);
-console.log(status.status); // "pending" | "processing" | "completed" | "failed"
-
-// When completed, the status response will contain the full spec data
-if (status.status === 'completed') {
-  console.log(status.output); // The generated specification
-}
-```
-
 ### Output Formats
 
 #### URL Format (`outputFormat: "url"`)

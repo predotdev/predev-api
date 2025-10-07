@@ -437,30 +437,6 @@ SpecResponse(
 - `AuthenticationError`: If authentication fails
 - `PredevAPIError`: For other API errors
 
-### Async Mode
-
-For long-running requests, you can use async mode to avoid timeouts:
-
-```python
-from predev_api import PredevAPI, AsyncSpecResponse, SpecResponse
-
-# Start async request
-async_response = predev.fast_spec(
-    input_text="Build a complex system",
-    async_mode=True
-)
-
-print(async_response.specId)  # "spec_abc123"
-
-# Poll for status
-status = predev.get_spec_status(async_response.specId)
-print(status.status)  # "pending" | "processing" | "completed" | "failed"
-
-# When completed, the status response will contain the full spec data
-if status.status == 'completed':
-    print(status.output)  # The generated specification
-```
-
 ### Output Formats
 
 #### URL Format (`output_format="url"`)
@@ -642,6 +618,7 @@ Current test coverage: **94%**
 For more information about the Pre.dev Architect API, visit:
 - [API Documentation](https://docs.pre.dev)
 - [Pre.dev Website](https://pre.dev)
+
 
 ## License
 
