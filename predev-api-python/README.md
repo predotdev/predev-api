@@ -128,7 +128,7 @@ PredevAPI(api_key: str, enterprise: bool = False, base_url: str = "https://api.p
 
 #### Methods
 
-##### `fast_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> Dict[str, Any]`
+##### `fast_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None, async_mode: bool = False) -> Union[SpecResponse, AsyncSpecResponse]`
 
 Generate a fast specification (30-40 seconds, 10 credits).
 
@@ -141,15 +141,41 @@ Generate a fast specification (30-40 seconds, 10 credits).
   - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance (`isNewBuild: true`)
   - **When provided**: Generates feature addition spec for existing project (`isNewBuild: false`)
 - `doc_urls` (List[str], optional): Array of documentation URLs that Architect will reference when generating specifications (e.g., API docs, design systems)
+- `async_mode` (bool, optional): If True, returns immediately with specId for polling
 
-**Returns:** Dictionary containing:
+**Returns:** Either `SpecResponse` or `AsyncSpecResponse`:
+
+**Synchronous Response (`SpecResponse`):**
 ```python
-{
-    "output": "https://pre.dev/s/abc123",  # URL or markdown content
-    "outputFormat": "url",                  # Echo of format requested
-    "isNewBuild": True,                     # True for new projects, False for features
-    "fileUrl": "https://pre.dev/s/abc123"  # Direct link to spec
-}
+SpecResponse(
+    _id="spec_abc123",
+    created="2024-01-01T00:00:00Z",
+    endpoint="fast_spec",
+    input="Build a task management app",
+    status="completed",
+    success=True,
+    uploadedFileShortUrl="https://pre.dev/s/abc123",
+    uploadedFileName="spec.md",
+    output="https://pre.dev/s/abc123",
+    outputFormat="url",
+    outputFileUrl="https://pre.dev/s/abc123",
+    executionTime=35000,
+    predevUrl="https://pre.dev/s/abc123",
+    lovableUrl="https://lovable.dev/s/abc123",
+    cursorUrl="https://cursor.sh/s/abc123",
+    v0Url="https://v0.dev/s/abc123",
+    boltUrl="https://bolt.new/s/abc123",
+    errorMessage=None,
+    progress="Completed"
+)
+```
+
+**Async Response (`AsyncSpecResponse`):**
+```python
+AsyncSpecResponse(
+    specId="spec_abc123",
+    status="pending"
+)
 ```
 
 **Cost:** 10 credits per request
@@ -198,7 +224,7 @@ result = predev.fast_spec(
 - `RateLimitError`: If rate limit is exceeded
 - `PredevAPIError`: For other API errors
 
-##### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> Dict[str, Any]`
+##### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None, async_mode: bool = False) -> Union[SpecResponse, AsyncSpecResponse]`
 
 Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade depth.
 
@@ -209,8 +235,9 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
   - **When omitted**: Full new project spec (`isNewBuild: true`)
   - **When provided**: Feature addition spec (`isNewBuild: false`)
 - `doc_urls` (List[str], optional): Documentation URLs for reference
+- `async_mode` (bool, optional): If True, returns immediately with specId for polling
 
-**Returns:** Dictionary with same structure as `fast_spec()`
+**Returns:** Same structure as `fast_spec()` - either `SpecResponse` or `AsyncSpecResponse`
 
 **Cost:** 50 credits per request
 
@@ -237,52 +264,91 @@ result = predev.deep_spec(
 - `RateLimitError`: If rate limit is exceeded
 - `PredevAPIError`: For other API errors
 
-##### `get_spec_status(spec_id: str) -> Dict[str, Any]`
+##### `get_spec_status(spec_id: str) -> SpecResponse`
 
 Get the status of a specification generation request (for async requests).
 
 **Parameters:**
 - `spec_id` (str): The ID of the specification request
 
-**Returns:** Dictionary with status information
+**Returns:** `SpecResponse` with status information:
 ```python
-{
-    "requestId": "abc123",
-    "status": "completed",  # pending | processing | completed | failed
-    "progress": "Finalizing documentation...",
-    "output": "https://pre.dev/s/abc123",
-    "outputFormat": "url",
-    "fileUrl": "https://pre.dev/s/abc123",
-    "executionTimeMs": 35000
-}
+SpecResponse(
+    _id="spec_abc123",
+    created="2024-01-01T00:00:00Z",
+    endpoint="fast_spec",
+    input="Build a task management app",
+    status="completed",
+    success=True,
+    uploadedFileShortUrl="https://pre.dev/s/abc123",
+    uploadedFileName="spec.md",
+    output="https://pre.dev/s/abc123",
+    outputFormat="url",
+    outputFileUrl="https://pre.dev/s/abc123",
+    executionTime=35000,
+    predevUrl="https://pre.dev/s/abc123",
+    lovableUrl="https://lovable.dev/s/abc123",
+    cursorUrl="https://cursor.sh/s/abc123",
+    v0Url="https://v0.dev/s/abc123",
+    boltUrl="https://bolt.new/s/abc123",
+    errorMessage=None,
+    progress="Completed"
+)
 ```
 
 **Raises:**
 - `AuthenticationError`: If authentication fails
 - `PredevAPIError`: For other API errors
 
+### Async Mode
+
+For long-running requests, you can use async mode to avoid timeouts:
+
+```python
+from predev_api import PredevAPI, AsyncSpecResponse, SpecResponse
+
+# Start async request
+async_response = predev.fast_spec(
+    input_text="Build a complex enterprise system",
+    async_mode=True
+)
+
+print(async_response.specId)  # "spec_abc123"
+
+# Poll for status
+status = predev.get_spec_status(async_response.specId)
+print(status.status)  # "pending" | "processing" | "completed" | "failed"
+
+# When completed, the status response will contain the full spec data
+if status.status == 'completed':
+    print(status.output)  # The generated specification
+```
+
 ### Output Formats
 
 #### URL Format (`output_format="url"`)
 Returns a hosted URL where you can view the specification in a formatted interface:
 ```python
-{
-    "output": "https://pre.dev/s/abc123",
-    "outputFormat": "url",
-    "isNewBuild": true,
-    "fileUrl": "https://pre.dev/s/abc123"
-}
+SpecResponse(
+    output="https://pre.dev/s/abc123",
+    outputFormat="url",
+    outputFileUrl="https://pre.dev/s/abc123",
+    predevUrl="https://pre.dev/s/abc123",
+    lovableUrl="https://lovable.dev/s/abc123",
+    cursorUrl="https://cursor.sh/s/abc123",
+    v0Url="https://v0.dev/s/abc123",
+    boltUrl="https://bolt.new/s/abc123"
+)
 ```
 
 #### Markdown Format (`output_format="markdown"`)
 Returns the raw markdown content directly in the response:
 ```python
-{
-    "markdown": "# Project Specification\n\n## Executive Summary...",
-    "outputFormat": "markdown",
-    "isNewBuild": true,
-    "fileUrl": "https://pre.dev/s/abc123"
-}
+SpecResponse(
+    output="# Project Specification\n\n## Executive Summary...",
+    outputFormat="markdown",
+    outputFileUrl="https://pre.dev/s/abc123"
+)
 ```
 
 **Fast Spec Markdown Example:**
@@ -365,12 +431,30 @@ Update as your agent completes work to keep both you and AI aligned on progress.
 The library provides custom exceptions for different error scenarios:
 
 ```python
-from predev_api import PredevAPI, PredevAPIError, AuthenticationError, RateLimitError
+from predev_api import PredevAPI, PredevAPIError, AuthenticationError, RateLimitError, SpecResponse, AsyncSpecResponse
 
 predev = PredevAPI(api_key="your_api_key")
 
 try:
-    result = predev.fast_spec("Build a mobile app")
+    result = predev.fast_spec(
+        input_text="Build a mobile app",
+        async_mode=True
+    )
+    
+    # Type-safe response handling
+    if isinstance(result, AsyncSpecResponse):
+        print(f"Async request started: {result.specId}")
+        
+        # Poll for status
+        status = predev.get_spec_status(result.specId)
+        if isinstance(status, SpecResponse):
+            print(f"Status: {status.status}")
+            if status.status == 'completed':
+                print(f"Output: {status.output}")
+    else:
+        # Synchronous response
+        print(f"Sync response: {result.output}")
+        
 except AuthenticationError as e:
     print(f"Authentication failed: {e}")
 except RateLimitError as e:

@@ -132,7 +132,7 @@ new PredevAPI(config: PredevAPIConfig)
 
 #### Methods
 
-##### `fastSpec(options: SpecGenOptions): Promise<SpecResponse>`
+##### `fastSpec(options: SpecGenOptions): Promise<SpecResponse | AsyncSpecResponse>`
 
 Generate a fast specification (30-40 seconds, 10 credits).
 
@@ -145,14 +145,40 @@ Generate a fast specification (30-40 seconds, 10 credits).
   - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance (`isNewBuild: true`)
   - **When provided**: Generates feature addition spec for existing project (`isNewBuild: false`)
 - `options.docURLs` (string[], optional): Array of documentation URLs that Architect will reference when generating specifications (e.g., API docs, design systems)
+- `options.async` (boolean, optional): If true, returns immediately with specId for polling
 
-**Returns:** Promise resolving to:
+**Returns:** Promise resolving to either:
+
+**Synchronous Response (`SpecResponse`):**
 ```typescript
 {
-  output: "https://pre.dev/s/abc123",  // URL or markdown content
-  outputFormat: "url",                  // Echo of format requested
-  isNewBuild: true,                     // true for new projects, false for features
-  fileUrl: "https://pre.dev/s/abc123"  // Direct link to spec
+  _id?: string;
+  created?: string;
+  endpoint: "fast_spec" | "deep_spec";
+  input: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  success: boolean;
+  uploadedFileShortUrl?: string;
+  uploadedFileName?: string;
+  output?: any;
+  outputFormat: "markdown" | "url";
+  outputFileUrl?: string;
+  executionTime?: number;
+  predevUrl?: string;
+  lovableUrl?: string;
+  cursorUrl?: string;
+  v0Url?: string;
+  boltUrl?: string;
+  errorMessage?: string;
+  progress?: string;
+}
+```
+
+**Async Response (`AsyncSpecResponse`):**
+```typescript
+{
+  specId: string;
+  status: "pending" | "processing" | "completed" | "failed";
 }
 ```
 
@@ -202,7 +228,7 @@ const result = await predev.fastSpec({
 - `RateLimitError`: If rate limit is exceeded
 - `PredevAPIError`: For other API errors
 
-##### `deepSpec(options: SpecGenOptions): Promise<SpecResponse>`
+##### `deepSpec(options: SpecGenOptions): Promise<SpecResponse | AsyncSpecResponse>`
 
 Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade depth.
 
@@ -213,8 +239,9 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
   - **When omitted**: Full new project spec (`isNewBuild: true`)
   - **When provided**: Feature addition spec (`isNewBuild: false`)
 - `options.docURLs` (string[], optional): Documentation URLs for reference
+- `options.async` (boolean, optional): If true, returns immediately with specId for polling
 
-**Returns:** Promise with same structure as `fastSpec()`
+**Returns:** Promise with same structure as `fastSpec()` - either `SpecResponse` or `AsyncSpecResponse`
 
 **Cost:** 50 credits per request
 
@@ -248,22 +275,57 @@ Get the status of a specification generation request (for async requests).
 **Parameters:**
 - `specId` (string): The ID of the specification request
 
-**Returns:** Promise resolving to status information:
+**Returns:** Promise resolving to `SpecResponse` with status information:
 ```typescript
 {
-  requestId: "abc123",
-  status: "completed",  // "pending" | "processing" | "completed" | "failed"
-  progress: "Finalizing documentation...",
-  output: "https://pre.dev/s/abc123",
-  outputFormat: "url",
-  fileUrl: "https://pre.dev/s/abc123",
-  executionTimeMs: 35000
+  _id?: string;
+  created?: string;
+  endpoint: "fast_spec" | "deep_spec";
+  input: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  success: boolean;
+  uploadedFileShortUrl?: string;
+  uploadedFileName?: string;
+  output?: any;
+  outputFormat: "markdown" | "url";
+  outputFileUrl?: string;
+  executionTime?: number;
+  predevUrl?: string;
+  lovableUrl?: string;
+  cursorUrl?: string;
+  v0Url?: string;
+  boltUrl?: string;
+  errorMessage?: string;
+  progress?: string;
 }
 ```
 
 **Throws:**
 - `AuthenticationError`: If authentication fails
 - `PredevAPIError`: For other API errors
+
+### Async Mode
+
+For long-running requests, you can use async mode to avoid timeouts:
+
+```typescript
+// Start async request
+const asyncResponse = await predev.fastSpec({
+  input: 'Build a complex enterprise system',
+  async: true
+});
+
+console.log(asyncResponse.specId); // "spec_abc123"
+
+// Poll for status
+const status = await predev.getSpecStatus(asyncResponse.specId);
+console.log(status.status); // "pending" | "processing" | "completed" | "failed"
+
+// When completed, the status response will contain the full spec data
+if (status.status === 'completed') {
+  console.log(status.output); // The generated specification
+}
+```
 
 ### Output Formats
 
@@ -273,8 +335,12 @@ Returns a hosted URL where you can view the specification in a formatted interfa
 {
   output: "https://pre.dev/s/abc123",
   outputFormat: "url",
-  isNewBuild: true,
-  fileUrl: "https://pre.dev/s/abc123"
+  outputFileUrl: "https://pre.dev/s/abc123",
+  predevUrl: "https://pre.dev/s/abc123",
+  lovableUrl: "https://lovable.dev/s/abc123",
+  cursorUrl: "https://cursor.sh/s/abc123",
+  v0Url: "https://v0.dev/s/abc123",
+  boltUrl: "https://bolt.new/s/abc123"
 }
 ```
 
@@ -282,10 +348,9 @@ Returns a hosted URL where you can view the specification in a formatted interfa
 Returns the raw markdown content directly in the response:
 ```typescript
 {
-  markdown: "# Project Specification\n\n## Executive Summary...",
+  output: "# Project Specification\n\n## Executive Summary...",
   outputFormat: "markdown",
-  isNewBuild: true,
-  fileUrl: "https://pre.dev/s/abc123"
+  outputFileUrl: "https://pre.dev/s/abc123"
 }
 ```
 
@@ -401,14 +466,34 @@ try {
 This package is written in TypeScript and includes full type definitions. You can import types for better IDE support:
 
 ```typescript
-import { PredevAPI, PredevAPIConfig, SpecResponse } from 'predev-api';
+import { 
+  PredevAPI, 
+  PredevAPIConfig, 
+  SpecResponse, 
+  AsyncSpecResponse,
+  ErrorResponse 
+} from 'predev-api';
 
 const config: PredevAPIConfig = {
   apiKey: 'your_api_key',
-  enterprise: false
+  baseUrl: 'https://api.pre.dev'
 };
 
 const client = new PredevAPI(config);
+
+// Type-safe async response handling
+const result = await client.fastSpec({
+  input: 'Build a task management app',
+  async: true
+});
+
+if ('specId' in result) {
+  // This is an AsyncSpecResponse
+  console.log('Async request started:', result.specId);
+} else {
+  // This is a SpecResponse
+  console.log('Sync response:', result.output);
+}
 ```
 
 ## Development & Testing
