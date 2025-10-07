@@ -2,7 +2,13 @@
  * Client for the Pre.dev Architect API
  */
 
-import type { PredevAPIConfig, OutputFormat, SpecResponse } from "./types";
+import type {
+	PredevAPIConfig,
+	OutputFormat,
+	SpecResponse,
+	AsyncSpecResponse,
+	ErrorResponse,
+} from "./types";
 import {
 	PredevAPIError,
 	AuthenticationError,
@@ -79,7 +85,7 @@ export class PredevAPI {
 		currentContext?: string;
 		docURLs?: string[];
 		async?: boolean;
-	}): Promise<SpecResponse> {
+	}): Promise<SpecResponse | AsyncSpecResponse> {
 		return this.makeRequest(
 			"/fast-spec",
 			options.input,
@@ -122,7 +128,7 @@ export class PredevAPI {
 		currentContext?: string;
 		docURLs?: string[];
 		async?: boolean;
-	}): Promise<SpecResponse> {
+	}): Promise<SpecResponse | AsyncSpecResponse> {
 		return this.makeRequest(
 			"/deep-spec",
 			options.input,
@@ -157,7 +163,7 @@ export class PredevAPI {
 				headers: this.headers,
 			});
 
-			return this.handleResponse(response);
+			return this.handleResponse(response) as Promise<SpecResponse>;
 		} catch (error) {
 			if (error instanceof PredevAPIError) {
 				throw error;
@@ -181,7 +187,7 @@ export class PredevAPI {
 		currentContext?: string,
 		docURLs?: string[],
 		asyncMode?: boolean
-	): Promise<SpecResponse> {
+	): Promise<SpecResponse | AsyncSpecResponse> {
 		const url = `${this.baseUrl}${endpoint}`;
 		const payload: Record<string, any> = {
 			input,
@@ -224,9 +230,11 @@ export class PredevAPI {
 	 * Handle API response and raise appropriate exceptions
 	 * @private
 	 */
-	private async handleResponse(response: Response): Promise<SpecResponse> {
+	private async handleResponse(
+		response: Response
+	): Promise<SpecResponse | AsyncSpecResponse> {
 		if (response.ok) {
-			return (await response.json()) as SpecResponse;
+			return (await response.json()) as SpecResponse | AsyncSpecResponse;
 		}
 
 		if (response.status === 401) {
@@ -239,10 +247,7 @@ export class PredevAPI {
 
 		let errorMessage = "Unknown error";
 		try {
-			const errorData = (await response.json()) as {
-				error?: string;
-				message?: string;
-			};
+			const errorData = (await response.json()) as ErrorResponse;
 			errorMessage =
 				errorData.error || errorData.message || JSON.stringify(errorData);
 		} catch {

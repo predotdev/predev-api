@@ -132,7 +132,7 @@ new PredevAPI(config: PredevAPIConfig)
 
 #### Methods
 
-##### `fastSpec(options: FastSpecOptions): Promise<SpecResponse>`
+##### `fastSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
 Generate a fast specification (30-40 seconds, 10 credits).
 
@@ -202,7 +202,7 @@ const result = await predev.fastSpec({
 - `RateLimitError`: If rate limit is exceeded
 - `PredevAPIError`: For other API errors
 
-##### `deepSpec(options: DeepSpecOptions): Promise<SpecResponse>`
+##### `deepSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
 Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade depth.
 

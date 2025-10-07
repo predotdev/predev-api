@@ -9,7 +9,7 @@ export interface PredevAPIConfig {
 
 export type OutputFormat = "url" | "markdown";
 
-export interface FastSpecOptions {
+export interface SpecGenOptions {
 	input: string;
 	outputFormat?: OutputFormat;
 	currentContext?: string;
@@ -17,14 +17,41 @@ export interface FastSpecOptions {
 	async?: boolean;
 }
 
-export interface DeepSpecOptions {
-	input: string;
-	outputFormat?: OutputFormat;
-	currentContext?: string;
-	docURLs?: string[];
-	async?: boolean;
+// Async mode response interfaces
+export interface AsyncSpecResponse {
+	specId: string;
+	status: "pending" | "processing" | "completed" | "failed";
 }
 
+// Status check response interface
 export interface SpecResponse {
-	[key: string]: any;
+	_id?: string;
+	created?: string;
+
+	endpoint: "fast_spec" | "deep_spec";
+	input: string;
+	status: "pending" | "processing" | "completed" | "failed";
+	success: boolean;
+
+	uploadedFileShortUrl?: string;
+	uploadedFileName?: string;
+	output?: any;
+	outputFormat: "markdown" | "url";
+	outputFileUrl?: string;
+	executionTime?: number;
+
+	predevUrl?: string;
+	lovableUrl?: string;
+	cursorUrl?: string;
+	v0Url?: string;
+	boltUrl?: string;
+
+	errorMessage?: string;
+	progress?: string;
+}
+
+// Error response interface
+export interface ErrorResponse {
+	error: string;
+	message: string;
 }

@@ -2,9 +2,53 @@
 Client for the Pre.dev Architect API
 """
 
-from typing import Optional, Dict, Any, Literal, List
+from typing import Optional, Dict, Any, Literal, List, Union
+from dataclasses import dataclass
 import requests
 from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
+
+
+@dataclass
+class AsyncSpecResponse:
+    """Async mode response class"""
+    specId: str
+    status: Literal['pending', 'processing', 'completed', 'failed']
+
+
+@dataclass
+class SpecResponse:
+    """Status check response class"""
+    _id: Optional[str] = None
+    created: Optional[str] = None
+
+    endpoint: Optional[Literal['fast_spec', 'deep_spec']] = None
+    input: Optional[str] = None
+    status: Optional[Literal['pending',
+                             'processing', 'completed', 'failed']] = None
+    success: Optional[bool] = None
+
+    uploadedFileShortUrl: Optional[str] = None
+    uploadedFileName: Optional[str] = None
+    output: Optional[Any] = None
+    outputFormat: Optional[Literal['markdown', 'url']] = None
+    outputFileUrl: Optional[str] = None
+    executionTime: Optional[int] = None
+
+    predevUrl: Optional[str] = None
+    lovableUrl: Optional[str] = None
+    cursorUrl: Optional[str] = None
+    v0Url: Optional[str] = None
+    boltUrl: Optional[str] = None
+
+    errorMessage: Optional[str] = None
+    progress: Optional[str] = None
+
+
+@dataclass
+class ErrorResponse:
+    """Error response class"""
+    error: str
+    message: str
 
 
 class PredevAPI:
@@ -47,7 +91,7 @@ class PredevAPI:
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None,
         async_mode: bool = False
-    ) -> Dict[str, Any]:
+    ) -> Union[SpecResponse, AsyncSpecResponse]:
         """
         Generate a fast specification for your project.
 
@@ -92,7 +136,7 @@ class PredevAPI:
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None,
         async_mode: bool = False
-    ) -> Dict[str, Any]:
+    ) -> Union[SpecResponse, AsyncSpecResponse]:
         """
         Generate a deep specification for your project.
 
@@ -131,7 +175,7 @@ class PredevAPI:
             async_mode=async_mode
         )
 
-    def get_spec_status(self, spec_id: str) -> Dict[str, Any]:
+    def get_spec_status(self, spec_id: str) -> SpecResponse:
         """
         Get the status of an async specification generation request.
 
@@ -166,7 +210,7 @@ class PredevAPI:
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None,
         async_mode: bool = False
-    ) -> Dict[str, Any]:
+    ) -> Union[SpecResponse, AsyncSpecResponse]:
         """Make a POST request to the API."""
         url = f"{self.base_url}{endpoint}"
         payload = {
@@ -208,7 +252,8 @@ class PredevAPI:
 
         try:
             error_data = response.json()
-            error_message = error_data.get("error", "Unknown error")
+            error_message = error_data.get("error") or error_data.get(
+                "message") or str(error_data)
         except Exception:
             error_message = response.text or "Unknown error"
 
