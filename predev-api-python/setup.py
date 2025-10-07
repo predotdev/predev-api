@@ -9,19 +9,19 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="predev-api",
-    version="0.1.0",
+    version="0.1.1",
     author="Pre.dev",
     author_email="support@pre.dev",
     description="Python client for the Pre.dev Architect API - Generate comprehensive software specifications",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/predev/predev-api-python",
+    url="https://github.com/predotdev/predev-api",
     packages=find_packages(exclude=["tests", "tests.*"]),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "License :: OSI Approved :: MIT",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -37,7 +37,7 @@ setup(
     keywords="predev api specification architect ai",
     project_urls={
         "Documentation": "https://docs.pre.dev/api-reference/introduction",
-        "Bug Reports": "https://github.com/predev/predev-api-python/issues",
-        "Source": "https://github.com/predev/predev-api-python",
+        "Bug Reports": "https://github.com/predotdev/predev-api/issues",
+        "Source": "https://github.com/predotdev/predev-api",
     },
 )

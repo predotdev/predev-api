@@ -55,7 +55,7 @@ client = PredevAPI(api_key="your_api_key")
 
 result = client.fast_spec(
     input_text="Build a task management app with team collaboration features",
-    output_format="url"  # or "json"
+    output_format="url"  # or "markdown"
 )
 
 print(result)
@@ -72,7 +72,7 @@ client = PredevAPI(api_key="your_api_key")
 
 result = client.deep_spec(
     input_text="Build an enterprise resource planning system with inventory, finance, and HR modules",
-    output_format="url"  # or "json"
+    output_format="url"  # or "markdown"
 )
 
 print(result)
@@ -428,4 +428,4 @@ MIT License - see LICENSE file for details
 
 ## Support
 
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/predev/predev-api-python).
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/predotdev/predev-api).

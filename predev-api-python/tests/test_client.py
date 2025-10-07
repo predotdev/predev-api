@@ -44,19 +44,19 @@ class TestFastSpec:
         mock_post.assert_called_once()
 
     @patch('predev_api.client.requests.post')
-    def test_fast_spec_with_json_format(self, mock_post):
-        """Test fast_spec with JSON output format"""
+    def test_fast_spec_with_markdown_format(self, mock_post):
+        """Test fast_spec with markdown output format"""
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {"spec": "data"}
+        mock_response.json.return_value = {"markdown": "# Spec content"}
         mock_post.return_value = mock_response
 
         client = PredevAPI(api_key="test_key")
-        result = client.fast_spec("Build a todo app", output_format="json")
+        result = client.fast_spec("Build a todo app", output_format="markdown")
 
         # Check that the payload includes the correct output format
         call_args = mock_post.call_args
-        assert call_args[1]["json"]["outputFormat"] == "json"
+        assert call_args[1]["json"]["outputFormat"] == "markdown"
 
     @patch('predev_api.client.requests.post')
     def test_fast_spec_authentication_error(self, mock_post):
