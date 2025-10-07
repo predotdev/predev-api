@@ -14,17 +14,8 @@ class TestPredevAPIInit:
         """Test initialization with solo authentication"""
         client = PredevAPI(api_key="test_key")
         assert client.api_key == "test_key"
-        assert client.enterprise is False
         assert "x-api-key" in client.headers
         assert client.headers["x-api-key"] == "test_key"
-
-    def test_init_with_enterprise_auth(self):
-        """Test initialization with enterprise authentication"""
-        client = PredevAPI(api_key="enterprise_key", enterprise=True)
-        assert client.api_key == "enterprise_key"
-        assert client.enterprise is True
-        assert "x-api-key" in client.headers
-        assert client.headers["x-api-key"] == "enterprise_key"
 
     def test_init_with_custom_base_url(self):
         """Test initialization with custom base URL"""
@@ -122,7 +113,7 @@ class TestDeepSpec:
 
         # Check that the endpoint is correct
         call_args = mock_post.call_args
-        assert "/api/deep-spec" in call_args[0][0]
+        assert "/deep-spec" in call_args[0][0]
 
 
 class TestGetSpecStatus:

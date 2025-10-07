@@ -16,12 +16,12 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/predev/predev-api-python",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests", "tests.*"]),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: MIT",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -29,6 +29,7 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
+    license="MIT",
     python_requires=">=3.8",
     install_requires=[
         "requests>=2.25.0",
