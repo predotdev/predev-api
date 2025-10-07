@@ -112,7 +112,7 @@ pytest
 
 # Publish to PyPI
 print_status "Publishing to PyPI..."
-twine upload dist/*
+twine upload dist/* --username __token__ --password "$PYPI_API_KEY"
 
 # Create git tag
 print_status "Creating git tag..."
