@@ -56,7 +56,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
 const result = await predev.fastSpec({
   input: 'Build a task management app with team collaboration features',
-  outputFormat: 'url' // or 'json'
+  outputFormat: 'url' // or 'markdown'
 });
 
 console.log(result);
@@ -73,7 +73,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
 const result = await predev.deepSpec({
   input: 'Build an enterprise resource planning system with inventory, finance, and HR modules',
-  outputFormat: 'url' // or 'json'
+  outputFormat: 'url' // or 'markdown'
 });
 
 console.log(result);
