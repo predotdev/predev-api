@@ -62,7 +62,7 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 # Get current version
-CURRENT_VERSION=$(python -c "import re; print(re.search(r'version=\"([^\"]+)\"', open('setup.py').read()).group(1))")
+CURRENT_VERSION=$(python3 -c "import re; print(re.search(r'version=\"([^\"]+)\"', open('setup.py').read()).group(1))")
 print_status "Current version: $CURRENT_VERSION"
 
 # Parse version components
@@ -104,15 +104,15 @@ rm -rf dist/ build/ *.egg-info/
 
 # Build the package
 print_status "Building package..."
-python -m build
+pyproject-build
 
 # Run tests
 print_status "Running tests..."
-python -m pytest
+pytest
 
 # Publish to PyPI
 print_status "Publishing to PyPI..."
-python -m twine upload dist/*
+twine upload dist/*
 
 # Create git tag
 print_status "Creating git tag..."
