@@ -8,7 +8,6 @@ A Python client library for the [Pre.dev Architect API](https://docs.pre.dev). G
 - 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
 - ⚡ **Async Spec**: Non-blocking async methods for long-running requests
 - 📊 **Status Tracking**: Check the status of async specification generation requests
-- 🔒 **Enterprise Support**: Both solo and enterprise authentication methods
 - ✨ **Type Hints**: Full type annotations for better IDE support
 - 🛡️ **Error Handling**: Custom exceptions for different error scenarios
 
@@ -43,96 +42,144 @@ The Pre.dev API uses API key authentication. Get your API key from the [pre.dev 
 predev = PredevAPI(api_key="your_api_key")
 ```
 
-## Usage
+## API Methods
 
-### Fast Spec Generation
+### Synchronous Methods
 
-Generate comprehensive specifications quickly, ideal for MVPs and prototypes:
+#### `fast_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
+Generate a fast specification (30-40 seconds, 10 credits).
+
+**Parameters:**
+- `input_text` **(required)**: `str` - Description of what you want to build
+- `output_format` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
+- `current_context` **(optional)**: `str` - Existing project context
+- `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference
+
+**Returns:** `SpecResponse` object with complete specification data
+
+**Example:**
 ```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
 result = predev.fast_spec(
-    input_text="Build a task management app with team collaboration features",
-    output_format="url"  # or "markdown"
+    input_text="Build a SaaS project management tool with real-time collaboration",
+    output_format="url"
 )
-
-print(result)
 ```
 
-### Deep Spec Generation
+#### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
-Generate ultra-detailed specifications for complex systems with enterprise-grade depth:
+Generate a deep specification (2-3 minutes, 50 credits).
 
+**Parameters:** Same as `fast_spec`
+
+**Returns:** `SpecResponse` object with comprehensive specification data
+
+**Example:**
 ```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
 result = predev.deep_spec(
-    input_text="Build an enterprise resource planning system with inventory, finance, and HR modules",
-    output_format="url"  # or "markdown"
+    input_text="Build a healthcare platform with HIPAA compliance",
+    output_format="url"
 )
-
-print(result)
 ```
 
-### Async Specification Generation
+### Asynchronous Methods
 
-Generate specifications asynchronously for long-running requests:
+#### `fast_spec_async(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
 
+Generate a fast specification asynchronously (returns immediately).
+
+**Parameters:** Same as `fast_spec`
+
+**Returns:** `AsyncResponse` object with `specId` for polling
+
+**Example:**
 ```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-# Fast spec async
 result = predev.fast_spec_async(
-    input_text="Build a task management app",
+    input_text="Build a comprehensive e-commerce platform",
     output_format="url"
 )
-print(f"Spec ID: {result.specId}")
-
-# Deep spec async
-result = predev.deep_spec_async(
-    input_text="Build an enterprise ERP system",
-    output_format="url"
-)
-print(f"Spec ID: {result.specId}")
+# Returns: AsyncResponse(specId="spec_123", status="pending")
 ```
 
-### Check Specification Status
+#### `deep_spec_async(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
 
-For async requests, check the status of your specification generation:
+Generate a deep specification asynchronously (returns immediately).
 
+**Parameters:** Same as `fast_spec`
+
+**Returns:** `AsyncResponse` object with `specId` for polling
+
+**Example:**
 ```python
-from predev_api import PredevAPI
-
-predev = PredevAPI(api_key="your_api_key")
-
-status = predev.get_spec_status(spec_id="your_spec_id")
-print(status)
+result = predev.deep_spec_async(
+    input_text="Build a fintech platform with regulatory compliance",
+    output_format="url"
+)
+# Returns: AsyncResponse(specId="spec_456", status="pending")
 ```
 
-## Examples
+### Status Checking
 
-Check out the [examples directory](./examples) for more detailed usage examples:
+#### `get_spec_status(spec_id: str) -> SpecResponse`
 
-- `fast_spec_example.py` - Generate fast specifications
-- `deep_spec_example.py` - Generate deep specifications
-- `get_status_example.py` - Check specification status
+Check the status of an async specification generation request.
 
-To run the examples:
+**Parameters:**
+- `spec_id` **(required)**: `str` - The specification ID from async methods
 
-```bash
-# Set your API key
-export PREDEV_API_KEY="your_api_key_here"
+**Returns:** `SpecResponse` object with current status and data (when completed)
 
-# Run an example
-python examples/fast_spec_example.py
+**Example:**
+```python
+status = predev.get_spec_status("spec_123")
+# Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
 ```
+
+## Response Types
+
+### `AsyncResponse`
+```python
+@dataclass
+class AsyncResponse:
+    specId: str                                    # Unique ID for polling (e.g., "spec_abc123")
+    status: Literal['pending', 'processing', 'completed', 'failed']
+```
+
+### `SpecResponse`
+```python
+@dataclass
+class SpecResponse:
+    # Basic info
+    _id: Optional[str] = None                      # Internal ID
+    created: Optional[str] = None                  # ISO timestamp
+    endpoint: Optional[Literal['fast_spec', 'deep_spec']] = None
+    input: Optional[str] = None                    # Original input text
+    status: Optional[Literal['pending', 'processing', 'completed', 'failed']] = None
+    success: Optional[bool] = None
+
+    # Output data (when completed)
+    uploadedFileShortUrl: Optional[str] = None    # Short URL to hosted spec
+    uploadedFileName: Optional[str] = None        # Filename
+    output: Optional[Any] = None                  # Raw content or URL
+    outputFormat: Optional[Literal['markdown', 'url']] = None
+    outputFileUrl: Optional[str] = None           # Full URL to hosted spec
+    executionTime: Optional[int] = None           # Processing time in milliseconds
+
+    # Integration URLs (when completed)
+    predevUrl: Optional[str] = None               # Link to pre.dev project
+    lovableUrl: Optional[str] = None              # Link to generate with Lovable
+    cursorUrl: Optional[str] = None               # Link to generate with Cursor
+    v0Url: Optional[str] = None                   # Link to generate with v0
+    boltUrl: Optional[str] = None                 # Link to generate with Bolt
+
+    # Error handling
+    errorMessage: Optional[str] = None            # Error details if failed
+    progress: Optional[str] = None                # Progress information
+```
+
+## Examples Directory
+
+Check out the [examples directory](./examples) for detailed usage examples.
 
 ## API Reference
 
@@ -143,12 +190,11 @@ Main client class for interacting with the Pre.dev API.
 #### Constructor
 
 ```python
-PredevAPI(api_key: str, enterprise: bool = False, base_url: str = "https://api.pre.dev")
+PredevAPI(api_key: str, base_url: str = "https://api.pre.dev")
 ```
 
 **Parameters:**
 - `api_key` (str): Your API key from pre.dev settings
-- `enterprise` (bool): Whether to use enterprise authentication (default: False)
 - `base_url` (str): Base URL for the API (default: "https://api.pre.dev")
 
 #### Methods
@@ -250,7 +296,7 @@ result = predev.fast_spec(
 
 ##### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
-Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade depth.
+Generate a deep specification (2-3 minutes, 25 credits).
 
 **Parameters:**
 - `input_text` (str, **required**): Description of what you want to build
@@ -264,7 +310,7 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
 
 **Cost:** 50 credits per request
 
-**Use Cases:** Complex systems, enterprise applications, comprehensive planning
+**Use Cases:** Complex systems, comprehensive planning
 
 **What's Generated:** Same as fast_spec but with:
 - 📊 More detailed architecture diagrams and explanations
@@ -276,7 +322,7 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
 **Example:**
 ```python
 result = predev.deep_spec(
-    input_text="Build an enterprise resource planning (ERP) system",
+    input_text="Build a resource planning (ERP) system",
     doc_urls=["https://company-docs.com/architecture"],
     output_format="url"
 )
@@ -344,7 +390,7 @@ AsyncResponse(
 **Example:**
 ```python
 result = predev.deep_spec_async(
-    input_text="Build an enterprise ERP system",
+    input_text="Build an ERP system",
     output_format="url"
 )
 # Use result.specId with get_spec_status() to check progress
@@ -400,7 +446,7 @@ from predev_api import PredevAPI, AsyncSpecResponse, SpecResponse
 
 # Start async request
 async_response = predev.fast_spec(
-    input_text="Build a complex enterprise system",
+    input_text="Build a complex system",
     async_mode=True
 )
 
@@ -582,7 +628,7 @@ python -m pytest -v
 ### Test Coverage
 
 The test suite covers:
-- Client initialization with solo and enterprise authentication
+- Client initialization and authentication
 - Fast spec generation
 - Deep spec generation  
 - Spec status checking
