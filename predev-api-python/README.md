@@ -6,6 +6,7 @@ A Python client library for the [Pre.dev Architect API](https://docs.pre.dev). G
 
 - 🚀 **Fast Spec**: Generate comprehensive specifications quickly - perfect for MVPs and prototypes
 - 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
+- ⚡ **Async Spec**: Non-blocking async methods for long-running requests
 - 📊 **Status Tracking**: Check the status of async specification generation requests
 - 🔒 **Enterprise Support**: Both solo and enterprise authentication methods
 - ✨ **Type Hints**: Full type annotations for better IDE support
@@ -78,6 +79,30 @@ result = predev.deep_spec(
 print(result)
 ```
 
+### Async Specification Generation
+
+Generate specifications asynchronously for long-running requests:
+
+```python
+from predev_api import PredevAPI
+
+predev = PredevAPI(api_key="your_api_key")
+
+# Fast spec async
+result = predev.fast_spec_async(
+    input_text="Build a task management app",
+    output_format="url"
+)
+print(f"Spec ID: {result.specId}")
+
+# Deep spec async
+result = predev.deep_spec_async(
+    input_text="Build an enterprise ERP system",
+    output_format="url"
+)
+print(f"Spec ID: {result.specId}")
+```
+
 ### Check Specification Status
 
 For async requests, check the status of your specification generation:
@@ -128,7 +153,7 @@ PredevAPI(api_key: str, enterprise: bool = False, base_url: str = "https://api.p
 
 #### Methods
 
-##### `fast_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None, async_mode: bool = False) -> Union[SpecResponse, AsyncSpecResponse]`
+##### `fast_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
 Generate a fast specification (30-40 seconds, 10 credits).
 
@@ -141,9 +166,8 @@ Generate a fast specification (30-40 seconds, 10 credits).
   - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance (`isNewBuild: true`)
   - **When provided**: Generates feature addition spec for existing project (`isNewBuild: false`)
 - `doc_urls` (List[str], optional): Array of documentation URLs that Architect will reference when generating specifications (e.g., API docs, design systems)
-- `async_mode` (bool, optional): If True, returns immediately with specId for polling
 
-**Returns:** Either `SpecResponse` or `AsyncSpecResponse`:
+**Returns:** `SpecResponse`:
 
 **Synchronous Response (`SpecResponse`):**
 ```python
@@ -224,7 +248,7 @@ result = predev.fast_spec(
 - `RateLimitError`: If rate limit is exceeded
 - `PredevAPIError`: For other API errors
 
-##### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None, async_mode: bool = False) -> Union[SpecResponse, AsyncSpecResponse]`
+##### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
 Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade depth.
 
@@ -235,9 +259,8 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
   - **When omitted**: Full new project spec (`isNewBuild: true`)
   - **When provided**: Feature addition spec (`isNewBuild: false`)
 - `doc_urls` (List[str], optional): Documentation URLs for reference
-- `async_mode` (bool, optional): If True, returns immediately with specId for polling
 
-**Returns:** Same structure as `fast_spec()` - either `SpecResponse` or `AsyncSpecResponse`
+**Returns:** `SpecResponse`
 
 **Cost:** 50 credits per request
 
@@ -257,6 +280,74 @@ result = predev.deep_spec(
     doc_urls=["https://company-docs.com/architecture"],
     output_format="url"
 )
+```
+
+**Raises:**
+- `AuthenticationError`: If authentication fails
+- `RateLimitError`: If rate limit is exceeded
+- `PredevAPIError`: For other API errors
+
+##### `fast_spec_async(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
+
+Generate a fast specification asynchronously (30-40 seconds, 10 credits).
+
+**Parameters:**
+- `input_text` (str, **required**): Description of what you want to build
+- `output_format` (str, optional): Output format - `"url"` (default) or `"markdown"`
+- `current_context` (str, optional): Existing project/codebase context
+- `doc_urls` (List[str], optional): Documentation URLs for reference
+
+**Returns:** `AsyncResponse` with specId for polling:
+```python
+AsyncResponse(
+    specId="spec_abc123",
+    status="pending"
+)
+```
+
+**Cost:** 10 credits per request
+
+**Example:**
+```python
+result = predev.fast_spec_async(
+    input_text="Build a task management app",
+    output_format="url"
+)
+# Use result.specId with get_spec_status() to check progress
+```
+
+**Raises:**
+- `AuthenticationError`: If authentication fails
+- `RateLimitError`: If rate limit is exceeded
+- `PredevAPIError`: For other API errors
+
+##### `deep_spec_async(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
+
+Generate a deep specification asynchronously (2-3 minutes, 25 credits).
+
+**Parameters:**
+- `input_text` (str, **required**): Description of what you want to build
+- `output_format` (str, optional): Output format - `"url"` (default) or `"markdown"`
+- `current_context` (str, optional): Existing project/codebase context
+- `doc_urls` (List[str], optional): Documentation URLs for reference
+
+**Returns:** `AsyncResponse` with specId for polling:
+```python
+AsyncResponse(
+    specId="spec_abc123",
+    status="pending"
+)
+```
+
+**Cost:** 50 credits per request
+
+**Example:**
+```python
+result = predev.deep_spec_async(
+    input_text="Build an enterprise ERP system",
+    output_format="url"
+)
+# Use result.specId with get_spec_status() to check progress
 ```
 
 **Raises:**

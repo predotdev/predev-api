@@ -14,11 +14,10 @@ export interface SpecGenOptions {
 	outputFormat?: OutputFormat;
 	currentContext?: string;
 	docURLs?: string[];
-	async?: boolean;
 }
 
 // Async mode response interfaces
-export interface AsyncSpecResponse {
+export interface AsyncResponse {
 	specId: string;
 	status: "pending" | "processing" | "completed" | "failed";
 }

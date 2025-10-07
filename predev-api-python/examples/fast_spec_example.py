@@ -71,14 +71,13 @@ print("Example 4: Async Mode")
 print("-" * 50)
 
 try:
-    result = predev.fast_spec(
+    result = predev.fast_spec_async(
         input_text="Build a comprehensive e-commerce platform with inventory management",
-        output_format="url",
-        async_mode=True
+        output_format="url"
     )
     print("✓ Request submitted!")
-    print(f"Request ID: {result.get('requestId')}")
-    print(f"Status: {result.get('status')}")
-    print("\nUse client.get_spec_status(request_id) to check progress")
+    print(f"Spec ID: {result.specId}")
+    print(f"Status: {result.status}")
+    print("\nUse client.get_spec_status(result.specId) to check progress")
 except Exception as e:
     print(f"✗ Error: {e}")

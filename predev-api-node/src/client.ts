@@ -6,7 +6,7 @@ import type {
 	PredevAPIConfig,
 	OutputFormat,
 	SpecResponse,
-	AsyncSpecResponse,
+	AsyncResponse,
 	ErrorResponse,
 } from "./types";
 import {
@@ -64,7 +64,6 @@ export class PredevAPI {
 	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
-	 * @param options.async - If true, returns immediately with requestId for polling
 	 * @returns Promise resolving to the API response
 	 *
 	 * @throws {AuthenticationError} If authentication fails
@@ -84,15 +83,13 @@ export class PredevAPI {
 		outputFormat?: OutputFormat;
 		currentContext?: string;
 		docURLs?: string[];
-		async?: boolean;
-	}): Promise<SpecResponse | AsyncSpecResponse> {
+	}): Promise<SpecResponse> {
 		return this.makeRequest(
 			"/fast-spec",
 			options.input,
 			options.outputFormat || "url",
 			options.currentContext,
-			options.docURLs,
-			options.async
+			options.docURLs
 		);
 	}
 
@@ -107,7 +104,6 @@ export class PredevAPI {
 	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
-	 * @param options.async - If true, returns immediately with requestId for polling
 	 * @returns Promise resolving to the API response
 	 *
 	 * @throws {AuthenticationError} If authentication fails
@@ -127,15 +123,97 @@ export class PredevAPI {
 		outputFormat?: OutputFormat;
 		currentContext?: string;
 		docURLs?: string[];
-		async?: boolean;
-	}): Promise<SpecResponse | AsyncSpecResponse> {
+	}): Promise<SpecResponse> {
 		return this.makeRequest(
 			"/deep-spec",
 			options.input,
 			options.outputFormat || "url",
 			options.currentContext,
-			options.docURLs,
-			options.async
+			options.docURLs
+		);
+	}
+
+	/**
+	 * Generate a fast specification asynchronously for your project.
+	 *
+	 * Perfect for MVPs and prototypes with balanced depth and speed.
+	 * Returns immediately with a request ID for polling the status.
+	 *
+	 * @param options - Options for generating the spec
+	 * @param options.input - Description of the project or feature to generate specs for
+	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
+	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
+	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
+	 * @returns Promise resolving to an AsyncResponse with specId for polling
+	 *
+	 * @throws {AuthenticationError} If authentication fails
+	 * @throws {RateLimitError} If rate limit is exceeded
+	 * @throws {PredevAPIError} For other API errors
+	 *
+	 * @example
+	 * ```typescript
+	 * const result = await client.fastSpecAsync({
+	 *   input: 'Build a task management app with team collaboration',
+	 *   outputFormat: 'url'
+	 * });
+	 * // Poll for status using result.specId
+	 * const status = await client.getSpecStatus(result.specId);
+	 * ```
+	 */
+	async fastSpecAsync(options: {
+		input: string;
+		outputFormat?: OutputFormat;
+		currentContext?: string;
+		docURLs?: string[];
+	}): Promise<AsyncResponse> {
+		return this.makeRequestAsync(
+			"/fast-spec",
+			options.input,
+			options.outputFormat || "url",
+			options.currentContext,
+			options.docURLs
+		);
+	}
+
+	/**
+	 * Generate a deep specification asynchronously for your project.
+	 *
+	 * Ultra-detailed specifications for complex systems with enterprise-grade depth
+	 * and comprehensive analysis. Returns immediately with a request ID for polling the status.
+	 *
+	 * @param options - Options for generating the spec
+	 * @param options.input - Description of the project or feature to generate specs for
+	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
+	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
+	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
+	 * @returns Promise resolving to an AsyncResponse with specId for polling
+	 *
+	 * @throws {AuthenticationError} If authentication fails
+	 * @throws {RateLimitError} If rate limit is exceeded
+	 * @throws {PredevAPIError} For other API errors
+	 *
+	 * @example
+	 * ```typescript
+	 * const result = await client.deepSpecAsync({
+	 *   input: 'Build an enterprise resource planning system',
+	 *   outputFormat: 'url'
+	 * });
+	 * // Poll for status using result.specId
+	 * const status = await client.getSpecStatus(result.specId);
+	 * ```
+	 */
+	async deepSpecAsync(options: {
+		input: string;
+		outputFormat?: OutputFormat;
+		currentContext?: string;
+		docURLs?: string[];
+	}): Promise<AsyncResponse> {
+		return this.makeRequestAsync(
+			"/deep-spec",
+			options.input,
+			options.outputFormat || "url",
+			options.currentContext,
+			options.docURLs
 		);
 	}
 
@@ -185,9 +263,8 @@ export class PredevAPI {
 		input: string,
 		outputFormat: OutputFormat,
 		currentContext?: string,
-		docURLs?: string[],
-		asyncMode?: boolean
-	): Promise<SpecResponse | AsyncSpecResponse> {
+		docURLs?: string[]
+	): Promise<SpecResponse> {
 		const url = `${this.baseUrl}${endpoint}`;
 		const payload: Record<string, any> = {
 			input,
@@ -202,8 +279,50 @@ export class PredevAPI {
 			payload.docURLs = docURLs;
 		}
 
-		if (asyncMode) {
-			payload.async = true;
+		try {
+			const response = await fetch(url, {
+				method: "POST",
+				headers: this.headers,
+				body: JSON.stringify(payload),
+			});
+
+			return this.handleResponse(response) as unknown as SpecResponse;
+		} catch (error) {
+			if (error instanceof PredevAPIError) {
+				throw error;
+			}
+			throw new PredevAPIError(
+				`Request failed: ${
+					error instanceof Error ? error.message : String(error)
+				}`
+			);
+		}
+	}
+
+	/**
+	 * Make an async POST request to the API
+	 * @private
+	 */
+	private async makeRequestAsync(
+		endpoint: string,
+		input: string,
+		outputFormat: OutputFormat,
+		currentContext?: string,
+		docURLs?: string[]
+	): Promise<AsyncResponse> {
+		const url = `${this.baseUrl}${endpoint}`;
+		const payload: Record<string, any> = {
+			input,
+			outputFormat,
+			async: true,
+		};
+
+		if (currentContext !== undefined) {
+			payload.currentContext = currentContext;
+		}
+
+		if (docURLs !== undefined) {
+			payload.docURLs = docURLs;
 		}
 
 		try {
@@ -213,7 +332,7 @@ export class PredevAPI {
 				body: JSON.stringify(payload),
 			});
 
-			return this.handleResponse(response);
+			return this.handleResponse(response) as unknown as AsyncResponse;
 		} catch (error) {
 			if (error instanceof PredevAPIError) {
 				throw error;
@@ -232,9 +351,9 @@ export class PredevAPI {
 	 */
 	private async handleResponse(
 		response: Response
-	): Promise<SpecResponse | AsyncSpecResponse> {
+	): Promise<SpecResponse | AsyncResponse> {
 		if (response.ok) {
-			return (await response.json()) as SpecResponse | AsyncSpecResponse;
+			return (await response.json()) as SpecResponse | AsyncResponse;
 		}
 
 		if (response.status === 401) {

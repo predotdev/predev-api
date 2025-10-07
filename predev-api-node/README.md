@@ -6,6 +6,7 @@ A TypeScript/Node.js client library for the [Pre.dev Architect API](https://docs
 
 - 🚀 **Fast Spec**: Generate comprehensive specifications quickly - perfect for MVPs and prototypes
 - 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
+- ⚡ **Async Spec**: Non-blocking async methods for long-running requests
 - 📊 **Status Tracking**: Check the status of async specification generation requests
 - 🔒 **Enterprise Support**: Both solo and enterprise authentication methods
 - ✨ **Full TypeScript Support**: Complete type definitions for better IDE support
@@ -132,7 +133,7 @@ new PredevAPI(config: PredevAPIConfig)
 
 #### Methods
 
-##### `fastSpec(options: SpecGenOptions): Promise<SpecResponse | AsyncSpecResponse>`
+##### `fastSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
 Generate a fast specification (30-40 seconds, 10 credits).
 
@@ -145,42 +146,8 @@ Generate a fast specification (30-40 seconds, 10 credits).
   - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance (`isNewBuild: true`)
   - **When provided**: Generates feature addition spec for existing project (`isNewBuild: false`)
 - `options.docURLs` (string[], optional): Array of documentation URLs that Architect will reference when generating specifications (e.g., API docs, design systems)
-- `options.async` (boolean, optional): If true, returns immediately with specId for polling
 
-**Returns:** Promise resolving to either:
-
-**Synchronous Response (`SpecResponse`):**
-```typescript
-{
-  _id?: string;
-  created?: string;
-  endpoint: "fast_spec" | "deep_spec";
-  input: string;
-  status: "pending" | "processing" | "completed" | "failed";
-  success: boolean;
-  uploadedFileShortUrl?: string;
-  uploadedFileName?: string;
-  output?: any;
-  outputFormat: "markdown" | "url";
-  outputFileUrl?: string;
-  executionTime?: number;
-  predevUrl?: string;
-  lovableUrl?: string;
-  cursorUrl?: string;
-  v0Url?: string;
-  boltUrl?: string;
-  errorMessage?: string;
-  progress?: string;
-}
-```
-
-**Async Response (`AsyncSpecResponse`):**
-```typescript
-{
-  specId: string;
-  status: "pending" | "processing" | "completed" | "failed";
-}
-```
+**Returns:** Promise resolving to `SpecResponse`:
 
 **Cost:** 10 credits per request
 
@@ -228,7 +195,7 @@ const result = await predev.fastSpec({
 - `RateLimitError`: If rate limit is exceeded
 - `PredevAPIError`: For other API errors
 
-##### `deepSpec(options: SpecGenOptions): Promise<SpecResponse | AsyncSpecResponse>`
+##### `deepSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
 Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade depth.
 
@@ -239,9 +206,8 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
   - **When omitted**: Full new project spec (`isNewBuild: true`)
   - **When provided**: Feature addition spec (`isNewBuild: false`)
 - `options.docURLs` (string[], optional): Documentation URLs for reference
-- `options.async` (boolean, optional): If true, returns immediately with specId for polling
 
-**Returns:** Promise with same structure as `fastSpec()` - either `SpecResponse` or `AsyncSpecResponse`
+**Returns:** Promise resolving to `SpecResponse`
 
 **Cost:** 50 credits per request
 
@@ -261,6 +227,74 @@ const result = await predev.deepSpec({
   docURLs: ['https://company-docs.com/architecture'],
   outputFormat: 'url'
 });
+```
+
+**Throws:**
+- `AuthenticationError`: If authentication fails
+- `RateLimitError`: If rate limit is exceeded
+- `PredevAPIError`: For other API errors
+
+##### `fastSpecAsync(options: SpecGenOptions): Promise<AsyncResponse>`
+
+Generate a fast specification asynchronously (30-40 seconds, 10 credits).
+
+**Parameters:**
+- `options.input` (string, **required**): Description of what you want to build
+- `options.outputFormat` ("url" | "markdown", optional): Output format - `"url"` (default) or `"markdown"`
+- `options.currentContext` (string, optional): Existing project/codebase context
+- `options.docURLs` (string[], optional): Documentation URLs for reference
+
+**Returns:** Promise resolving to `AsyncResponse` with specId for polling:
+```typescript
+{
+  specId: string;
+  status: "pending" | "processing" | "completed" | "failed";
+}
+```
+
+**Cost:** 10 credits per request
+
+**Example:**
+```typescript
+const result = await predev.fastSpecAsync({
+  input: 'Build a task management app',
+  outputFormat: 'url'
+});
+// Use result.specId with getSpecStatus() to check progress
+```
+
+**Throws:**
+- `AuthenticationError`: If authentication fails
+- `RateLimitError`: If rate limit is exceeded
+- `PredevAPIError`: For other API errors
+
+##### `deepSpecAsync(options: SpecGenOptions): Promise<AsyncResponse>`
+
+Generate a deep specification asynchronously (2-3 minutes, 25 credits).
+
+**Parameters:**
+- `options.input` (string, **required**): Description of what you want to build
+- `options.outputFormat` ("url" | "markdown", optional): Output format - `"url"` (default) or `"markdown"`
+- `options.currentContext` (string, optional): Existing project/codebase context
+- `options.docURLs` (string[], optional): Documentation URLs for reference
+
+**Returns:** Promise resolving to `AsyncResponse` with specId for polling:
+```typescript
+{
+  specId: string;
+  status: "pending" | "processing" | "completed" | "failed";
+}
+```
+
+**Cost:** 50 credits per request
+
+**Example:**
+```typescript
+const result = await predev.deepSpecAsync({
+  input: 'Build an enterprise ERP system',
+  outputFormat: 'url'
+});
+// Use result.specId with getSpecStatus() to check progress
 ```
 
 **Throws:**

@@ -42,6 +42,7 @@ Both libraries provide:
 
 - **Fast Spec Generation**: Comprehensive specifications quickly - perfect for MVPs and prototypes
 - **Deep Spec Generation**: Ultra-detailed specifications for complex systems with enterprise-grade depth
+- **Async Spec Generation**: Non-blocking async methods for long-running requests
 - **Status Tracking**: Check the status of async specification generation requests
 - **Enterprise Support**: Both solo and enterprise authentication methods
 - **Type Safety**: Full type hints (Python) and TypeScript definitions (Node.js)
@@ -92,6 +93,44 @@ const result = await predev.deepSpec({
   input: "Your complex project description",
   outputFormat: "url"  // or "json"
 });
+```
+
+### Async Spec Generation
+
+Generate specifications asynchronously for long-running requests.
+
+**Python:**
+```python
+# Fast spec async
+result = predev.fast_spec_async(
+    input_text="Your project description",
+    output_format="url"
+)
+# Returns: AsyncResponse with specId
+
+# Deep spec async
+result = predev.deep_spec_async(
+    input_text="Your complex project description",
+    output_format="url"
+)
+# Returns: AsyncResponse with specId
+```
+
+**TypeScript:**
+```typescript
+// Fast spec async
+const result = await predev.fastSpecAsync({
+  input: "Your project description",
+  outputFormat: "url"
+});
+// Returns: AsyncResponse with specId
+
+// Deep spec async
+const result = await predev.deepSpecAsync({
+  input: "Your complex project description",
+  outputFormat: "url"
+});
+// Returns: AsyncResponse with specId
 ```
 
 ### Get Spec Status

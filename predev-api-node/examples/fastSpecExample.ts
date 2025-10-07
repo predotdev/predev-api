@@ -79,17 +79,16 @@ console.log("Example 4: Async Mode");
 console.log("-".repeat(50));
 
 try {
-	const result = await predev.fastSpec({
+	const result = await predev.fastSpecAsync({
 		input:
 			"Build a comprehensive e-commerce platform with inventory management",
 		outputFormat: "url",
-		async: true,
 	});
 
 	console.log("✓ Request submitted!");
-	console.log(`Request ID: ${(result as any).requestId}`);
-	console.log(`Status: ${(result as any).status}`);
-	console.log("\nUse predev.getSpecStatus(requestId) to check progress");
+	console.log(`Spec ID: ${result.specId}`);
+	console.log(`Status: ${result.status}`);
+	console.log("\nUse predev.getSpecStatus(result.specId) to check progress");
 } catch (error) {
 	console.error("✗ Error:", error instanceof Error ? error.message : error);
 }

@@ -9,7 +9,7 @@ from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
 
 
 @dataclass
-class AsyncSpecResponse:
+class AsyncResponse:
     """Async mode response class"""
     specId: str
     status: Literal['pending', 'processing', 'completed', 'failed']
@@ -89,9 +89,8 @@ class PredevAPI:
         input_text: str,
         output_format: Literal["url", "markdown"] = "url",
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None,
-        async_mode: bool = False
-    ) -> Union[SpecResponse, AsyncSpecResponse]:
+        doc_urls: Optional[List[str]] = None
+    ) -> SpecResponse:
         """
         Generate a fast specification for your project.
 
@@ -100,13 +99,12 @@ class PredevAPI:
         Args:
             input_text: Description of the project or feature to generate specs for
             output_format: Format of the output - "url" or "markdown" (default: "url")
-            current_context: Existing project/codebase context. When omitted, generates 
+            current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
-            async_mode: If True, returns immediately with requestId for polling
 
         Returns:
-            API response as a dictionary
+            API response as SpecResponse object
 
         Raises:
             AuthenticationError: If authentication fails
@@ -125,8 +123,7 @@ class PredevAPI:
             input_text=input_text,
             output_format=output_format,
             current_context=current_context,
-            doc_urls=doc_urls,
-            async_mode=async_mode
+            doc_urls=doc_urls
         )
 
     def deep_spec(
@@ -134,9 +131,8 @@ class PredevAPI:
         input_text: str,
         output_format: Literal["url", "markdown"] = "url",
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None,
-        async_mode: bool = False
-    ) -> Union[SpecResponse, AsyncSpecResponse]:
+        doc_urls: Optional[List[str]] = None
+    ) -> SpecResponse:
         """
         Generate a deep specification for your project.
 
@@ -146,13 +142,12 @@ class PredevAPI:
         Args:
             input_text: Description of the project or feature to generate specs for
             output_format: Format of the output - "url" or "markdown" (default: "url")
-            current_context: Existing project/codebase context. When omitted, generates 
+            current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
-            async_mode: If True, returns immediately with requestId for polling
 
         Returns:
-            API response as a dictionary
+            API response as SpecResponse object
 
         Raises:
             AuthenticationError: If authentication fails
@@ -171,8 +166,97 @@ class PredevAPI:
             input_text=input_text,
             output_format=output_format,
             current_context=current_context,
-            doc_urls=doc_urls,
-            async_mode=async_mode
+            doc_urls=doc_urls
+        )
+
+    def fast_spec_async(
+        self,
+        input_text: str,
+        output_format: Literal["url", "markdown"] = "url",
+        current_context: Optional[str] = None,
+        doc_urls: Optional[List[str]] = None
+    ) -> AsyncResponse:
+        """
+        Generate a fast specification asynchronously for your project.
+
+        Perfect for MVPs and prototypes with balanced depth and speed.
+        Returns immediately with a request ID for polling the status.
+
+        Args:
+            input_text: Description of the project or feature to generate specs for
+            output_format: Format of the output - "url" or "markdown" (default: "url")
+            current_context: Existing project/codebase context. When omitted, generates
+                           full new project spec. When provided, generates feature addition spec.
+            doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+
+        Returns:
+            API response as AsyncResponse object with specId for polling
+
+        Raises:
+            AuthenticationError: If authentication fails
+            RateLimitError: If rate limit is exceeded
+            PredevAPIError: For other API errors
+
+        Example:
+            >>> client = PredevAPI(api_key="your_key")
+            >>> result = client.fast_spec_async(
+            ...     input_text="Build a task management app with team collaboration",
+            ...     output_format="url"
+            ... )
+            >>> # Poll for status using result.specId
+            >>> status = client.get_spec_status(result.specId)
+        """
+        return self._make_request_async(
+            endpoint="/fast-spec",
+            input_text=input_text,
+            output_format=output_format,
+            current_context=current_context,
+            doc_urls=doc_urls
+        )
+
+    def deep_spec_async(
+        self,
+        input_text: str,
+        output_format: Literal["url", "markdown"] = "url",
+        current_context: Optional[str] = None,
+        doc_urls: Optional[List[str]] = None
+    ) -> AsyncResponse:
+        """
+        Generate a deep specification asynchronously for your project.
+
+        Ultra-detailed specifications for complex systems with enterprise-grade depth
+        and comprehensive analysis. Returns immediately with a request ID for polling the status.
+
+        Args:
+            input_text: Description of the project or feature to generate specs for
+            output_format: Format of the output - "url" or "markdown" (default: "url")
+            current_context: Existing project/codebase context. When omitted, generates
+                           full new project spec. When provided, generates feature addition spec.
+            doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+
+        Returns:
+            API response as AsyncResponse object with specId for polling
+
+        Raises:
+            AuthenticationError: If authentication fails
+            RateLimitError: If rate limit is exceeded
+            PredevAPIError: For other API errors
+
+        Example:
+            >>> client = PredevAPI(api_key="your_key")
+            >>> result = client.deep_spec_async(
+            ...     input_text="Build an enterprise resource planning system",
+            ...     output_format="url"
+            ... )
+            >>> # Poll for status using result.specId
+            >>> status = client.get_spec_status(result.specId)
+        """
+        return self._make_request_async(
+            endpoint="/deep-spec",
+            input_text=input_text,
+            output_format=output_format,
+            current_context=current_context,
+            doc_urls=doc_urls
         )
 
     def get_spec_status(self, spec_id: str) -> SpecResponse:
@@ -208,9 +292,8 @@ class PredevAPI:
         input_text: str,
         output_format: str,
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None,
-        async_mode: bool = False
-    ) -> Union[SpecResponse, AsyncSpecResponse]:
+        doc_urls: Optional[List[str]] = None
+    ) -> SpecResponse:
         """Make a POST request to the API."""
         url = f"{self.base_url}{endpoint}"
         payload = {
@@ -224,8 +307,39 @@ class PredevAPI:
         if doc_urls is not None:
             payload["docURLs"] = doc_urls
 
-        if async_mode:
-            payload["async"] = True
+        try:
+            response = requests.post(
+                url,
+                headers=self.headers,
+                json=payload,
+                timeout=300  # 5 minutes for spec generation
+            )
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def _make_request_async(
+        self,
+        endpoint: str,
+        input_text: str,
+        output_format: str,
+        current_context: Optional[str] = None,
+        doc_urls: Optional[List[str]] = None
+    ) -> AsyncResponse:
+        """Make an async POST request to the API."""
+        url = f"{self.base_url}{endpoint}"
+        payload = {
+            "input": input_text,
+            "outputFormat": output_format,
+            "async": True
+        }
+
+        if current_context is not None:
+            payload["currentContext"] = current_context
+
+        if doc_urls is not None:
+            payload["docURLs"] = doc_urls
 
         try:
             response = requests.post(
