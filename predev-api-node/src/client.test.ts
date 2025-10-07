@@ -148,7 +148,7 @@ describe("PredevAPI", () => {
 			});
 
 			const fetchCall = (global.fetch as any).mock.calls[0];
-			expect(fetchCall[0]).toContain("/api/deep-spec");
+			expect(fetchCall[0]).toContain("/deep-spec");
 		});
 	});
 
