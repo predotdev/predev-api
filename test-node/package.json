@@ -1,0 +1,13 @@
+{
+	"name": "predev-api-test",
+	"version": "1.0.0",
+	"description": "Test suite for Pre.dev API Node client",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"test": "node test-sync.js && node test-async.js"
+	},
+	"dependencies": {
+		"predev-api": "file:../predev-api-node"
+	}
+}

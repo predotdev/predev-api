@@ -8,12 +8,12 @@ import type {
 	SpecResponse,
 	AsyncResponse,
 	ErrorResponse,
-} from "./types";
+} from "./types.js";
 import {
 	PredevAPIError,
 	AuthenticationError,
 	RateLimitError,
-} from "./exceptions";
+} from "./exceptions.js";
 
 /**
  * Client for interacting with the Pre.dev Architect API.
