@@ -23,11 +23,11 @@ npm install predev-api
 ```typescript
 import { PredevAPI } from 'predev-api';
 
-// Initialize the client with your API key
-const client = new PredevAPI({ apiKey: 'your_api_key_here' });
+// Initialize the predev client with your API key
+const predev = new PredevAPI({ apiKey: 'your_api_key_here' });
 
 // Generate a fast specification
-const result = await client.fastSpec({
+const result = await predev.fastSpec({
   input: 'Build a task management app with team collaboration',
   outputFormat: 'url'
 });
@@ -40,7 +40,7 @@ console.log(result);
 The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys:
 
 ```typescript
-const client = new PredevAPI({ apiKey: 'your_api_key' });
+const predev = new PredevAPI({ apiKey: 'your_api_key' });
 ```
 
 ## Usage
@@ -52,9 +52,9 @@ Generate comprehensive specifications quickly, ideal for MVPs and prototypes:
 ```typescript
 import { PredevAPI } from 'predev-api';
 
-const client = new PredevAPI({ apiKey: 'your_api_key' });
+const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
-const result = await client.fastSpec({
+const result = await predev.fastSpec({
   input: 'Build a task management app with team collaboration features',
   outputFormat: 'url' // or 'json'
 });
@@ -69,9 +69,9 @@ Generate ultra-detailed specifications for complex systems with enterprise-grade
 ```typescript
 import { PredevAPI } from 'predev-api';
 
-const client = new PredevAPI({ apiKey: 'your_api_key' });
+const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
-const result = await client.deepSpec({
+const result = await predev.deepSpec({
   input: 'Build an enterprise resource planning system with inventory, finance, and HR modules',
   outputFormat: 'url' // or 'json'
 });
@@ -86,9 +86,9 @@ For async requests, check the status of your specification generation:
 ```typescript
 import { PredevAPI } from 'predev-api';
 
-const client = new PredevAPI({ apiKey: 'your_api_key' });
+const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
-const status = await client.getSpecStatus('your_spec_id');
+const status = await predev.getSpecStatus('your_spec_id');
 console.log(status);
 ```
 
@@ -171,7 +171,7 @@ Generate a fast specification (30-40 seconds, 10 credits).
 
 **Example - New Project:**
 ```typescript
-const result = await client.fastSpec({
+const result = await predev.fastSpec({
   input: 'Build a SaaS project management tool with team collaboration',
   outputFormat: 'url'
 });
@@ -180,7 +180,7 @@ const result = await client.fastSpec({
 
 **Example - Feature Addition:**
 ```typescript
-const result = await client.fastSpec({
+const result = await predev.fastSpec({
   input: 'Add calendar view and Gantt chart visualization',
   currentContext: 'Existing task management system with list/board views, auth, team features',
   outputFormat: 'url'
@@ -190,7 +190,7 @@ const result = await client.fastSpec({
 
 **Example - With Documentation URLs:**
 ```typescript
-const result = await client.fastSpec({
+const result = await predev.fastSpec({
   input: 'Build a customer support ticketing system',
   docURLs: ['https://docs.pre.dev', 'https://docs.stripe.com'],
   outputFormat: 'markdown'
@@ -229,7 +229,7 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
 
 **Example:**
 ```typescript
-const result = await client.deepSpec({
+const result = await predev.deepSpec({
   input: 'Build an enterprise resource planning (ERP) system',
   docURLs: ['https://company-docs.com/architecture'],
   outputFormat: 'url'
@@ -376,10 +376,10 @@ import {
   RateLimitError 
 } from 'predev-api';
 
-const client = new PredevAPI({ apiKey: 'your_api_key' });
+const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
 try {
-  const result = await client.fastSpec({ input: 'Build a mobile app' });
+  const result = await predev.fastSpec({ input: 'Build a mobile app' });
 } catch (error) {
   if (error instanceof AuthenticationError) {
     console.error('Authentication failed:', error.message);

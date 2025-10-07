@@ -1,91 +1,95 @@
 /**
  * Example: Generate a fast specification
- * 
+ *
  * This example demonstrates how to use the Pre.dev API to generate
  * a fast specification for a project.
  */
 
-import { PredevAPI } from '../src/index';
+import { PredevAPI } from "../src/index";
 
 // Get API key from environment variable or replace with your key
-const API_KEY = process.env.PREDEV_API_KEY || 'your_api_key_here';
+const API_KEY = process.env.PREDEV_API_KEY || "your_api_key_here";
 
-// Initialize the client
-const client = new PredevAPI({ apiKey: API_KEY });
+// Initialize the predev client
+const predev = new PredevAPI({ apiKey: API_KEY });
 
 // Example 1: New Project - Task Management App
-console.log('Example 1: New Project - Task Management App');
-console.log('-'.repeat(50));
+console.log("Example 1: New Project - Task Management App");
+console.log("-".repeat(50));
 
 try {
-  const result = await client.fastSpec({
-    input: 'Build a task management app with team collaboration features including real-time updates, task assignments, and progress tracking',
-    outputFormat: 'url'
-  });
-  
-  console.log('✓ Fast spec generated successfully!');
-  console.log(`URL: ${(result as any).output}`);
-  console.log(`Is New Build: ${(result as any).isNewBuild}`);
+	const result = await predev.fastSpec({
+		input:
+			"Build a task management app with team collaboration features including real-time updates, task assignments, and progress tracking",
+		outputFormat: "url",
+	});
+
+	console.log("✓ Fast spec generated successfully!");
+	console.log(`URL: ${(result as any).output}`);
+	console.log(`Is New Build: ${(result as any).isNewBuild}`);
 } catch (error) {
-  console.error('✗ Error:', error instanceof Error ? error.message : error);
+	console.error("✗ Error:", error instanceof Error ? error.message : error);
 }
 
-console.log('\n');
+console.log("\n");
 
 // Example 2: Feature Addition with Context
-console.log('Example 2: Feature Addition - Add Calendar View');
-console.log('-'.repeat(50));
+console.log("Example 2: Feature Addition - Add Calendar View");
+console.log("-".repeat(50));
 
 try {
-  const result = await client.fastSpec({
-    input: 'Add a calendar view and Gantt chart visualization',
-    currentContext: 'Existing task management system with list and board views, user auth, and basic team features',
-    outputFormat: 'url'
-  });
-  
-  console.log('✓ Fast spec generated successfully!');
-  console.log(`URL: ${(result as any).output}`);
-  console.log(`Is New Build: ${(result as any).isNewBuild}`);
+	const result = await predev.fastSpec({
+		input: "Add a calendar view and Gantt chart visualization",
+		currentContext:
+			"Existing task management system with list and board views, user auth, and basic team features",
+		outputFormat: "url",
+	});
+
+	console.log("✓ Fast spec generated successfully!");
+	console.log(`URL: ${(result as any).output}`);
+	console.log(`Is New Build: ${(result as any).isNewBuild}`);
 } catch (error) {
-  console.error('✗ Error:', error instanceof Error ? error.message : error);
+	console.error("✗ Error:", error instanceof Error ? error.message : error);
 }
 
-console.log('\n');
+console.log("\n");
 
 // Example 3: With Documentation URLs
-console.log('Example 3: With Documentation URLs');
-console.log('-'.repeat(50));
+console.log("Example 3: With Documentation URLs");
+console.log("-".repeat(50));
 
 try {
-  const result = await client.fastSpec({
-    input: 'Build a customer support ticketing system with priority levels and file attachments',
-    docURLs: ['https://docs.pre.dev', 'https://docs.stripe.com'],
-    outputFormat: 'url'
-  });
-  
-  console.log('✓ Fast spec generated successfully!');
-  console.log(`URL: ${(result as any).output}`);
+	const result = await predev.fastSpec({
+		input:
+			"Build a customer support ticketing system with priority levels and file attachments",
+		docURLs: ["https://docs.pre.dev", "https://docs.stripe.com"],
+		outputFormat: "url",
+	});
+
+	console.log("✓ Fast spec generated successfully!");
+	console.log(`URL: ${(result as any).output}`);
 } catch (error) {
-  console.error('✗ Error:', error instanceof Error ? error.message : error);
+	console.error("✗ Error:", error instanceof Error ? error.message : error);
 }
 
-console.log('\n');
+console.log("\n");
 
 // Example 4: Async Mode
-console.log('Example 4: Async Mode');
-console.log('-'.repeat(50));
+console.log("Example 4: Async Mode");
+console.log("-".repeat(50));
 
 try {
-  const result = await client.fastSpec({
-    input: 'Build a comprehensive e-commerce platform with inventory management',
-    outputFormat: 'url',
-    async: true
-  });
-  
-  console.log('✓ Request submitted!');
-  console.log(`Request ID: ${(result as any).requestId}`);
-  console.log(`Status: ${(result as any).status}`);
-  console.log('\nUse client.getSpecStatus(requestId) to check progress');
+	const result = await predev.fastSpec({
+		input:
+			"Build a comprehensive e-commerce platform with inventory management",
+		outputFormat: "url",
+		async: true,
+	});
+
+	console.log("✓ Request submitted!");
+	console.log(`Request ID: ${(result as any).requestId}`);
+	console.log(`Status: ${(result as any).status}`);
+	console.log("\nUse predev.getSpecStatus(requestId) to check progress");
 } catch (error) {
-  console.error('✗ Error:', error instanceof Error ? error.message : error);
+	console.error("✗ Error:", error instanceof Error ? error.message : error);
 }

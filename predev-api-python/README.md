@@ -22,11 +22,11 @@ pip install predev-api
 ```python
 from predev_api import PredevAPI
 
-# Initialize the client with your API key
-client = PredevAPI(api_key="your_api_key_here")
+# Initialize the predev client with your API key
+predev = PredevAPI(api_key="your_api_key_here")
 
 # Generate a fast specification
-result = client.fast_spec(
+result = predev.fast_spec(
     input_text="Build a task management app with team collaboration",
     output_format="url"
 )
@@ -39,7 +39,7 @@ print(result)
 The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys:
 
 ```python
-client = PredevAPI(api_key="your_api_key")
+predev = PredevAPI(api_key="your_api_key")
 ```
 
 ## Usage
@@ -51,9 +51,9 @@ Generate comprehensive specifications quickly, ideal for MVPs and prototypes:
 ```python
 from predev_api import PredevAPI
 
-client = PredevAPI(api_key="your_api_key")
+predev = PredevAPI(api_key="your_api_key")
 
-result = client.fast_spec(
+result = predev.fast_spec(
     input_text="Build a task management app with team collaboration features",
     output_format="url"  # or "markdown"
 )
@@ -68,9 +68,9 @@ Generate ultra-detailed specifications for complex systems with enterprise-grade
 ```python
 from predev_api import PredevAPI
 
-client = PredevAPI(api_key="your_api_key")
+predev = PredevAPI(api_key="your_api_key")
 
-result = client.deep_spec(
+result = predev.deep_spec(
     input_text="Build an enterprise resource planning system with inventory, finance, and HR modules",
     output_format="url"  # or "markdown"
 )
@@ -85,9 +85,9 @@ For async requests, check the status of your specification generation:
 ```python
 from predev_api import PredevAPI
 
-client = PredevAPI(api_key="your_api_key")
+predev = PredevAPI(api_key="your_api_key")
 
-status = client.get_spec_status(spec_id="your_spec_id")
+status = predev.get_spec_status(spec_id="your_spec_id")
 print(status)
 ```
 
@@ -167,7 +167,7 @@ Generate a fast specification (30-40 seconds, 10 credits).
 
 **Example - New Project:**
 ```python
-result = client.fast_spec(
+result = predev.fast_spec(
     input_text="Build a SaaS project management tool with team collaboration",
     output_format="url"
 )
@@ -176,7 +176,7 @@ result = client.fast_spec(
 
 **Example - Feature Addition:**
 ```python
-result = client.fast_spec(
+result = predev.fast_spec(
     input_text="Add calendar view and Gantt chart visualization",
     current_context="Existing task management system with list/board views, auth, team features",
     output_format="url"
@@ -186,7 +186,7 @@ result = client.fast_spec(
 
 **Example - With Documentation URLs:**
 ```python
-result = client.fast_spec(
+result = predev.fast_spec(
     input_text="Build a customer support ticketing system",
     doc_urls=["https://docs.pre.dev", "https://docs.stripe.com"],
     output_format="markdown"
@@ -225,7 +225,7 @@ Generate a deep specification (2-3 minutes, 25 credits) with enterprise-grade de
 
 **Example:**
 ```python
-result = client.deep_spec(
+result = predev.deep_spec(
     input_text="Build an enterprise resource planning (ERP) system",
     doc_urls=["https://company-docs.com/architecture"],
     output_format="url"
@@ -367,10 +367,10 @@ The library provides custom exceptions for different error scenarios:
 ```python
 from predev_api import PredevAPI, PredevAPIError, AuthenticationError, RateLimitError
 
-client = PredevAPI(api_key="your_api_key")
+predev = PredevAPI(api_key="your_api_key")
 
 try:
-    result = client.fast_spec("Build a mobile app")
+    result = predev.fast_spec("Build a mobile app")
 except AuthenticationError as e:
     print(f"Authentication failed: {e}")
 except RateLimitError as e:

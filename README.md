@@ -16,8 +16,8 @@ Python client for the Pre.dev Architect API with full type hints support.
 ```python
 from predev_api import PredevAPI
 
-client = PredevAPI(api_key="your_api_key")
-result = client.fast_spec("Build a task management app")
+predev = PredevAPI(api_key="your_api_key")
+result = predev.fast_spec("Build a task management app")
 ```
 
 [📖 Python Documentation](./predev-api-python/README.md)
@@ -30,8 +30,8 @@ Modern TypeScript/Node.js client using ES6+ modules with full type definitions.
 ```typescript
 import { PredevAPI } from 'predev-api';
 
-const client = new PredevAPI({ apiKey: 'your_api_key' });
-const result = await client.fastSpec({ input: 'Build a task management app' });
+const predev = new PredevAPI({ apiKey: 'your_api_key' });
+const result = await predev.fastSpec({ input: 'Build a task management app' });
 ```
 
 [📖 Node.js Documentation](./predev-api-node/README.md)
@@ -60,7 +60,7 @@ Generate comprehensive specifications quickly with balanced depth and speed.
 
 **Python:**
 ```python
-result = client.fast_spec(
+result = predev.fast_spec(
     input_text="Your project description",
     output_format="url"  # or "json"
 )
@@ -68,7 +68,7 @@ result = client.fast_spec(
 
 **TypeScript:**
 ```typescript
-const result = await client.fastSpec({
+const result = await predev.fastSpec({
   input: "Your project description",
   outputFormat: "url"  // or "json"
 });
@@ -80,7 +80,7 @@ Generate ultra-detailed specifications for complex systems with comprehensive an
 
 **Python:**
 ```python
-result = client.deep_spec(
+result = predev.deep_spec(
     input_text="Your complex project description",
     output_format="url"  # or "json"
 )
@@ -88,7 +88,7 @@ result = client.deep_spec(
 
 **TypeScript:**
 ```typescript
-const result = await client.deepSpec({
+const result = await predev.deepSpec({
   input: "Your complex project description",
   outputFormat: "url"  // or "json"
 });
@@ -100,12 +100,12 @@ Check the status of an async specification generation request.
 
 **Python:**
 ```python
-status = client.get_spec_status("spec_id")
+status = predev.get_spec_status("spec_id")
 ```
 
 **TypeScript:**
 ```typescript
-const status = await client.getSpecStatus("spec_id");
+const status = await predev.getSpecStatus("spec_id");
 ```
 
 ## 📖 Documentation
