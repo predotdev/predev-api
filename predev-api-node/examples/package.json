@@ -1,20 +1,17 @@
 {
-  "name": "predev-api-examples",
-  "version": "1.0.0",
-  "description": "Examples for predev-api",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "fast-spec": "tsx fastSpecExample.ts",
-    "deep-spec": "tsx deepSpecExample.ts",
-    "status": "tsx getStatusExample.ts",
-    "claude-agent": "tsx customClaudeAgentSDK.ts"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.18.0",
-    "@claude-ai/agent-sdk": "^0.1.0"
-  },
-  "devDependencies": {
-    "tsx": "^4.7.0"
-  }
+	"name": "predev-api-examples",
+	"version": "1.0.0",
+	"description": "Examples for predev-api",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"basic-examples": "tsx basicExamples.ts",
+		"claude-agent": "tsx customClaudeAgentSDK.ts"
+	},
+	"dependencies": {
+		"@anthropic-ai/sdk": "^0.18.0"
+	},
+	"devDependencies": {
+		"tsx": "^4.7.0"
+	}
 }

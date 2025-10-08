@@ -210,8 +210,8 @@ Generate a fast specification (30-40 seconds, 10 credits).
   - `"url"` (default): Returns hosted URL to view the spec
   - `"markdown"`: Returns raw markdown content in response
 - `options.currentContext` (string, optional): Existing project/codebase context
-  - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance (`isNewBuild: true`)
-  - **When provided**: Generates feature addition spec for existing project (`isNewBuild: false`)
+  - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance
+  - **When provided**: Generates feature addition spec for existing project
 - `options.docURLs` (string[], optional): Array of documentation URLs that Architect will reference when generating specifications (e.g., API docs, design systems)
 
 **Returns:** Promise resolving to `SpecResponse`:
@@ -235,7 +235,6 @@ const result = await predev.fastSpec({
   input: 'Build a SaaS project management tool with team collaboration',
   outputFormat: 'url'
 });
-// Returns: isNewBuild=true, includes setup and deployment
 ```
 
 **Example - Feature Addition:**
@@ -245,7 +244,6 @@ const result = await predev.fastSpec({
   currentContext: 'Existing task management system with list/board views, auth, team features',
   outputFormat: 'url'
 });
-// Returns: isNewBuild=false, focuses only on new features
 ```
 
 **Example - With Documentation URLs:**
@@ -270,8 +268,8 @@ Generate a deep specification (2-3 minutes, 25 credits).
 - `options.input` (string, **required**): Description of what you want to build
 - `options.outputFormat` ("url" | "markdown", optional): Output format - `"url"` (default) or `"markdown"`
 - `options.currentContext` (string, optional): Existing project/codebase context
-  - **When omitted**: Full new project spec (`isNewBuild: true`)
-  - **When provided**: Feature addition spec (`isNewBuild: false`)
+  - **When omitted**: Full new project spec
+  - **When provided**: Feature addition spec
 - `options.docURLs` (string[], optional): Documentation URLs for reference
 
 **Returns:** Promise resolving to `SpecResponse`
@@ -629,4 +627,4 @@ MIT License - see LICENSE file for details
 
 ## Support
 
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/predev/predev-api-node).
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/predotdev/predev-api).

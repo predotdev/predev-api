@@ -26,7 +26,6 @@ try {
 
 	console.log("✓ Deep spec generated successfully!");
 	console.log(`URL: ${(result as any).output}`);
-	console.log(`Is New Build: ${(result as any).isNewBuild}`);
 } catch (error) {
 	console.error("✗ Error:", error instanceof Error ? error.message : error);
 }
@@ -48,7 +47,6 @@ try {
 
 	console.log("✓ Deep spec generated successfully!");
 	console.log(`URL: ${(result as any).output}`);
-	console.log(`Is New Build: ${(result as any).isNewBuild}`);
 } catch (error) {
 	console.error("✗ Error:", error instanceof Error ? error.message : error);
 }

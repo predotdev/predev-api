@@ -209,8 +209,8 @@ Generate a fast specification (30-40 seconds, 10 credits).
   - `"url"` (default): Returns hosted URL to view the spec
   - `"markdown"`: Returns raw markdown content in response
 - `current_context` (str, optional): Existing project/codebase context
-  - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance (`isNewBuild: true`)
-  - **When provided**: Generates feature addition spec for existing project (`isNewBuild: false`)
+  - **When omitted**: Generates full new project spec with setup, deployment, docs, maintenance
+  - **When provided**: Generates feature addition spec for existing project
 - `doc_urls` (List[str], optional): Array of documentation URLs that Architect will reference when generating specifications (e.g., API docs, design systems)
 
 **Returns:** `SpecResponse`:
@@ -267,7 +267,6 @@ result = predev.fast_spec(
     input_text="Build a SaaS project management tool with team collaboration",
     output_format="url"
 )
-# Returns: isNewBuild=True, includes setup and deployment
 ```
 
 **Example - Feature Addition:**
@@ -277,7 +276,6 @@ result = predev.fast_spec(
     current_context="Existing task management system with list/board views, auth, team features",
     output_format="url"
 )
-# Returns: isNewBuild=False, focuses only on new features
 ```
 
 **Example - With Documentation URLs:**
@@ -302,8 +300,8 @@ Generate a deep specification (2-3 minutes, 25 credits).
 - `input_text` (str, **required**): Description of what you want to build
 - `output_format` (str, optional): Output format - `"url"` (default) or `"markdown"`
 - `current_context` (str, optional): Existing project/codebase context
-  - **When omitted**: Full new project spec (`isNewBuild: true`)
-  - **When provided**: Feature addition spec (`isNewBuild: false`)
+  - **When omitted**: Full new project spec
+  - **When provided**: Feature addition spec
 - `doc_urls` (List[str], optional): Documentation URLs for reference
 
 **Returns:** `SpecResponse`

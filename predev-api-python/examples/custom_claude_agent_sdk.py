@@ -21,7 +21,8 @@ from claude_agent_sdk import query
 
 # Get API keys from environment
 PREDEV_API_KEY = os.environ.get("PREDEV_API_KEY", "your_api_key_here")
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "your_anthropic_api_key")
+ANTHROPIC_API_KEY = os.environ.get(
+    "ANTHROPIC_API_KEY", "your_anthropic_api_key")
 
 # Set Anthropic API key for Claude SDK
 os.environ["ANTHROPIC_API_KEY"] = ANTHROPIC_API_KEY
@@ -33,14 +34,14 @@ predev_client = PredevAPI(api_key=PREDEV_API_KEY)
 async def implement_spec_with_claude(spec_url: str, project_dir: str):
     """
     Use Claude Agent SDK to autonomously implement a spec.
-    
+
     Claude will:
     1. Download and read the spec from the URL
     2. Create all necessary files and folder structure
     3. Write complete implementation code
     4. Run any setup commands if needed
     """
-    
+
     prompt = f"""I have a project specification at: {spec_url}
 
 Please implement this project completely:
@@ -61,7 +62,7 @@ Work through the spec milestone by milestone. Create all files for each mileston
     print(f"📁 Project directory: {project_dir}")
     print("-" * 70)
     print()
-    
+
     # Query the agent - it will autonomously create files and implement
     async for message in query(prompt=prompt):
         # Print progress messages from Claude as it works
