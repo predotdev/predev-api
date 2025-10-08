@@ -158,8 +158,8 @@ class SpecResponse:
     success: Optional[bool] = None
 
     # Output data (when completed)
-    uploadedFileShortUrl: Optional[str] = None    # Short URL to hosted spec
-    uploadedFileName: Optional[str] = None        # Filename
+    uploadedFileShortUrl: Optional[str] = None    # URL to input file
+    uploadedFileName: Optional[str] = None        # Name of input file
     output: Optional[Any] = None                  # Raw content or URL
     outputFormat: Optional[Literal['markdown', 'url']] = None
     outputFileUrl: Optional[str] = None           # Full URL to hosted spec

@@ -156,10 +156,10 @@ const status = await predev.getSpecStatus('spec_123');
   input: string;                  // Original input text
   status: "pending" | "processing" | "completed" | "failed";
   success: boolean;
+  uploadedFileShortUrl?: string;  // URL to input file
+  uploadedFileName?: string;      // Name of input file
 
   // Output data (when completed)
-  uploadedFileShortUrl?: string;  // Short URL to hosted spec
-  uploadedFileName?: string;      // Filename
   output?: any;                   // Raw content or URL
   outputFormat: "markdown" | "url";
   outputFileUrl?: string;         // Full URL to hosted spec
