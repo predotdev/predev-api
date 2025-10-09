@@ -1,4 +1,4 @@
-# pre.dev Architect API - Node.js/TypeScript Client
+# pre.dev Architect API
 
 A TypeScript/Node.js client library for the [Pre.dev Architect API](https://docs.pre.dev). Generate comprehensive software specifications using AI-powered analysis.
 
