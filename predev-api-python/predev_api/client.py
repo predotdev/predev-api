@@ -51,6 +51,14 @@ class ErrorResponse:
     message: str
 
 
+@dataclass
+class ListSpecsResponse:
+    """List/Find specs response class"""
+    specs: List['SpecResponse']
+    total: int
+    hasMore: bool
+
+
 class PredevAPI:
     """
     Client for interacting with the Pre.dev Architect API.
@@ -281,6 +289,114 @@ class PredevAPI:
 
         try:
             response = requests.get(url, headers=self.headers, timeout=60)
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def list_specs(
+        self,
+        limit: Optional[int] = None,
+        skip: Optional[int] = None,
+        endpoint: Optional[Literal['fast_spec', 'deep_spec']] = None,
+        status: Optional[Literal['pending',
+                                 'processing', 'completed', 'failed']] = None
+    ) -> ListSpecsResponse:
+        """
+        List all specs with optional filtering and pagination.
+
+        Args:
+            limit: Results per page (1-100, default: 20)
+            skip: Offset for pagination (default: 0)
+            endpoint: Filter by endpoint type
+            status: Filter by status
+
+        Returns:
+            ListSpecsResponse with specs array and pagination metadata
+
+        Raises:
+            AuthenticationError: If authentication fails
+            PredevAPIError: For other API errors
+
+        Example:
+            >>> client = PredevAPI(api_key="your_key")
+            >>> # Get first 20 specs
+            >>> result = client.list_specs()
+            >>> # Get completed specs only
+            >>> completed = client.list_specs(status='completed')
+            >>> # Paginate: get specs 20-40
+            >>> page2 = client.list_specs(skip=20, limit=20)
+        """
+        url = f"{self.base_url}/list-specs"
+        params = {}
+
+        if limit is not None:
+            params['limit'] = limit
+        if skip is not None:
+            params['skip'] = skip
+        if endpoint is not None:
+            params['endpoint'] = endpoint
+        if status is not None:
+            params['status'] = status
+
+        try:
+            response = requests.get(
+                url, headers=self.headers, params=params, timeout=60)
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def find_specs(
+        self,
+        query: str,
+        limit: Optional[int] = None,
+        skip: Optional[int] = None,
+        endpoint: Optional[Literal['fast_spec', 'deep_spec']] = None,
+        status: Optional[Literal['pending',
+                                 'processing', 'completed', 'failed']] = None
+    ) -> ListSpecsResponse:
+        """
+        Search for specs using regex patterns.
+
+        Args:
+            query: REQUIRED - Regex pattern (case-insensitive)
+            limit: Results per page (1-100, default: 20)
+            skip: Offset for pagination (default: 0)
+            endpoint: Filter by endpoint type
+            status: Filter by status
+
+        Returns:
+            ListSpecsResponse with matching specs and pagination metadata
+
+        Raises:
+            AuthenticationError: If authentication fails
+            PredevAPIError: For other API errors
+
+        Example:
+            >>> client = PredevAPI(api_key="your_key")
+            >>> # Search for "payment" specs
+            >>> result = client.find_specs(query='payment')
+            >>> # Search for specs starting with "Build"
+            >>> builds = client.find_specs(query='^Build')
+            >>> # Search: only completed specs mentioning "auth"
+            >>> auth = client.find_specs(query='auth', status='completed')
+        """
+        url = f"{self.base_url}/find-specs"
+        params = {'query': query}
+
+        if limit is not None:
+            params['limit'] = limit
+        if skip is not None:
+            params['skip'] = skip
+        if endpoint is not None:
+            params['endpoint'] = endpoint
+        if status is not None:
+            params['status'] = status
+
+        try:
+            response = requests.get(
+                url, headers=self.headers, params=params, timeout=60)
             self._handle_response(response)
             return response.json()
         except requests.RequestException as e:

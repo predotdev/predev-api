@@ -8,6 +8,9 @@ import type {
 	SpecResponse,
 	AsyncResponse,
 	ErrorResponse,
+	ListSpecsParams,
+	FindSpecsParams,
+	ListSpecsResponse,
 } from "./types.js";
 import {
 	PredevAPIError,
@@ -255,6 +258,136 @@ export class PredevAPI {
 	}
 
 	/**
+	 * List all specs with optional filtering and pagination.
+	 *
+	 * @param params - Query parameters for filtering and pagination
+	 * @param params.limit - Results per page (1-100, default: 20)
+	 * @param params.skip - Offset for pagination (default: 0)
+	 * @param params.endpoint - Filter by endpoint: "fast_spec" or "deep_spec"
+	 * @param params.status - Filter by status: "pending", "processing", "completed", or "failed"
+	 * @returns Promise resolving to list of specs with metadata
+	 *
+	 * @throws {AuthenticationError} If authentication fails
+	 * @throws {PredevAPIError} For other API errors
+	 *
+	 * @example
+	 * ```typescript
+	 * // Get first 20 specs
+	 * const result = await client.listSpecs();
+	 *
+	 * // Get completed specs only
+	 * const completed = await client.listSpecs({ status: 'completed' });
+	 *
+	 * // Paginate: get specs 20-40
+	 * const page2 = await client.listSpecs({ skip: 20, limit: 20 });
+	 * ```
+	 */
+	async listSpecs(params?: ListSpecsParams): Promise<ListSpecsResponse> {
+		const queryParams = new URLSearchParams();
+
+		if (params?.limit !== undefined) {
+			queryParams.append("limit", params.limit.toString());
+		}
+		if (params?.skip !== undefined) {
+			queryParams.append("skip", params.skip.toString());
+		}
+		if (params?.endpoint !== undefined) {
+			queryParams.append("endpoint", params.endpoint);
+		}
+		if (params?.status !== undefined) {
+			queryParams.append("status", params.status);
+		}
+
+		const queryString = queryParams.toString();
+		const url = `${this.baseUrl}/list-specs${
+			queryString ? `?${queryString}` : ""
+		}`;
+
+		try {
+			const response = await fetch(url, {
+				method: "GET",
+				headers: this.headers,
+			});
+
+			return this.handleResponse(response) as Promise<ListSpecsResponse>;
+		} catch (error) {
+			if (error instanceof PredevAPIError) {
+				throw error;
+			}
+			throw new PredevAPIError(
+				`Request failed: ${
+					error instanceof Error ? error.message : String(error)
+				}`
+			);
+		}
+	}
+
+	/**
+	 * Search for specs using regex patterns.
+	 *
+	 * @param params - Query parameters for searching
+	 * @param params.query - REQUIRED - Regex pattern (case-insensitive)
+	 * @param params.limit - Results per page (1-100, default: 20)
+	 * @param params.skip - Offset for pagination (default: 0)
+	 * @param params.endpoint - Filter by endpoint: "fast_spec" or "deep_spec"
+	 * @param params.status - Filter by status: "pending", "processing", "completed", or "failed"
+	 * @returns Promise resolving to matching specs with metadata
+	 *
+	 * @throws {AuthenticationError} If authentication fails
+	 * @throws {PredevAPIError} For other API errors
+	 *
+	 * @example
+	 * ```typescript
+	 * // Search for "payment" specs
+	 * const result = await client.findSpecs({ query: 'payment' });
+	 *
+	 * // Search for specs starting with "Build"
+	 * const builds = await client.findSpecs({ query: '^Build' });
+	 *
+	 * // Search: only completed specs mentioning "auth"
+	 * const auth = await client.findSpecs({ query: 'auth', status: 'completed' });
+	 * ```
+	 */
+	async findSpecs(params: FindSpecsParams): Promise<ListSpecsResponse> {
+		const queryParams = new URLSearchParams();
+
+		queryParams.append("query", params.query);
+
+		if (params.limit !== undefined) {
+			queryParams.append("limit", params.limit.toString());
+		}
+		if (params.skip !== undefined) {
+			queryParams.append("skip", params.skip.toString());
+		}
+		if (params.endpoint !== undefined) {
+			queryParams.append("endpoint", params.endpoint);
+		}
+		if (params.status !== undefined) {
+			queryParams.append("status", params.status);
+		}
+
+		const url = `${this.baseUrl}/find-specs?${queryParams.toString()}`;
+
+		try {
+			const response = await fetch(url, {
+				method: "GET",
+				headers: this.headers,
+			});
+
+			return this.handleResponse(response) as Promise<ListSpecsResponse>;
+		} catch (error) {
+			if (error instanceof PredevAPIError) {
+				throw error;
+			}
+			throw new PredevAPIError(
+				`Request failed: ${
+					error instanceof Error ? error.message : String(error)
+				}`
+			);
+		}
+	}
+
+	/**
 	 * Make a POST request to the API
 	 * @private
 	 */
@@ -351,9 +484,12 @@ export class PredevAPI {
 	 */
 	private async handleResponse(
 		response: Response
-	): Promise<SpecResponse | AsyncResponse> {
+	): Promise<SpecResponse | AsyncResponse | ListSpecsResponse> {
 		if (response.ok) {
-			return (await response.json()) as SpecResponse | AsyncResponse;
+			return (await response.json()) as
+				| SpecResponse
+				| AsyncResponse
+				| ListSpecsResponse;
 		}
 
 		if (response.status === 401) {

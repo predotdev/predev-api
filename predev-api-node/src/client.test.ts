@@ -186,6 +186,140 @@ describe("PredevAPI", () => {
 		});
 	});
 
+	describe("listSpecs", () => {
+		it("should successfully list specs", async () => {
+			const mockResponse = {
+				specs: [
+					{ _id: "1", input: "Build a todo app", status: "completed" },
+					{ _id: "2", input: "Build an ERP system", status: "processing" },
+				],
+				total: 42,
+				hasMore: true,
+			};
+
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: true,
+				json: async () => mockResponse,
+			});
+
+			const client = new PredevAPI({ apiKey: "test_key" });
+			const result = await client.listSpecs();
+
+			expect(result).toEqual(mockResponse);
+			expect(result.specs).toHaveLength(2);
+			expect(result.total).toBe(42);
+			expect(result.hasMore).toBe(true);
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+		});
+
+		it("should list specs with filters", async () => {
+			const mockResponse = {
+				specs: [{ _id: "1", input: "Build a todo app", status: "completed" }],
+				total: 1,
+				hasMore: false,
+			};
+
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: true,
+				json: async () => mockResponse,
+			});
+
+			const client = new PredevAPI({ apiKey: "test_key" });
+			await client.listSpecs({
+				status: "completed",
+				endpoint: "fast_spec",
+				limit: 10,
+				skip: 5,
+			});
+
+			const fetchCall = (global.fetch as any).mock.calls[0];
+			expect(fetchCall[0]).toContain("/list-specs");
+			expect(fetchCall[0]).toContain("status=completed");
+			expect(fetchCall[0]).toContain("endpoint=fast_spec");
+			expect(fetchCall[0]).toContain("limit=10");
+			expect(fetchCall[0]).toContain("skip=5");
+		});
+
+		it("should throw AuthenticationError on 401", async () => {
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: false,
+				status: 401,
+				json: async () => ({}),
+			});
+
+			const client = new PredevAPI({ apiKey: "invalid_key" });
+
+			await expect(client.listSpecs()).rejects.toThrow(AuthenticationError);
+		});
+	});
+
+	describe("findSpecs", () => {
+		it("should successfully find specs", async () => {
+			const mockResponse = {
+				specs: [
+					{ _id: "1", input: "Build a payment system", status: "completed" },
+				],
+				total: 1,
+				hasMore: false,
+			};
+
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: true,
+				json: async () => mockResponse,
+			});
+
+			const client = new PredevAPI({ apiKey: "test_key" });
+			const result = await client.findSpecs({ query: "payment" });
+
+			expect(result).toEqual(mockResponse);
+			expect(result.specs).toHaveLength(1);
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+		});
+
+		it("should find specs with regex pattern", async () => {
+			const mockResponse = {
+				specs: [
+					{ _id: "1", input: "Build a todo app", status: "completed" },
+					{ _id: "2", input: "Build an ERP system", status: "completed" },
+				],
+				total: 2,
+				hasMore: false,
+			};
+
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: true,
+				json: async () => mockResponse,
+			});
+
+			const client = new PredevAPI({ apiKey: "test_key" });
+			await client.findSpecs({
+				query: "^Build",
+				status: "completed",
+				limit: 20,
+			});
+
+			const fetchCall = (global.fetch as any).mock.calls[0];
+			expect(fetchCall[0]).toContain("/find-specs");
+			expect(fetchCall[0]).toContain("query=%5EBuild"); // URL encoded ^Build
+			expect(fetchCall[0]).toContain("status=completed");
+			expect(fetchCall[0]).toContain("limit=20");
+		});
+
+		it("should throw AuthenticationError on 401", async () => {
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: false,
+				status: 401,
+				json: async () => ({}),
+			});
+
+			const client = new PredevAPI({ apiKey: "invalid_key" });
+
+			await expect(client.findSpecs({ query: "test" })).rejects.toThrow(
+				AuthenticationError
+			);
+		});
+	});
+
 	describe("error handling", () => {
 		it("should handle network errors", async () => {
 			(global.fetch as any).mockRejectedValueOnce(new Error("Network error"));

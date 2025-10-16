@@ -135,6 +135,78 @@ status = predev.get_spec_status("spec_123")
 # Returns SpecResponse with status: "pending" | "processing" | "completed" | "failed"
 ```
 
+### Listing and Searching Specs
+
+#### `list_specs(limit: Optional[int] = None, skip: Optional[int] = None, endpoint: Optional[Literal["fast_spec", "deep_spec"]] = None, status: Optional[Literal["pending", "processing", "completed", "failed"]] = None) -> ListSpecsResponse`
+
+List all specs with optional filtering and pagination.
+
+**Parameters:**
+- `limit` **(optional)**: `int` - Results per page (1-100, default: 20)
+- `skip` **(optional)**: `int` - Offset for pagination (default: 0)
+- `endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
+- `status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
+
+**Returns:** `ListSpecsResponse` object with specs array and pagination metadata
+
+**Examples:**
+```python
+# Get first 20 specs
+result = predev.list_specs()
+
+# Get completed specs only
+completed = predev.list_specs(status='completed')
+
+# Paginate: get specs 20-40
+page2 = predev.list_specs(skip=20, limit=20)
+
+# Filter by endpoint type
+fast_specs = predev.list_specs(endpoint='fast_spec')
+```
+
+#### `find_specs(query: str, limit: Optional[int] = None, skip: Optional[int] = None, endpoint: Optional[Literal["fast_spec", "deep_spec"]] = None, status: Optional[Literal["pending", "processing", "completed", "failed"]] = None) -> ListSpecsResponse`
+
+Search for specs using regex patterns.
+
+**Parameters:**
+- `query` **(required)**: `str` - Regex pattern (case-insensitive)
+- `limit` **(optional)**: `int` - Results per page (1-100, default: 20)
+- `skip` **(optional)**: `int` - Offset for pagination (default: 0)
+- `endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
+- `status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
+
+**Returns:** `ListSpecsResponse` object with matching specs and pagination metadata
+
+**Examples:**
+```python
+# Search for "payment" specs
+payment_specs = predev.find_specs(query='payment')
+
+# Search for specs starting with "Build"
+build_specs = predev.find_specs(query='^Build')
+
+# Search: only completed specs mentioning "auth"
+auth_specs = predev.find_specs(
+    query='auth',
+    status='completed'
+)
+
+# Complex regex: find SaaS or SASS projects
+saas_specs = predev.find_specs(query='saas|sass')
+```
+
+**Regex Pattern Examples:**
+
+| Pattern | Matches |
+|---------|---------|
+| `payment` | "payment", "Payment", "make payment" |
+| `^Build` | Specs starting with "Build" |
+| `platform$` | Specs ending with "platform" |
+| `(API\|REST)` | Either "API" or "REST" |
+| `auth.*system` | "auth" then anything then "system" |
+| `\\d{3,}` | 3+ digits (budgets, quantities) |
+| `saas\|sass` | SaaS or SASS |
+
 ## Response Types
 
 ### `AsyncResponse`
@@ -175,6 +247,15 @@ class SpecResponse:
     # Error handling
     errorMessage: Optional[str] = None            # Error details if failed
     progress: Optional[str] = None                # Progress information
+```
+
+### `ListSpecsResponse`
+```python
+@dataclass
+class ListSpecsResponse:
+    specs: List[SpecResponse]  # Array of spec objects
+    total: int                 # Total count of matching specs
+    hasMore: bool              # Whether more results are available
 ```
 
 ## Examples Directory

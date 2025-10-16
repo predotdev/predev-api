@@ -54,3 +54,27 @@ export interface ErrorResponse {
 	error: string;
 	message: string;
 }
+
+// List specs query parameters
+export interface ListSpecsParams {
+	limit?: number; // 1-100, default 20
+	skip?: number; // default 0
+	endpoint?: "fast_spec" | "deep_spec";
+	status?: "pending" | "processing" | "completed" | "failed";
+}
+
+// Find specs query parameters
+export interface FindSpecsParams {
+	query: string; // REQUIRED - regex pattern
+	limit?: number; // 1-100, default 20
+	skip?: number; // default 0
+	endpoint?: "fast_spec" | "deep_spec";
+	status?: "pending" | "processing" | "completed" | "failed";
+}
+
+// List/Find specs response
+export interface ListSpecsResponse {
+	specs: SpecResponse[];
+	total: number;
+	hasMore: boolean;
+}

@@ -136,6 +136,78 @@ const status = await predev.getSpecStatus('spec_123');
 // Returns full SpecResponse with status: "pending" | "processing" | "completed" | "failed"
 ```
 
+### Listing and Searching Specs
+
+#### `listSpecs(params?: ListSpecsParams): Promise<ListSpecsResponse>`
+
+List all specs with optional filtering and pagination.
+
+**Parameters:**
+- `params.limit` **(optional)**: `number` - Results per page (1-100, default: 20)
+- `params.skip` **(optional)**: `number` - Offset for pagination (default: 0)
+- `params.endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
+- `params.status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
+
+**Returns:** `ListSpecsResponse` object with specs array and pagination metadata
+
+**Examples:**
+```typescript
+// Get first 20 specs
+const result = await predev.listSpecs();
+
+// Get completed specs only
+const completed = await predev.listSpecs({ status: 'completed' });
+
+// Paginate: get specs 20-40
+const page2 = await predev.listSpecs({ skip: 20, limit: 20 });
+
+// Filter by endpoint type
+const fastSpecs = await predev.listSpecs({ endpoint: 'fast_spec' });
+```
+
+#### `findSpecs(params: FindSpecsParams): Promise<ListSpecsResponse>`
+
+Search for specs using regex patterns.
+
+**Parameters:**
+- `params.query` **(required)**: `string` - Regex pattern (case-insensitive)
+- `params.limit` **(optional)**: `number` - Results per page (1-100, default: 20)
+- `params.skip` **(optional)**: `number` - Offset for pagination (default: 0)
+- `params.endpoint` **(optional)**: `"fast_spec" | "deep_spec"` - Filter by endpoint type
+- `params.status` **(optional)**: `"pending" | "processing" | "completed" | "failed"` - Filter by status
+
+**Returns:** `ListSpecsResponse` object with matching specs and pagination metadata
+
+**Examples:**
+```typescript
+// Search for "payment" specs
+const paymentSpecs = await predev.findSpecs({ query: 'payment' });
+
+// Search for specs starting with "Build"
+const buildSpecs = await predev.findSpecs({ query: '^Build' });
+
+// Search: only completed specs mentioning "auth"
+const authSpecs = await predev.findSpecs({ 
+  query: 'auth', 
+  status: 'completed' 
+});
+
+// Complex regex: find SaaS or SASS projects
+const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
+```
+
+**Regex Pattern Examples:**
+
+| Pattern | Matches |
+|---------|---------|
+| `payment` | "payment", "Payment", "make payment" |
+| `^Build` | Specs starting with "Build" |
+| `platform$` | Specs ending with "platform" |
+| `(API\|REST)` | Either "API" or "REST" |
+| `auth.*system` | "auth" then anything then "system" |
+| `\\d{3,}` | 3+ digits (budgets, quantities) |
+| `saas\|sass` | SaaS or SASS |
+
 ## Response Types
 
 ### `AsyncResponse`
@@ -175,6 +247,15 @@ const status = await predev.getSpecStatus('spec_123');
   // Error handling
   errorMessage?: string;          // Error details if failed
   progress?: string;              // Progress information
+}
+```
+
+### `ListSpecsResponse`
+```typescript
+{
+  specs: SpecResponse[];  // Array of spec objects
+  total: number;          // Total count of matching specs
+  hasMore: boolean;       // Whether more results are available
 }
 ```
 

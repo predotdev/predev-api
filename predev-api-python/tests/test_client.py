@@ -147,6 +147,135 @@ class TestGetSpecStatus:
             client.get_spec_status("123")
 
 
+class TestListSpecs:
+    """Test list_specs method"""
+
+    @patch('predev_api.client.requests.get')
+    def test_list_specs_success(self, mock_get):
+        """Test successful list_specs call"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "specs": [
+                {"_id": "1", "input": "Build a todo app", "status": "completed"},
+                {"_id": "2", "input": "Build an ERP system", "status": "processing"}
+            ],
+            "total": 42,
+            "hasMore": True
+        }
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="test_key")
+        result = client.list_specs()
+
+        assert result["total"] == 42
+        assert result["hasMore"] is True
+        assert len(result["specs"]) == 2
+        mock_get.assert_called_once()
+
+    @patch('predev_api.client.requests.get')
+    def test_list_specs_with_filters(self, mock_get):
+        """Test list_specs with filters"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "specs": [{"_id": "1", "input": "Build a todo app", "status": "completed"}],
+            "total": 1,
+            "hasMore": False
+        }
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="test_key")
+        result = client.list_specs(
+            status='completed',
+            endpoint='fast_spec',
+            limit=10,
+            skip=5
+        )
+
+        # Check that the params were passed correctly
+        call_args = mock_get.call_args
+        assert call_args[1]["params"]["status"] == "completed"
+        assert call_args[1]["params"]["endpoint"] == "fast_spec"
+        assert call_args[1]["params"]["limit"] == 10
+        assert call_args[1]["params"]["skip"] == 5
+
+    @patch('predev_api.client.requests.get')
+    def test_list_specs_authentication_error(self, mock_get):
+        """Test list_specs with authentication error"""
+        mock_response = Mock()
+        mock_response.status_code = 401
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="invalid_key")
+        with pytest.raises(AuthenticationError):
+            client.list_specs()
+
+
+class TestFindSpecs:
+    """Test find_specs method"""
+
+    @patch('predev_api.client.requests.get')
+    def test_find_specs_success(self, mock_get):
+        """Test successful find_specs call"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "specs": [
+                {"_id": "1", "input": "Build a payment system", "status": "completed"}
+            ],
+            "total": 1,
+            "hasMore": False
+        }
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="test_key")
+        result = client.find_specs(query='payment')
+
+        assert result["total"] == 1
+        assert len(result["specs"]) == 1
+        mock_get.assert_called_once()
+
+    @patch('predev_api.client.requests.get')
+    def test_find_specs_with_regex_pattern(self, mock_get):
+        """Test find_specs with regex pattern"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "specs": [
+                {"_id": "1", "input": "Build a todo app", "status": "completed"},
+                {"_id": "2", "input": "Build an ERP system", "status": "completed"}
+            ],
+            "total": 2,
+            "hasMore": False
+        }
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="test_key")
+        result = client.find_specs(
+            query='^Build',
+            status='completed',
+            limit=20
+        )
+
+        # Check that the params were passed correctly
+        call_args = mock_get.call_args
+        assert call_args[1]["params"]["query"] == "^Build"
+        assert call_args[1]["params"]["status"] == "completed"
+        assert call_args[1]["params"]["limit"] == 20
+
+    @patch('predev_api.client.requests.get')
+    def test_find_specs_authentication_error(self, mock_get):
+        """Test find_specs with authentication error"""
+        mock_response = Mock()
+        mock_response.status_code = 401
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="invalid_key")
+        with pytest.raises(AuthenticationError):
+            client.find_specs(query='test')
+
+
 class TestErrorHandling:
     """Test error handling"""
 
