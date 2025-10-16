@@ -32,7 +32,7 @@
 	"bugs": {
 		"url": "https://github.com/predotdev/predev-api/issues"
 	},
-	"homepage": "https://docs.pre.dev/api-reference/introduction",
+	"homepage": "https://docs.pre.dev/",
 	"files": [
 		"dist",
 		"README.md"

@@ -36,7 +36,7 @@ setup(
     ],
     keywords="predev api specification architect ai",
     project_urls={
-        "Documentation": "https://docs.pre.dev/api-reference/introduction",
+        "Documentation": "https://docs.pre.dev/",
         "Bug Reports": "https://github.com/predotdev/predev-api/issues",
         "Source": "https://github.com/predotdev/predev-api",
     },
