@@ -14,8 +14,8 @@ class TestPredevAPIInit:
         """Test initialization with solo authentication"""
         client = PredevAPI(api_key="test_key")
         assert client.api_key == "test_key"
-        assert "x-api-key" in client.headers
-        assert client.headers["x-api-key"] == "test_key"
+        assert "Authorization" in client.headers
+        assert client.headers["Authorization"] == "Bearer test_key"
 
     def test_init_with_custom_base_url(self):
         """Test initialization with custom base URL"""

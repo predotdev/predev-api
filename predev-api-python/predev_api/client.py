@@ -86,9 +86,9 @@ class PredevAPI:
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
 
-        # Set up headers with x-api-key
+        # Set up headers with Authorization Bearer token
         self.headers = {
-            "x-api-key": api_key,
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
 

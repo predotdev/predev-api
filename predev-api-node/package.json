@@ -1,6 +1,6 @@
 {
 	"name": "predev-api",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "TypeScript/Node.js client for the Pre.dev Architect API - Generate comprehensive software specifications",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",

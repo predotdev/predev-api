@@ -50,9 +50,9 @@ export class PredevAPI {
 		this.apiKey = config.apiKey;
 		this.baseUrl = config.baseUrl?.replace(/\/$/, "") || "https://api.pre.dev";
 
-		// Set up headers with x-api-key
+		// Set up headers with Authorization Bearer token
 		this.headers = {
-			"x-api-key": this.apiKey,
+			Authorization: `Bearer ${this.apiKey}`,
 			"Content-Type": "application/json",
 		};
 	}
