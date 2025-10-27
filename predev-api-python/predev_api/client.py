@@ -16,6 +16,13 @@ class AsyncResponse:
 
 
 @dataclass
+class ZippedDocsUrl:
+    """Zipped documentation URL class"""
+    platform: str
+    masterZipShortUrl: str
+
+
+@dataclass
 class SpecResponse:
     """Status check response class"""
     _id: Optional[str] = None
@@ -39,6 +46,8 @@ class SpecResponse:
     cursorUrl: Optional[str] = None
     v0Url: Optional[str] = None
     boltUrl: Optional[str] = None
+
+    zippedDocsUrls: Optional[List['ZippedDocsUrl']] = None
 
     errorMessage: Optional[str] = None
     progress: Optional[str] = None

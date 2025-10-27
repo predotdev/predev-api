@@ -10,4 +10,9 @@ export {
 	AuthenticationError,
 	RateLimitError,
 } from "./exceptions.js";
-export type { PredevAPIConfig, SpecGenOptions, SpecResponse } from "./types.js";
+export type {
+	PredevAPIConfig,
+	SpecGenOptions,
+	SpecResponse,
+	ZippedDocsUrl,
+} from "./types.js";

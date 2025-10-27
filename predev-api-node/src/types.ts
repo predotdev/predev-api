@@ -22,6 +22,11 @@ export interface AsyncResponse {
 	status: "pending" | "processing" | "completed" | "failed";
 }
 
+export interface ZippedDocsUrl {
+	platform: string;
+	masterZipShortUrl: string;
+}
+
 // Status check response interface
 export interface SpecResponse {
 	_id?: string;
@@ -44,6 +49,8 @@ export interface SpecResponse {
 	cursorUrl?: string;
 	v0Url?: string;
 	boltUrl?: string;
+
+	zippedDocsUrls?: ZippedDocsUrl[];
 
 	errorMessage?: string;
 	progress?: string;

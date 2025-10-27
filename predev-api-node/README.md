@@ -55,7 +55,7 @@ Generate a fast specification (30-40 seconds, 10 credits).
 - `options.input` **(required)**: `string` - Description of what you want to build
 - `options.outputFormat` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
 - `options.currentContext` **(optional)**: `string` - Existing project context
-- `options.docURLs` **(optional)**: `string[]` - Documentation URLs to reference
+- `options.docURLs` **(optional)**: `string[]` - Documentation URLs to reference (e.g., Stripe docs, framework docs)
 
 **Returns:** `SpecResponse` object with complete specification data
 
@@ -65,6 +65,25 @@ const result = await predev.fastSpec({
   input: 'Build a SaaS project management tool with real-time collaboration',
   outputFormat: 'url'
 });
+```
+
+**Example with Documentation URLs:**
+```typescript
+const result = await predev.fastSpec({
+  input: 'Build a payment processing integration with Stripe',
+  outputFormat: 'url',
+  docURLs: ['https://stripe.com/docs/api']
+});
+
+// When docURLs are provided, the response includes zippedDocsUrls:
+// result.zippedDocsUrls = [
+//   {
+//     platform: "stripe.com",
+//     masterZipShortUrl: "https://api.pre.dev/s/xyz789"
+//   }
+// ]
+// These zipped documentation folders can be downloaded and help coding agents
+// stay on track by providing complete, up-to-date documentation context.
 ```
 
 #### `deepSpec(options: SpecGenOptions): Promise<SpecResponse>`
@@ -243,6 +262,13 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   cursorUrl?: string;             // Link to generate with Cursor
   v0Url?: string;                 // Link to generate with v0
   boltUrl?: string;               // Link to generate with Bolt
+
+  // Documentation (when docURLs provided)
+  zippedDocsUrls?: Array<{
+    platform: string;             // Platform name (e.g., "stripe.com")
+    masterZipShortUrl: string;    // URL to download zipped documentation
+  }>;                             // Complete documentation as zipped folders
+                                  // Helps coding agents stay on track with full context
 
   // Error handling
   errorMessage?: string;          // Error details if failed

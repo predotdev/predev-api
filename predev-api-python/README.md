@@ -54,7 +54,7 @@ Generate a fast specification (30-40 seconds, 10 credits).
 - `input_text` **(required)**: `str` - Description of what you want to build
 - `output_format` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
 - `current_context` **(optional)**: `str` - Existing project context
-- `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference
+- `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference (e.g., Stripe docs, framework docs)
 
 **Returns:** `SpecResponse` object with complete specification data
 
@@ -64,6 +64,25 @@ result = predev.fast_spec(
     input_text="Build a SaaS project management tool with real-time collaboration",
     output_format="url"
 )
+```
+
+**Example with Documentation URLs:**
+```python
+result = predev.fast_spec(
+    input_text="Build a payment processing integration with Stripe",
+    output_format="url",
+    doc_urls=["https://stripe.com/docs/api"]
+)
+
+# When doc_urls are provided, the response includes zippedDocsUrls:
+# result.zippedDocsUrls = [
+#     ZippedDocsUrl(
+#         platform="stripe.com",
+#         masterZipShortUrl="https://api.pre.dev/s/xyz789"
+#     )
+# ]
+# These zipped documentation folders can be downloaded and help coding agents
+# stay on track by providing complete, up-to-date documentation context.
 ```
 
 #### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
@@ -243,6 +262,12 @@ class SpecResponse:
     cursorUrl: Optional[str] = None               # Link to generate with Cursor
     v0Url: Optional[str] = None                   # Link to generate with v0
     boltUrl: Optional[str] = None                 # Link to generate with Bolt
+
+    # Documentation (when doc_urls provided)
+    zippedDocsUrls: Optional[List[ZippedDocsUrl]] = None
+                                                  # Complete documentation as zipped folders
+                                                  # Helps coding agents stay on track with full context
+                                                  # Each entry contains platform name and download URL
 
     # Error handling
     errorMessage: Optional[str] = None            # Error details if failed
