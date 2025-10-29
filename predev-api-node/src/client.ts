@@ -4,7 +4,6 @@
 
 import type {
 	PredevAPIConfig,
-	OutputFormat,
 	SpecResponse,
 	AsyncResponse,
 	ErrorResponse,
@@ -64,7 +63,6 @@ export class PredevAPI {
 	 *
 	 * @param options - Options for generating the spec
 	 * @param options.input - Description of the project or feature to generate specs for
-	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
 	 * @returns Promise resolving to the API response
@@ -76,21 +74,18 @@ export class PredevAPI {
 	 * @example
 	 * ```typescript
 	 * const result = await client.fastSpec({
-	 *   input: 'Build a task management app with team collaboration',
-	 *   outputFormat: 'url'
+	 *   input: 'Build a task management app with team collaboration'
 	 * });
 	 * ```
 	 */
 	async fastSpec(options: {
 		input: string;
-		outputFormat?: OutputFormat;
 		currentContext?: string;
 		docURLs?: string[];
 	}): Promise<SpecResponse> {
 		return this.makeRequest(
 			"/fast-spec",
 			options.input,
-			options.outputFormat || "url",
 			options.currentContext,
 			options.docURLs
 		);
@@ -104,7 +99,6 @@ export class PredevAPI {
 	 *
 	 * @param options - Options for generating the spec
 	 * @param options.input - Description of the project or feature to generate specs for
-	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
 	 * @returns Promise resolving to the API response
@@ -116,21 +110,18 @@ export class PredevAPI {
 	 * @example
 	 * ```typescript
 	 * const result = await client.deepSpec({
-	 *   input: 'Build an enterprise resource planning system',
-	 *   outputFormat: 'url'
+	 *   input: 'Build an enterprise resource planning system'
 	 * });
 	 * ```
 	 */
 	async deepSpec(options: {
 		input: string;
-		outputFormat?: OutputFormat;
 		currentContext?: string;
 		docURLs?: string[];
 	}): Promise<SpecResponse> {
 		return this.makeRequest(
 			"/deep-spec",
 			options.input,
-			options.outputFormat || "url",
 			options.currentContext,
 			options.docURLs
 		);
@@ -144,7 +135,6 @@ export class PredevAPI {
 	 *
 	 * @param options - Options for generating the spec
 	 * @param options.input - Description of the project or feature to generate specs for
-	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
 	 * @returns Promise resolving to an AsyncResponse with specId for polling
@@ -156,8 +146,7 @@ export class PredevAPI {
 	 * @example
 	 * ```typescript
 	 * const result = await client.fastSpecAsync({
-	 *   input: 'Build a task management app with team collaboration',
-	 *   outputFormat: 'url'
+	 *   input: 'Build a task management app with team collaboration'
 	 * });
 	 * // Poll for status using result.specId
 	 * const status = await client.getSpecStatus(result.specId);
@@ -165,14 +154,12 @@ export class PredevAPI {
 	 */
 	async fastSpecAsync(options: {
 		input: string;
-		outputFormat?: OutputFormat;
 		currentContext?: string;
 		docURLs?: string[];
 	}): Promise<AsyncResponse> {
 		return this.makeRequestAsync(
 			"/fast-spec",
 			options.input,
-			options.outputFormat || "url",
 			options.currentContext,
 			options.docURLs
 		);
@@ -186,7 +173,6 @@ export class PredevAPI {
 	 *
 	 * @param options - Options for generating the spec
 	 * @param options.input - Description of the project or feature to generate specs for
-	 * @param options.outputFormat - Format of the output - "url" or "markdown" (default: "url")
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
 	 * @returns Promise resolving to an AsyncResponse with specId for polling
@@ -198,8 +184,7 @@ export class PredevAPI {
 	 * @example
 	 * ```typescript
 	 * const result = await client.deepSpecAsync({
-	 *   input: 'Build an enterprise resource planning system',
-	 *   outputFormat: 'url'
+	 *   input: 'Build an enterprise resource planning system'
 	 * });
 	 * // Poll for status using result.specId
 	 * const status = await client.getSpecStatus(result.specId);
@@ -207,14 +192,12 @@ export class PredevAPI {
 	 */
 	async deepSpecAsync(options: {
 		input: string;
-		outputFormat?: OutputFormat;
 		currentContext?: string;
 		docURLs?: string[];
 	}): Promise<AsyncResponse> {
 		return this.makeRequestAsync(
 			"/deep-spec",
 			options.input,
-			options.outputFormat || "url",
 			options.currentContext,
 			options.docURLs
 		);
@@ -394,14 +377,12 @@ export class PredevAPI {
 	private async makeRequest(
 		endpoint: string,
 		input: string,
-		outputFormat: OutputFormat,
 		currentContext?: string,
 		docURLs?: string[]
 	): Promise<SpecResponse> {
 		const url = `${this.baseUrl}${endpoint}`;
 		const payload: Record<string, any> = {
 			input,
-			outputFormat,
 		};
 
 		if (currentContext !== undefined) {
@@ -439,14 +420,12 @@ export class PredevAPI {
 	private async makeRequestAsync(
 		endpoint: string,
 		input: string,
-		outputFormat: OutputFormat,
 		currentContext?: string,
 		docURLs?: string[]
 	): Promise<AsyncResponse> {
 		const url = `${this.baseUrl}${endpoint}`;
 		const payload: Record<string, any> = {
 			input,
-			outputFormat,
 			async: true,
 		};
 

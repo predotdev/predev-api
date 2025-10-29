@@ -22,7 +22,6 @@ console.log("=".repeat(50));
 try {
 	const result = await client.fastSpec({
 		input: "Build a simple todo app with React and TypeScript",
-		outputFormat: "url",
 	});
 
 	console.log("✅ Sync fast spec test passed!");
@@ -30,7 +29,10 @@ try {
 	console.log(`📊 Status: ${result.status}`);
 	console.log(`⏱️  Execution Time: ${result.executionTime || "N/A"}ms`);
 	console.log(
-		`🔗 Output URL: ${result.output || result.outputFileUrl || "N/A"}`
+		`🔗 Coding Agent Spec URL: ${result.codingAgentSpecUrl || "N/A"}`
+	);
+	console.log(
+		`🔗 Human Spec URL: ${result.humanSpecUrl || "N/A"}`
 	);
 
 	if (result.success) {

@@ -78,11 +78,10 @@ Work through the spec milestone by milestone. Create all files for each mileston
     console.log('-'.repeat(70));
 
     const specResult = await predevClient.fastSpec({
-      input: 'Build a simple todo list app with add, delete, and mark complete functionality. Use vanilla JavaScript and localStorage.',
-      outputFormat: 'url'
+      input: 'Build a simple todo list app with add, delete, and mark complete functionality. Use vanilla JavaScript and localStorage.'
     });
 
-    const specUrl = (specResult as any).output;
+    const specUrl = specResult.humanSpecUrl;
     console.log(`✓ Spec generated: ${specUrl}`);
     console.log();
 

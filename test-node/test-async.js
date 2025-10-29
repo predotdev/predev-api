@@ -27,7 +27,6 @@ try {
 	console.log("📤 Submitting async fast spec request...");
 	const asyncResult = await client.fastSpecAsync({
 		input: "Build a weather dashboard with charts and location-based forecasts",
-		outputFormat: "url",
 	});
 
 	console.log("✅ Async request submitted successfully!");
@@ -58,10 +57,11 @@ try {
 					`⏱️  Execution Time: ${statusResult.executionTime || "N/A"}ms`
 				);
 				console.log(
-					`🔗 Output URL: ${
-						statusResult.output || statusResult.outputFileUrl || "N/A"
+					`🔗 Coding Agent Spec URL: ${
+						statusResult.codingAgentSpecUrl || "N/A"
 					}`
 				);
+				console.log(`🔗 Human Spec URL: ${statusResult.humanSpecUrl || "N/A"}`);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n❌ Specification generation failed!");

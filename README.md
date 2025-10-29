@@ -62,16 +62,14 @@ Generate comprehensive specifications quickly with balanced depth and speed.
 **Python:**
 ```python
 result = predev.fast_spec(
-    input_text="Your project description",
-    output_format="url"  # or "json"
+    input_text="Your project description"
 )
 ```
 
 **TypeScript:**
 ```typescript
 const result = await predev.fastSpec({
-  input: "Your project description",
-  outputFormat: "url"  // or "json"
+  input: "Your project description"
 });
 ```
 
@@ -82,16 +80,14 @@ Generate ultra-detailed specifications for complex systems with comprehensive an
 **Python:**
 ```python
 result = predev.deep_spec(
-    input_text="Your complex project description",
-    output_format="url"  # or "json"
+    input_text="Your complex project description"
 )
 ```
 
 **TypeScript:**
 ```typescript
 const result = await predev.deepSpec({
-  input: "Your complex project description",
-  outputFormat: "url"  // or "json"
+  input: "Your complex project description"
 });
 ```
 
@@ -103,15 +99,13 @@ Generate specifications asynchronously for long-running requests.
 ```python
 # Fast spec async
 result = predev.fast_spec_async(
-    input_text="Your project description",
-    output_format="url"
+    input_text="Your project description"
 )
 # Returns: AsyncResponse with specId
 
 # Deep spec async
 result = predev.deep_spec_async(
-    input_text="Your complex project description",
-    output_format="url"
+    input_text="Your complex project description"
 )
 # Returns: AsyncResponse with specId
 ```
@@ -120,15 +114,13 @@ result = predev.deep_spec_async(
 ```typescript
 // Fast spec async
 const result = await predev.fastSpecAsync({
-  input: "Your project description",
-  outputFormat: "url"
+  input: "Your project description"
 });
 // Returns: AsyncResponse with specId
 
 // Deep spec async
 const result = await predev.deepSpecAsync({
-  input: "Your complex project description",
-  outputFormat: "url"
+  input: "Your complex project description"
 });
 // Returns: AsyncResponse with specId
 ```

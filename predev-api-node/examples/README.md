@@ -68,7 +68,6 @@ const predev = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
 
 const result = await predev.fastSpec({
   input: "Build a task management app",
-  outputFormat: "url",
 });
 
 console.log(result);
@@ -78,7 +77,6 @@ console.log(result);
 ```typescript
 const result = await predev.deepSpec({
   input: "Build a healthcare platform",
-  outputFormat: "url",
 });
 
 console.log(result);
@@ -88,7 +86,6 @@ console.log(result);
 ```typescript
 const result = await predev.fastSpecAsync({
   input: "Build an e-commerce platform",
-  outputFormat: "url",
 });
 
 console.log(`Spec ID: ${result.specId}`);

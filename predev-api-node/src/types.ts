@@ -7,11 +7,8 @@ export interface PredevAPIConfig {
 	baseUrl?: string;
 }
 
-export type OutputFormat = "url" | "markdown";
-
 export interface SpecGenOptions {
 	input: string;
-	outputFormat?: OutputFormat;
 	currentContext?: string;
 	docURLs?: string[];
 }
@@ -39,9 +36,8 @@ export interface SpecResponse {
 
 	uploadedFileShortUrl?: string;
 	uploadedFileName?: string;
-	output?: any;
-	outputFormat: "markdown" | "url";
-	outputFileUrl?: string;
+	codingAgentSpecUrl?: string;
+	humanSpecUrl?: string;
 	executionTime?: number;
 
 	predevUrl?: string;

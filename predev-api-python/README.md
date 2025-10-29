@@ -27,8 +27,7 @@ predev = PredevAPI(api_key="your_api_key_here")
 
 # Generate a fast specification
 result = predev.fast_spec(
-    input_text="Build a task management app with team collaboration",
-    output_format="url"
+    input_text="Build a task management app with team collaboration"
 )
 
 print(result)
@@ -46,13 +45,12 @@ predev = PredevAPI(api_key="your_api_key")
 
 ### Synchronous Methods
 
-#### `fast_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
+#### `fast_spec(input_text: str, current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
 Generate a fast specification (30-40 seconds, 10 credits).
 
 **Parameters:**
 - `input_text` **(required)**: `str` - Description of what you want to build
-- `output_format` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
 - `current_context` **(optional)**: `str` - Existing project context
 - `doc_urls` **(optional)**: `List[str]` - Documentation URLs to reference (e.g., Stripe docs, framework docs)
 
@@ -61,8 +59,7 @@ Generate a fast specification (30-40 seconds, 10 credits).
 **Example:**
 ```python
 result = predev.fast_spec(
-    input_text="Build a SaaS project management tool with real-time collaboration",
-    output_format="url"
+    input_text="Build a SaaS project management tool with real-time collaboration"
 )
 ```
 
@@ -70,7 +67,6 @@ result = predev.fast_spec(
 ```python
 result = predev.fast_spec(
     input_text="Build a payment processing integration with Stripe",
-    output_format="url",
     doc_urls=["https://stripe.com/docs/api"]
 )
 
@@ -85,7 +81,7 @@ result = predev.fast_spec(
 # stay on track by providing complete, up-to-date documentation context.
 ```
 
-#### `deep_spec(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
+#### `deep_spec(input_text: str, current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
 Generate a deep specification (2-3 minutes, 50 credits).
 
@@ -96,14 +92,13 @@ Generate a deep specification (2-3 minutes, 50 credits).
 **Example:**
 ```python
 result = predev.deep_spec(
-    input_text="Build a healthcare platform with HIPAA compliance",
-    output_format="url"
+    input_text="Build a healthcare platform with HIPAA compliance"
 )
 ```
 
 ### Asynchronous Methods
 
-#### `fast_spec_async(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
+#### `fast_spec_async(input_text: str, current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
 
 Generate a fast specification asynchronously (returns immediately).
 
@@ -114,13 +109,12 @@ Generate a fast specification asynchronously (returns immediately).
 **Example:**
 ```python
 result = predev.fast_spec_async(
-    input_text="Build a comprehensive e-commerce platform",
-    output_format="url"
+    input_text="Build a comprehensive e-commerce platform"
 )
 # Returns: AsyncResponse(specId="spec_123", status="pending")
 ```
 
-#### `deep_spec_async(input_text: str, output_format: Literal["url", "markdown"] = "url", current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
+#### `deep_spec_async(input_text: str, current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> AsyncResponse`
 
 Generate a deep specification asynchronously (returns immediately).
 
@@ -131,8 +125,7 @@ Generate a deep specification asynchronously (returns immediately).
 **Example:**
 ```python
 result = predev.deep_spec_async(
-    input_text="Build a fintech platform with regulatory compliance",
-    output_format="url"
+    input_text="Build a fintech platform with regulatory compliance"
 )
 # Returns: AsyncResponse(specId="spec_456", status="pending")
 ```
@@ -251,9 +244,8 @@ class SpecResponse:
     # Output data (when completed)
     uploadedFileShortUrl: Optional[str] = None    # URL to input file
     uploadedFileName: Optional[str] = None        # Name of input file
-    output: Optional[Any] = None                  # Raw content or URL
-    outputFormat: Optional[Literal['markdown', 'url']] = None
-    outputFileUrl: Optional[str] = None           # Full URL to hosted spec
+    codingAgentSpecUrl: Optional[str] = None      # Spec optimized for AI/LLM systems
+    humanSpecUrl: Optional[str] = None            # Spec optimized for human readers
     executionTime: Optional[int] = None           # Processing time in milliseconds
 
     # Integration URLs (when completed)

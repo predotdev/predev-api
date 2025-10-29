@@ -36,9 +36,8 @@ class SpecResponse:
 
     uploadedFileShortUrl: Optional[str] = None
     uploadedFileName: Optional[str] = None
-    output: Optional[Any] = None
-    outputFormat: Optional[Literal['markdown', 'url']] = None
-    outputFileUrl: Optional[str] = None
+    codingAgentSpecUrl: Optional[str] = None
+    humanSpecUrl: Optional[str] = None
     executionTime: Optional[int] = None
 
     predevUrl: Optional[str] = None
@@ -104,7 +103,6 @@ class PredevAPI:
     def fast_spec(
         self,
         input_text: str,
-        output_format: Literal["url", "markdown"] = "url",
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None
     ) -> SpecResponse:
@@ -115,7 +113,6 @@ class PredevAPI:
 
         Args:
             input_text: Description of the project or feature to generate specs for
-            output_format: Format of the output - "url" or "markdown" (default: "url")
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
@@ -131,14 +128,12 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.fast_spec(
-            ...     input_text="Build a task management app with team collaboration",
-            ...     output_format="url"
+            ...     input_text="Build a task management app with team collaboration"
             ... )
         """
         return self._make_request(
             endpoint="/fast-spec",
             input_text=input_text,
-            output_format=output_format,
             current_context=current_context,
             doc_urls=doc_urls
         )
@@ -146,7 +141,6 @@ class PredevAPI:
     def deep_spec(
         self,
         input_text: str,
-        output_format: Literal["url", "markdown"] = "url",
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None
     ) -> SpecResponse:
@@ -158,7 +152,6 @@ class PredevAPI:
 
         Args:
             input_text: Description of the project or feature to generate specs for
-            output_format: Format of the output - "url" or "markdown" (default: "url")
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
@@ -174,14 +167,12 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.deep_spec(
-            ...     input_text="Build an enterprise resource planning system",
-            ...     output_format="url"
+            ...     input_text="Build an enterprise resource planning system"
             ... )
         """
         return self._make_request(
             endpoint="/deep-spec",
             input_text=input_text,
-            output_format=output_format,
             current_context=current_context,
             doc_urls=doc_urls
         )
@@ -189,7 +180,6 @@ class PredevAPI:
     def fast_spec_async(
         self,
         input_text: str,
-        output_format: Literal["url", "markdown"] = "url",
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None
     ) -> AsyncResponse:
@@ -201,7 +191,6 @@ class PredevAPI:
 
         Args:
             input_text: Description of the project or feature to generate specs for
-            output_format: Format of the output - "url" or "markdown" (default: "url")
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
@@ -217,8 +206,7 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.fast_spec_async(
-            ...     input_text="Build a task management app with team collaboration",
-            ...     output_format="url"
+            ...     input_text="Build a task management app with team collaboration"
             ... )
             >>> # Poll for status using result.specId
             >>> status = client.get_spec_status(result.specId)
@@ -226,7 +214,6 @@ class PredevAPI:
         return self._make_request_async(
             endpoint="/fast-spec",
             input_text=input_text,
-            output_format=output_format,
             current_context=current_context,
             doc_urls=doc_urls
         )
@@ -234,7 +221,6 @@ class PredevAPI:
     def deep_spec_async(
         self,
         input_text: str,
-        output_format: Literal["url", "markdown"] = "url",
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None
     ) -> AsyncResponse:
@@ -246,7 +232,6 @@ class PredevAPI:
 
         Args:
             input_text: Description of the project or feature to generate specs for
-            output_format: Format of the output - "url" or "markdown" (default: "url")
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
@@ -262,8 +247,7 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.deep_spec_async(
-            ...     input_text="Build an enterprise resource planning system",
-            ...     output_format="url"
+            ...     input_text="Build an enterprise resource planning system"
             ... )
             >>> # Poll for status using result.specId
             >>> status = client.get_spec_status(result.specId)
@@ -271,7 +255,6 @@ class PredevAPI:
         return self._make_request_async(
             endpoint="/deep-spec",
             input_text=input_text,
-            output_format=output_format,
             current_context=current_context,
             doc_urls=doc_urls
         )
@@ -415,15 +398,13 @@ class PredevAPI:
         self,
         endpoint: str,
         input_text: str,
-        output_format: str,
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None
     ) -> SpecResponse:
         """Make a POST request to the API."""
         url = f"{self.base_url}{endpoint}"
         payload = {
-            "input": input_text,
-            "outputFormat": output_format
+            "input": input_text
         }
 
         if current_context is not None:
@@ -448,7 +429,6 @@ class PredevAPI:
         self,
         endpoint: str,
         input_text: str,
-        output_format: str,
         current_context: Optional[str] = None,
         doc_urls: Optional[List[str]] = None
     ) -> AsyncResponse:
@@ -456,7 +436,6 @@ class PredevAPI:
         url = f"{self.base_url}{endpoint}"
         payload = {
             "input": input_text,
-            "outputFormat": output_format,
             "async": True
         }
 

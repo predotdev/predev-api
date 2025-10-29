@@ -63,12 +63,11 @@ describe("PredevAPI", () => {
 			const client = new PredevAPI({ apiKey: "test_key" });
 			await client.fastSpec({
 				input: "Build a todo app",
-				outputFormat: "markdown",
 			});
 
 			const fetchCall = (global.fetch as any).mock.calls[0];
 			const body = JSON.parse(fetchCall[1].body);
-			expect(body.outputFormat).toBe("markdown");
+			expect(body.input).toBe("Build a todo app");
 		});
 
 		it("should throw AuthenticationError on 401", async () => {
@@ -144,7 +143,6 @@ describe("PredevAPI", () => {
 			const client = new PredevAPI({ apiKey: "test_key" });
 			await client.deepSpec({
 				input: "Build an ERP system",
-				outputFormat: "url",
 			});
 
 			const fetchCall = (global.fetch as any).mock.calls[0];

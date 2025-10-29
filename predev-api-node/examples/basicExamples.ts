@@ -40,11 +40,11 @@ async function example1_BasicFastSpec() {
 		const result = await predev.fastSpec({
 			input:
 				"Build a task management app with team collaboration features including real-time updates, task assignments, and progress tracking",
-			outputFormat: "url",
 		});
 
 		console.log("✓ Fast spec generated successfully!");
-		console.log(`URL: ${(result as any).output}`);
+		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
+		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -64,11 +64,11 @@ async function example2_FastSpecFeatureAddition() {
 			input: "Add a calendar view and Gantt chart visualization",
 			currentContext:
 				"Existing task management system with list and board views, user auth, and basic team features",
-			outputFormat: "url",
 		});
 
 		console.log("✓ Fast spec generated successfully!");
-		console.log(`URL: ${(result as any).output}`);
+		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
+		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -88,11 +88,11 @@ async function example3_FastSpecWithDocURLs() {
 			input:
 				"Build a customer support ticketing system with priority levels and file attachments",
 			docURLs: ["https://docs.pre.dev", "https://docs.stripe.com"],
-			outputFormat: "url",
 		});
 
 		console.log("✓ Fast spec generated successfully!");
-		console.log(`URL: ${(result as any).output}`);
+		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
+		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -111,11 +111,11 @@ async function example4_DeepSpecEnterprise() {
 		const result = await predev.deepSpec({
 			input:
 				"Build an enterprise healthcare management platform with patient records, appointment scheduling, billing, insurance processing, and HIPAA compliance for a multi-location hospital system",
-			outputFormat: "url",
 		});
 
 		console.log("✓ Deep spec generated successfully!");
-		console.log(`URL: ${(result as any).output}`);
+		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
+		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -136,11 +136,11 @@ async function example5_DeepSpecFeatureAddition() {
 				"Add AI-powered diagnostics, predictive analytics, and automated treatment recommendations",
 			currentContext:
 				"Existing platform has patient management, scheduling, basic reporting, built with React/Node.js/PostgreSQL, serves 50+ medical practices",
-			outputFormat: "url",
 		});
 
 		console.log("✓ Deep spec generated successfully!");
-		console.log(`URL: ${(result as any).output}`);
+		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
+		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -159,7 +159,6 @@ async function example6_FastSpecAsync() {
 		const result = await predev.fastSpecAsync({
 			input:
 				"Build a comprehensive e-commerce platform with inventory management",
-			outputFormat: "url",
 		});
 
 		console.log("✓ Request submitted!");
@@ -180,7 +179,8 @@ async function example6_FastSpecAsync() {
 
 			if (statusResult.status === "completed") {
 				console.log("\n✓ Fast spec completed!");
-				console.log(`URL: ${(statusResult as any).output}`);
+				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
+				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Fast spec failed!");
@@ -212,7 +212,6 @@ async function example7_DeepSpecAsync() {
 		const result = await predev.deepSpecAsync({
 			input:
 				"Build a comprehensive fintech platform with banking, investments, crypto trading, regulatory compliance, and real-time market data",
-			outputFormat: "url",
 		});
 
 		console.log("✓ Request submitted!");
@@ -234,7 +233,8 @@ async function example7_DeepSpecAsync() {
 
 			if (statusResult.status === "completed") {
 				console.log("\n✓ Deep spec completed!");
-				console.log(`URL: ${(statusResult as any).output}`);
+				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
+				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Deep spec failed!");
@@ -268,7 +268,6 @@ async function example8_ErrorHandling() {
 	try {
 		await invalidPredev.fastSpec({
 			input: "Build a test app",
-			outputFormat: "url",
 		});
 	} catch (error) {
 		if (error instanceof AuthenticationError) {
@@ -299,13 +298,11 @@ async function example9_MarkdownOutput() {
 		const result = await predev.fastSpec({
 			input:
 				"Build a simple blog platform with posts, comments, and user profiles",
-			outputFormat: "markdown",
 		});
 
 		console.log("✓ Fast spec generated successfully!");
-		console.log("Raw markdown content:");
-		console.log("-".repeat(30));
-		console.log((result as any).output);
+		console.log("Coding Agent Spec URL: " + (result.codingAgentSpecUrl || "N/A"));
+		console.log("Human Spec URL: " + (result.humanSpecUrl || "N/A"));
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}

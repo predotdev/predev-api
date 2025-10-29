@@ -23,8 +23,7 @@ from predev_api import PredevAPI
 predev = PredevAPI(api_key=os.environ.get("PREDEV_API_KEY"))
 
 result = predev.fast_spec(
-    input_text="Build a task management app",
-    output_format="url"
+    input_text="Build a task management app"
 )
 
 print(result)
@@ -39,8 +38,7 @@ from predev_api import PredevAPI
 predev = PredevAPI(api_key=os.environ.get("PREDEV_API_KEY"))
 
 result = predev.deep_spec(
-    input_text="Build a healthcare platform",
-    output_format="url"
+    input_text="Build a healthcare platform"
 )
 
 print(result)
@@ -56,8 +54,7 @@ from predev_api import PredevAPI
 predev = PredevAPI(api_key=os.environ.get("PREDEV_API_KEY"))
 
 result = predev.fast_spec_async(
-    input_text="Build an e-commerce platform",
-    output_format="url"
+    input_text="Build an e-commerce platform"
 )
 
 print(f"Spec ID: {result.specId}")
@@ -83,8 +80,7 @@ from predev_api import PredevAPI
 predev = PredevAPI(api_key=os.environ.get("PREDEV_API_KEY"))
 
 result = predev.deep_spec_async(
-    input_text="Build a comprehensive fintech platform",
-    output_format="url"
+    input_text="Build a comprehensive fintech platform"
 )
 
 print(f"Spec ID: {result.specId}")

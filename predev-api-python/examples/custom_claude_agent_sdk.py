@@ -80,11 +80,10 @@ async def main():
     print("-" * 70)
 
     spec_result = predev_client.fast_spec(
-        input_text="Build a simple todo list app with add, delete, and mark complete functionality. Use vanilla JavaScript and localStorage.",
-        output_format="url"
+        input_text="Build a simple todo list app with add, delete, and mark complete functionality. Use vanilla JavaScript and localStorage."
     )
 
-    spec_url = spec_result.get('output')
+    spec_url = spec_result.get('humanSpecUrl') or spec_result.get('codingAgentSpecUrl')
     print(f"✓ Spec generated: {spec_url}")
     print()
 

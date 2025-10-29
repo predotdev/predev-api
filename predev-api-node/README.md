@@ -28,8 +28,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key_here' });
 
 // Generate a fast specification
 const result = await predev.fastSpec({
-  input: 'Build a task management app with team collaboration',
-  outputFormat: 'url'
+  input: 'Build a task management app with team collaboration'
 });
 
 console.log(result);
@@ -53,7 +52,6 @@ Generate a fast specification (30-40 seconds, 10 credits).
 
 **Parameters:**
 - `options.input` **(required)**: `string` - Description of what you want to build
-- `options.outputFormat` **(optional)**: `"url" | "markdown"` - Output format (default: `"url"`)
 - `options.currentContext` **(optional)**: `string` - Existing project context
 - `options.docURLs` **(optional)**: `string[]` - Documentation URLs to reference (e.g., Stripe docs, framework docs)
 
@@ -62,8 +60,7 @@ Generate a fast specification (30-40 seconds, 10 credits).
 **Example:**
 ```typescript
 const result = await predev.fastSpec({
-  input: 'Build a SaaS project management tool with real-time collaboration',
-  outputFormat: 'url'
+  input: 'Build a SaaS project management tool with real-time collaboration'
 });
 ```
 
@@ -71,7 +68,6 @@ const result = await predev.fastSpec({
 ```typescript
 const result = await predev.fastSpec({
   input: 'Build a payment processing integration with Stripe',
-  outputFormat: 'url',
   docURLs: ['https://stripe.com/docs/api']
 });
 
@@ -97,8 +93,7 @@ Generate a deep specification (2-3 minutes, 50 credits).
 **Example:**
 ```typescript
 const result = await predev.deepSpec({
-  input: 'Build a healthcare platform with HIPAA compliance',
-  outputFormat: 'url'
+  input: 'Build a healthcare platform with HIPAA compliance'
 });
 ```
 
@@ -115,8 +110,7 @@ Generate a fast specification asynchronously (returns immediately).
 **Example:**
 ```typescript
 const result = await predev.fastSpecAsync({
-  input: 'Build a comprehensive e-commerce platform',
-  outputFormat: 'url'
+  input: 'Build a comprehensive e-commerce platform'
 });
 // Returns: { specId: "spec_123", status: "pending" }
 ```
@@ -132,8 +126,7 @@ Generate a deep specification asynchronously (returns immediately).
 **Example:**
 ```typescript
 const result = await predev.deepSpecAsync({
-  input: 'Build a fintech platform with regulatory compliance',
-  outputFormat: 'url'
+  input: 'Build a fintech platform with regulatory compliance'
 });
 // Returns: { specId: "spec_456", status: "pending" }
 ```
@@ -250,10 +243,9 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   uploadedFileShortUrl?: string;  // URL to input file
   uploadedFileName?: string;      // Name of input file
 
-  // Output data (when completed)
-  output?: any;                   // Raw content or URL
-  outputFormat: "markdown" | "url";
-  outputFileUrl?: string;         // Full URL to hosted spec
+  // Output URLs (when completed)
+  codingAgentSpecUrl?: string;    // Spec optimized for AI/LLM systems
+  humanSpecUrl?: string;          // Spec optimized for human readers
   executionTime?: number;         // Processing time in milliseconds
 
   // Integration URLs (when completed)
@@ -275,35 +267,3 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   progress?: string;              // Progress information
 }
 ```
-
-### `ListSpecsResponse`
-```typescript
-{
-  specs: SpecResponse[];  // Array of spec objects
-  total: number;          // Total count of matching specs
-  hasMore: boolean;       // Whether more results are available
-}
-```
-
-## Examples Directory
-
-Check out the [examples directory](https://github.com/predotdev/predev-api/tree/main/predev-api-node/examples) for detailed usage examples.
-
-To build the TypeScript package:
-
-```bash
-# Compile TypeScript to JavaScript
-npm run build
-
-# The compiled files will be in the dist/ directory
-```
-
-## Documentation
-
-For more information about the Pre.dev Architect API, visit:
-- [API Documentation](https://docs.pre.dev)
-- [pre.dev Website](https://pre.dev)
-
-## Support
-
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/predotdev/predev-api).

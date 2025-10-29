@@ -45,18 +45,19 @@ class TestFastSpec:
 
     @patch('predev_api.client.requests.post')
     def test_fast_spec_with_markdown_format(self, mock_post):
-        """Test fast_spec with markdown output format"""
+        """Test fast_spec with current_context"""
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {"markdown": "# Spec content"}
+        mock_response.json.return_value = {"context": "received"}
         mock_post.return_value = mock_response
 
         client = PredevAPI(api_key="test_key")
-        result = client.fast_spec("Build a todo app", output_format="markdown")
+        result = client.fast_spec(
+            "Build a todo app", current_context="existing app")
 
-        # Check that the payload includes the correct output format
+        # Check that the payload includes the current context
         call_args = mock_post.call_args
-        assert call_args[1]["json"]["outputFormat"] == "markdown"
+        assert call_args[1]["json"]["currentContext"] == "existing app"
 
     @patch('predev_api.client.requests.post')
     def test_fast_spec_authentication_error(self, mock_post):
@@ -102,14 +103,14 @@ class TestDeepSpec:
 
     @patch('predev_api.client.requests.post')
     def test_deep_spec_with_url_format(self, mock_post):
-        """Test deep_spec with URL output format"""
+        """Test deep_spec with input"""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"url": "https://example.com"}
         mock_post.return_value = mock_response
 
         client = PredevAPI(api_key="test_key")
-        result = client.deep_spec("Build an ERP system", output_format="url")
+        result = client.deep_spec("Build an ERP system")
 
         # Check that the endpoint is correct
         call_args = mock_post.call_args
