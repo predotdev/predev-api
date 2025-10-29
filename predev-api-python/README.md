@@ -246,6 +246,7 @@ class SpecResponse:
     uploadedFileName: Optional[str] = None        # Name of input file
     codingAgentSpecUrl: Optional[str] = None      # Spec optimized for AI/LLM systems
     humanSpecUrl: Optional[str] = None            # Spec optimized for human readers
+    totalHumanHours: Optional[int] = None         # Estimated hours for human developers
     executionTime: Optional[int] = None           # Processing time in milliseconds
 
     # Integration URLs (when completed)

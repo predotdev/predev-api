@@ -45,6 +45,7 @@ async def example1_basic_fast_spec():
         print("✓ Fast spec generated successfully!")
         print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
         print(f"Human Spec URL: {result.humanSpecUrl}")
+        print(f"Total Human Hours: {result.totalHumanHours}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -67,6 +68,7 @@ async def example2_fast_spec_feature_addition():
         print("✓ Fast spec generated successfully!")
         print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
         print(f"Human Spec URL: {result.humanSpecUrl}")
+        print(f"Total Human Hours: {result.totalHumanHours}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -89,6 +91,7 @@ async def example3_fast_spec_with_doc_urls():
         print("✓ Fast spec generated successfully!")
         print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
         print(f"Human Spec URL: {result.humanSpecUrl}")
+        print(f"Total Human Hours: {result.totalHumanHours}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -110,6 +113,7 @@ async def example4_deep_spec_enterprise():
         print("✓ Deep spec generated successfully!")
         print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
         print(f"Human Spec URL: {result.humanSpecUrl}")
+        print(f"Total Human Hours: {result.totalHumanHours}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -132,6 +136,7 @@ async def example5_deep_spec_feature_addition():
         print("✓ Deep spec generated successfully!")
         print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
         print(f"Human Spec URL: {result.humanSpecUrl}")
+        print(f"Total Human Hours: {result.totalHumanHours}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -170,6 +175,7 @@ async def example6_fast_spec_async():
                 print("\n✓ Fast spec completed!")
                 print(f"Coding Agent Spec URL: {status_result.codingAgentSpecUrl}")
                 print(f"Human Spec URL: {status_result.humanSpecUrl}")
+                print(f"Total Human Hours: {status_result.totalHumanHours}")
                 break
             elif status_result.status == "failed":
                 print("\n✗ Fast spec failed!")
@@ -217,6 +223,7 @@ async def example7_deep_spec_async():
                 print("\n✓ Deep spec completed!")
                 print(f"Coding Agent Spec URL: {status_result.codingAgentSpecUrl}")
                 print(f"Human Spec URL: {status_result.humanSpecUrl}")
+                print(f"Total Human Hours: {status_result.totalHumanHours}")
                 break
             elif status_result.status == "failed":
                 print("\n✗ Deep spec failed!")

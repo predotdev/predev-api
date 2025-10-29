@@ -246,6 +246,7 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   // Output URLs (when completed)
   codingAgentSpecUrl?: string;    // Spec optimized for AI/LLM systems
   humanSpecUrl?: string;          // Spec optimized for human readers
+  totalHumanHours?: number;       // Estimated hours for human developers
   executionTime?: number;         // Processing time in milliseconds
 
   // Integration URLs (when completed)

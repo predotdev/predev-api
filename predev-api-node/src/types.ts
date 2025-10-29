@@ -38,6 +38,7 @@ export interface SpecResponse {
 	uploadedFileName?: string;
 	codingAgentSpecUrl?: string;
 	humanSpecUrl?: string;
+	totalHumanHours?: number;
 	executionTime?: number;
 
 	predevUrl?: string;

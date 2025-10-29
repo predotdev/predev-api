@@ -38,6 +38,7 @@ class SpecResponse:
     uploadedFileName: Optional[str] = None
     codingAgentSpecUrl: Optional[str] = None
     humanSpecUrl: Optional[str] = None
+    totalHumanHours: Optional[int] = None
     executionTime: Optional[int] = None
 
     predevUrl: Optional[str] = None

@@ -45,6 +45,7 @@ async function example1_BasicFastSpec() {
 		console.log("✓ Fast spec generated successfully!");
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
+		console.log(`Total Human Hours: ${result.totalHumanHours}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -69,6 +70,7 @@ async function example2_FastSpecFeatureAddition() {
 		console.log("✓ Fast spec generated successfully!");
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
+		console.log(`Total Human Hours: ${result.totalHumanHours}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -93,6 +95,7 @@ async function example3_FastSpecWithDocURLs() {
 		console.log("✓ Fast spec generated successfully!");
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
+		console.log(`Total Human Hours: ${result.totalHumanHours}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -116,6 +119,7 @@ async function example4_DeepSpecEnterprise() {
 		console.log("✓ Deep spec generated successfully!");
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
+		console.log(`Total Human Hours: ${result.totalHumanHours}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -141,6 +145,7 @@ async function example5_DeepSpecFeatureAddition() {
 		console.log("✓ Deep spec generated successfully!");
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
+		console.log(`Total Human Hours: ${result.totalHumanHours}`);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -181,6 +186,7 @@ async function example6_FastSpecAsync() {
 				console.log("\n✓ Fast spec completed!");
 				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
 				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
+				console.log(`Total Human Hours: ${statusResult.totalHumanHours}`);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Fast spec failed!");
@@ -235,6 +241,7 @@ async function example7_DeepSpecAsync() {
 				console.log("\n✓ Deep spec completed!");
 				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
 				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
+				console.log(`Total Human Hours: ${statusResult.totalHumanHours}`);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Deep spec failed!");
