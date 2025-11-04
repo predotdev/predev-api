@@ -15,4 +15,5 @@ export type {
 	SpecGenOptions,
 	SpecResponse,
 	ZippedDocsUrl,
+	CreditsBalanceResponse,
 } from "./types.js";

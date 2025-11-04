@@ -262,6 +262,29 @@ async def example8_error_handling():
         print(f"✓ Caught generic error: {error}")
 
 
+async def example13_get_credits_balance():
+    """
+    Example 13: Check Credits Balance
+
+    Check the remaining prototype credits balance for the API key
+    """
+    print("\nExample 13: Check Credits Balance")
+    print("=" * 50)
+
+    try:
+        balance = predev.get_credits_balance()
+
+        print("✓ Credits balance retrieved successfully!")
+        print(f"Success: {balance.success}")
+        print(f"Credits Remaining: {balance.creditsRemaining}")
+    except AuthenticationError as error:
+        print(f"✗ Authentication error: {error}")
+    except PredevAPIError as error:
+        print(f"✗ API error: {error}")
+    except Exception as error:
+        print(f"✗ Error: {error}")
+
+
 async def example9_markdown_output():
     """
     Example 9: Markdown Output Format
@@ -432,6 +455,7 @@ async def main():
 
     # Error handling example
     await example8_error_handling()
+    await example13_get_credits_balance()
 
     # Claude Agent SDK example (uncomment if you have the SDK installed)
     # await example10_claude_agent_integration()

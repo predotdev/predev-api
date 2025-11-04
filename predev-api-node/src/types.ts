@@ -85,3 +85,8 @@ export interface ListSpecsResponse {
 	total: number;
 	hasMore: boolean;
 }
+
+export interface CreditsBalanceResponse {
+	success: boolean;
+	creditsRemaining: number;
+}

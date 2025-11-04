@@ -318,6 +318,60 @@ describe("PredevAPI", () => {
 		});
 	});
 
+	describe("getCreditsBalance", () => {
+		it("should successfully get credits balance", async () => {
+			const mockResponse = {
+				success: true,
+				creditsRemaining: 1500,
+			};
+
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: true,
+				json: async () => mockResponse,
+			});
+
+			const client = new PredevAPI({ apiKey: "test_key" });
+			const result = await client.getCreditsBalance();
+
+			expect(result).toEqual(mockResponse);
+			expect(result.creditsRemaining).toBe(1500);
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+		});
+
+		it("should call the correct endpoint", async () => {
+			const mockResponse = {
+				success: true,
+				creditsRemaining: 1500,
+			};
+
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: true,
+				json: async () => mockResponse,
+			});
+
+			const client = new PredevAPI({ apiKey: "test_key" });
+			await client.getCreditsBalance();
+
+			const fetchCall = (global.fetch as any).mock.calls[0];
+			expect(fetchCall[0]).toContain("/credits-balance");
+			expect(fetchCall[1].method).toBe("GET");
+		});
+
+		it("should throw AuthenticationError on 401", async () => {
+			(global.fetch as any).mockResolvedValueOnce({
+				ok: false,
+				status: 401,
+				json: async () => ({}),
+			});
+
+			const client = new PredevAPI({ apiKey: "invalid_key" });
+
+			await expect(client.getCreditsBalance()).rejects.toThrow(
+				AuthenticationError
+			);
+		});
+	});
+
 	describe("error handling", () => {
 		it("should handle network errors", async () => {
 			(global.fetch as any).mockRejectedValueOnce(new Error("Network error"));

@@ -12,6 +12,7 @@ import type {
 	ListSpecsResponse,
 	File,
 	SpecGenOptions,
+	CreditsBalanceResponse,
 } from "./types.js";
 import {
 	PredevAPIError,
@@ -384,6 +385,42 @@ export class PredevAPI {
 	}
 
 	/**
+	 * Get the current credits balance for the API key.
+	 *
+	 * @returns Promise resolving to the API response with credits balance
+	 *
+	 * @throws {AuthenticationError} If authentication fails
+	 * @throws {PredevAPIError} For other API errors
+	 *
+	 * @example
+	 * ```typescript
+	 * const balance = await client.getCreditsBalance();
+	 * console.log(balance);
+	 * ```
+	 */
+	async getCreditsBalance(): Promise<CreditsBalanceResponse> {
+		const url = `${this.baseUrl}/credits-balance`;
+
+		try {
+			const response = await fetch(url, {
+				method: "GET",
+				headers: this.headers,
+			});
+
+			return this.handleResponse(response) as Promise<CreditsBalanceResponse>;
+		} catch (error) {
+			if (error instanceof PredevAPIError) {
+				throw error;
+			}
+			throw new PredevAPIError(
+				`Request failed: ${
+					error instanceof Error ? error.message : String(error)
+				}`
+			);
+		}
+	}
+
+	/**
 	 * Make a POST request to the API
 	 * @private
 	 */
@@ -606,12 +643,15 @@ export class PredevAPI {
 	 */
 	private async handleResponse(
 		response: Response
-	): Promise<SpecResponse | AsyncResponse | ListSpecsResponse> {
+	): Promise<
+		SpecResponse | AsyncResponse | ListSpecsResponse | CreditsBalanceResponse
+	> {
 		if (response.ok) {
 			return (await response.json()) as
 				| SpecResponse
 				| AsyncResponse
-				| ListSpecsResponse;
+				| ListSpecsResponse
+				| CreditsBalanceResponse;
 		}
 
 		if (response.status === 401) {

@@ -68,6 +68,13 @@ class ListSpecsResponse:
     hasMore: bool
 
 
+@dataclass
+class CreditsBalanceResponse:
+    """Credits balance response class"""
+    success: bool
+    creditsRemaining: int
+
+
 class PredevAPI:
     """
     Client for interacting with the Pre.dev Architect API.
@@ -408,6 +415,32 @@ class PredevAPI:
                 url, headers=self.headers, params=params, timeout=60)
             self._handle_response(response)
             return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def get_credits_balance(self) -> CreditsBalanceResponse:
+        """
+        Get the current credits balance for the API key.
+
+        Returns:
+            CreditsBalanceResponse with credits remaining
+
+        Raises:
+            AuthenticationError: If authentication fails
+            PredevAPIError: For other API errors
+
+        Example:
+            >>> client = PredevAPI(api_key="your_key")
+            >>> balance = client.get_credits_balance()
+            >>> print(balance.creditsRemaining)
+        """
+        url = f"{self.base_url}/credits-balance"
+
+        try:
+            response = requests.get(url, headers=self.headers, timeout=60)
+            self._handle_response(response)
+            data = response.json()
+            return CreditsBalanceResponse(success=data['success'], creditsRemaining=data['creditsRemaining'])
         except requests.RequestException as e:
             raise PredevAPIError(f"Request failed: {str(e)}") from e
 

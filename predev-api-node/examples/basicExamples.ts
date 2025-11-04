@@ -293,6 +293,35 @@ async function example8_ErrorHandling() {
 }
 
 /**
+ * Example 13: Check Credits Balance
+ *
+ * Check the remaining prototype credits balance for the API key
+ */
+async function example13_GetCreditsBalance() {
+	console.log("\nExample 13: Check Credits Balance");
+	console.log("=".repeat(50));
+
+	try {
+		const balance = await predev.getCreditsBalance();
+
+		console.log("✓ Credits balance retrieved successfully!");
+		console.log(`Success: ${balance.success}`);
+		console.log(`Credits Remaining: ${balance.creditsRemaining}`);
+	} catch (error) {
+		if (error instanceof AuthenticationError) {
+			console.log("✗ Authentication error:", error.message);
+		} else if (error instanceof PredevAPIError) {
+			console.log("✗ API error:", error.message);
+		} else {
+			console.log(
+				"✗ Error:",
+				error instanceof Error ? error.message : error
+			);
+		}
+	}
+}
+
+/**
  * Example 9: Markdown Output Format
  *
  * Generate specifications in markdown format instead of URLs
@@ -486,6 +515,9 @@ async function main() {
 	// Error handling example
 	await example8_ErrorHandling();
 
+	// Check credits balance
+	await example13_GetCreditsBalance();
+
 	// Async file upload example (uncomment to run)
 	// await example12_FastSpecAsyncWithFile();
 
@@ -509,4 +541,5 @@ export {
 	example10_FastSpecWithFileNode,
 	example11_DeepSpecWithFileWeb,
 	example12_FastSpecAsyncWithFile,
+	example13_GetCreditsBalance,
 };

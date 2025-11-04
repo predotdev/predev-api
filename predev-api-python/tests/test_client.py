@@ -277,6 +277,57 @@ class TestFindSpecs:
             client.find_specs(query='test')
 
 
+class TestGetCreditsBalance:
+    """Test get_credits_balance method"""
+
+    @patch('predev_api.client.requests.get')
+    def test_get_credits_balance_success(self, mock_get):
+        """Test successful get_credits_balance call"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "success": True,
+            "creditsRemaining": 1500
+        }
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="test_key")
+        result = client.get_credits_balance()
+
+        assert result.success is True
+        assert result.creditsRemaining == 1500
+        mock_get.assert_called_once()
+
+    @patch('predev_api.client.requests.get')
+    def test_get_credits_balance_endpoint(self, mock_get):
+        """Test that get_credits_balance calls the correct endpoint"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "success": True,
+            "creditsRemaining": 1500
+        }
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="test_key")
+        result = client.get_credits_balance()
+
+        # Check that the endpoint is correct
+        call_args = mock_get.call_args
+        assert "/credits-balance" in call_args[0][0]
+
+    @patch('predev_api.client.requests.get')
+    def test_get_credits_balance_authentication_error(self, mock_get):
+        """Test get_credits_balance with authentication error"""
+        mock_response = Mock()
+        mock_response.status_code = 401
+        mock_get.return_value = mock_response
+
+        client = PredevAPI(api_key="invalid_key")
+        with pytest.raises(AuthenticationError):
+            client.get_credits_balance()
+
+
 class TestErrorHandling:
     """Test error handling"""
 
