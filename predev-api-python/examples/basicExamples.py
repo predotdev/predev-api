@@ -283,6 +283,123 @@ async def example9_markdown_output():
         print(f"✗ Error: {error}")
 
 
+async def example10_fast_spec_with_file():
+    """
+    Example 10: Fast Spec with File Upload
+
+    Generate a specification by uploading a file (requirements, architecture doc, etc.)
+    """
+    print("\nExample 10: Fast Spec with File Upload")
+    print("=" * 50)
+
+    try:
+        # Create a sample file for this example
+        sample_file = "sample_requirements.txt"
+        with open(sample_file, "w") as f:
+            f.write("Build a task management system with real-time collaboration, priorities, and team features")
+
+        # Upload file by path
+        result = predev.fast_spec(
+            input_text="Generate specifications based on the uploaded requirements",
+            file=sample_file
+        )
+
+        print("✓ Fast spec with file generated successfully!")
+        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
+        print(f"Human Spec URL: {result.humanSpecUrl}")
+        print(f"Uploaded File: {result.uploadedFileName}")
+
+        # Clean up
+        os.remove(sample_file)
+    except Exception as error:
+        print(f"✗ Error: {error}")
+
+
+async def example11_deep_spec_with_file():
+    """
+    Example 11: Deep Spec with File Upload
+
+    Generate a deep specification by uploading a documentation file
+    """
+    print("\nExample 11: Deep Spec with File Upload")
+    print("=" * 50)
+
+    try:
+        # Create a sample file
+        sample_file = "architecture_doc.txt"
+        with open(sample_file, "w") as f:
+            f.write("Enterprise healthcare platform with patient records, HIPAA compliance, and ML diagnostics")
+
+        # Upload file using file object
+        with open(sample_file, "rb") as f:
+            result = predev.deep_spec(
+                input_text="Create comprehensive architecture and implementation specs",
+                file=f
+            )
+
+        print("✓ Deep spec with file generated successfully!")
+        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
+        print(f"Human Spec URL: {result.humanSpecUrl}")
+        print(f"Total Human Hours: {result.totalHumanHours}")
+
+        # Clean up
+        os.remove(sample_file)
+    except Exception as error:
+        print(f"✗ Error: {error}")
+
+
+async def example12_fast_spec_async_with_file():
+    """
+    Example 12: Async Fast Spec with File Upload
+
+    Generate an async fast specification with file upload
+    """
+    print("\nExample 12: Async Fast Spec with File Upload")
+    print("=" * 50)
+
+    try:
+        # Create a sample file
+        sample_file = "design_doc.txt"
+        with open(sample_file, "w") as f:
+            f.write("UI/UX design guidelines and component specifications")
+
+        result = predev.fast_spec_async(
+            input_text="Generate specs based on the design documentation",
+            file=sample_file
+        )
+
+        print("✓ Async request submitted!")
+        print(f"Spec ID: {result.specId}")
+        print(f"Status: {result.status}")
+
+        # Poll for completion
+        print("\nPolling for completion...")
+        attempts = 0
+        max_attempts = 10
+
+        while attempts < max_attempts:
+            sleep(3)  # Wait 3 seconds
+            attempts += 1
+
+            status_result = predev.get_spec_status(result.specId)
+            print(f"Attempt {attempts}: Status = {status_result.status}")
+
+            if status_result.status == "completed":
+                print("\n✓ Spec completed!")
+                print(f"Uploaded File: {status_result.uploadedFileName}")
+                print(f"Coding Agent Spec URL: {status_result.codingAgentSpecUrl}")
+                break
+            elif status_result.status == "failed":
+                print("\n✗ Spec failed!")
+                print(f"Error: {status_result.errorMessage}")
+                break
+
+        # Clean up
+        os.remove(sample_file)
+    except Exception as error:
+        print(f"✗ Error: {error}")
+
+
 async def main():
     """
     Main execution - run all examples
@@ -304,6 +421,9 @@ async def main():
     await example4_deep_spec_enterprise()
     await example5_deep_spec_feature_addition()
     await example9_markdown_output()
+    await example10_fast_spec_with_file()
+    await example11_deep_spec_with_file()
+    await example12_fast_spec_async_with_file()
 
     # Note: Async examples are available in the code but have import timing issues with global variables
     # The async functionality works correctly when tested in isolation

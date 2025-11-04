@@ -10,6 +10,8 @@ import type {
 	ListSpecsParams,
 	FindSpecsParams,
 	ListSpecsResponse,
+	File,
+	SpecGenOptions,
 } from "./types.js";
 import {
 	PredevAPIError,
@@ -24,13 +26,32 @@ import {
  * - Fast Spec: Generate comprehensive specs quickly (ideal for MVPs and prototypes)
  * - Deep Spec: Generate ultra-detailed specs for complex systems (enterprise-grade depth)
  *
+ * File Upload Support:
+ * - Browser/Web: Pass File or Blob objects directly
+ * - Node.js: Pass {data: Buffer, name: string} objects
+ * - Both environments automatically handle multipart/form-data encoding
+ *
  * @example
  * ```typescript
  * import { PredevAPI } from 'predev-api';
  *
+ * // Web/Browser usage
  * const client = new PredevAPI({ apiKey: 'your_api_key' });
- * const result = await client.fastSpec({ input: 'Build a task management app' });
- * console.log(result);
+ * const fileInput = document.querySelector('input[type="file"]');
+ * const result = await client.fastSpec({
+ *   input: 'Build a task management app',
+ *   file: fileInput.files[0]  // Pass File directly
+ * });
+ *
+ * // Node.js usage
+ * import fs from 'fs';
+ * const result = await client.fastSpec({
+ *   input: 'Build based on these requirements',
+ *   file: {
+ *     data: fs.readFileSync('requirements.pdf'),
+ *     name: 'requirements.pdf'
+ *   }
+ * });
  * ```
  */
 export class PredevAPI {
@@ -65,6 +86,7 @@ export class PredevAPI {
 	 * @param options.input - Description of the project or feature to generate specs for
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
+	 * @param options.file - Optional file to upload (Blob in browsers, or {data: Buffer, name: string} in Node.js)
 	 * @returns Promise resolving to the API response
 	 *
 	 * @throws {AuthenticationError} If authentication fails
@@ -74,20 +96,18 @@ export class PredevAPI {
 	 * @example
 	 * ```typescript
 	 * const result = await client.fastSpec({
-	 *   input: 'Build a task management app with team collaboration'
+	 *   input: 'Build a task management app with team collaboration',
+	 *   file: blob // Browser: File or Blob; Node.js: {data: Buffer, name: string}
 	 * });
 	 * ```
 	 */
-	async fastSpec(options: {
-		input: string;
-		currentContext?: string;
-		docURLs?: string[];
-	}): Promise<SpecResponse> {
+	async fastSpec(options: SpecGenOptions): Promise<SpecResponse> {
 		return this.makeRequest(
 			"/fast-spec",
 			options.input,
 			options.currentContext,
-			options.docURLs
+			options.docURLs,
+			options.file
 		);
 	}
 
@@ -101,6 +121,7 @@ export class PredevAPI {
 	 * @param options.input - Description of the project or feature to generate specs for
 	 * @param options.currentContext - Existing project/codebase context. When omitted, generates full new project spec. When provided, generates feature addition spec.
 	 * @param options.docURLs - Array of documentation URLs to reference (e.g., API docs, design systems)
+	 * @param options.file - Optional file to upload (Blob in browsers, or {data: Buffer, name: string} in Node.js)
 	 * @returns Promise resolving to the API response
 	 *
 	 * @throws {AuthenticationError} If authentication fails
@@ -110,20 +131,18 @@ export class PredevAPI {
 	 * @example
 	 * ```typescript
 	 * const result = await client.deepSpec({
-	 *   input: 'Build an enterprise resource planning system'
+	 *   input: 'Build an enterprise resource planning system',
+	 *   file: blob // Browser: File or Blob; Node.js: {data: Buffer, name: string}
 	 * });
 	 * ```
 	 */
-	async deepSpec(options: {
-		input: string;
-		currentContext?: string;
-		docURLs?: string[];
-	}): Promise<SpecResponse> {
+	async deepSpec(options: SpecGenOptions): Promise<SpecResponse> {
 		return this.makeRequest(
 			"/deep-spec",
 			options.input,
 			options.currentContext,
-			options.docURLs
+			options.docURLs,
+			options.file
 		);
 	}
 
@@ -152,16 +171,13 @@ export class PredevAPI {
 	 * const status = await client.getSpecStatus(result.specId);
 	 * ```
 	 */
-	async fastSpecAsync(options: {
-		input: string;
-		currentContext?: string;
-		docURLs?: string[];
-	}): Promise<AsyncResponse> {
+	async fastSpecAsync(options: SpecGenOptions): Promise<AsyncResponse> {
 		return this.makeRequestAsync(
 			"/fast-spec",
 			options.input,
 			options.currentContext,
-			options.docURLs
+			options.docURLs,
+			options.file
 		);
 	}
 
@@ -190,16 +206,13 @@ export class PredevAPI {
 	 * const status = await client.getSpecStatus(result.specId);
 	 * ```
 	 */
-	async deepSpecAsync(options: {
-		input: string;
-		currentContext?: string;
-		docURLs?: string[];
-	}): Promise<AsyncResponse> {
+	async deepSpecAsync(options: SpecGenOptions): Promise<AsyncResponse> {
 		return this.makeRequestAsync(
 			"/deep-spec",
 			options.input,
 			options.currentContext,
-			options.docURLs
+			options.docURLs,
+			options.file
 		);
 	}
 
@@ -378,9 +391,21 @@ export class PredevAPI {
 		endpoint: string,
 		input: string,
 		currentContext?: string,
-		docURLs?: string[]
+		docURLs?: string[],
+		file?: File
 	): Promise<SpecResponse> {
 		const url = `${this.baseUrl}${endpoint}`;
+
+		if (file) {
+			return this.makeRequestWithFile(
+				url,
+				input,
+				currentContext,
+				docURLs,
+				file
+			);
+		}
+
 		const payload: Record<string, any> = {
 			input,
 		};
@@ -421,9 +446,21 @@ export class PredevAPI {
 		endpoint: string,
 		input: string,
 		currentContext?: string,
-		docURLs?: string[]
+		docURLs?: string[],
+		file?: File
 	): Promise<AsyncResponse> {
 		const url = `${this.baseUrl}${endpoint}`;
+
+		if (file) {
+			return this.makeRequestWithFileAsync(
+				url,
+				input,
+				currentContext,
+				docURLs,
+				file
+			);
+		}
+
 		const payload: Record<string, any> = {
 			input,
 			async: true,
@@ -457,6 +494,112 @@ export class PredevAPI {
 		}
 	}
 
+	private async makeRequestWithFile(
+		url: string,
+		input: string,
+		currentContext: string | undefined,
+		docURLs: string[] | undefined,
+		file: File
+	): Promise<SpecResponse> {
+		const formData = new FormData();
+		formData.append("input", input);
+
+		if (currentContext !== undefined) {
+			formData.append("currentContext", currentContext);
+		}
+
+		if (docURLs !== undefined) {
+			formData.append("docURLs", JSON.stringify(docURLs));
+		}
+
+		const fileToUpload = await this.normalizeFile(file);
+		formData.append("file", fileToUpload, this.getFileName(file));
+
+		const headers: Record<string, string> = {
+			Authorization: this.headers.Authorization,
+		};
+
+		try {
+			const response = await fetch(url, {
+				method: "POST",
+				headers,
+				body: formData,
+			});
+
+			return this.handleResponse(response) as unknown as SpecResponse;
+		} catch (error) {
+			if (error instanceof PredevAPIError) {
+				throw error;
+			}
+			throw new PredevAPIError(
+				`Request failed: ${
+					error instanceof Error ? error.message : String(error)
+				}`
+			);
+		}
+	}
+
+	private async makeRequestWithFileAsync(
+		url: string,
+		input: string,
+		currentContext: string | undefined,
+		docURLs: string[] | undefined,
+		file: File
+	): Promise<AsyncResponse> {
+		const formData = new FormData();
+		formData.append("input", input);
+		formData.append("async", "true");
+
+		if (currentContext !== undefined) {
+			formData.append("currentContext", currentContext);
+		}
+
+		if (docURLs !== undefined) {
+			formData.append("docURLs", JSON.stringify(docURLs));
+		}
+
+		const fileToUpload = await this.normalizeFile(file);
+		formData.append("file", fileToUpload, this.getFileName(file));
+
+		const headers: Record<string, string> = {
+			Authorization: this.headers.Authorization,
+		};
+
+		try {
+			const response = await fetch(url, {
+				method: "POST",
+				headers,
+				body: formData,
+			});
+
+			return this.handleResponse(response) as unknown as AsyncResponse;
+		} catch (error) {
+			if (error instanceof PredevAPIError) {
+				throw error;
+			}
+			throw new PredevAPIError(
+				`Request failed: ${
+					error instanceof Error ? error.message : String(error)
+				}`
+			);
+		}
+	}
+
+	private async normalizeFile(file: File): Promise<Blob> {
+		if (file instanceof Blob) {
+			return file;
+		}
+		return new Blob([file.data], { type: "application/octet-stream" });
+	}
+
+	private getFileName(file: File): string {
+		if (file instanceof Blob && file.type) {
+			const ext = file.type === "application/pdf" ? ".pdf" : ".txt";
+			return `upload${ext}`;
+		}
+		return (file as any).name || "upload.txt";
+	}
+
 	/**
 	 * Handle API response and raise appropriate exceptions
 	 * @private
@@ -485,8 +628,12 @@ export class PredevAPI {
 			errorMessage =
 				errorData.error || errorData.message || JSON.stringify(errorData);
 		} catch {
-			const textError = await response.text();
-			errorMessage = textError || errorMessage;
+			try {
+				const textError = await response.text();
+				errorMessage = textError || errorMessage;
+			} catch {
+				errorMessage = `HTTP ${response.status}`;
+			}
 		}
 
 		throw new PredevAPIError(

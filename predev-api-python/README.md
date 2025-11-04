@@ -33,6 +33,67 @@ result = predev.fast_spec(
 print(result)
 ```
 
+## File Upload Support
+
+All `fast_spec`, `deep_spec`, `fast_spec_async`, and `deep_spec_async` methods support optional file uploads. This allows you to provide architecture documents, requirements files, design mockups, or other context files to improve specification generation.
+
+### Using File Path (Simplest)
+
+```python
+from predev_api import PredevAPI
+
+predev = PredevAPI(api_key="your_api_key")
+
+# Just pass the file path as a string
+result = predev.fast_spec(
+    input_text="Generate specs based on these requirements",
+    file="path/to/requirements.pdf"
+)
+```
+
+### Using File-like Objects
+
+```python
+# Open and upload a file
+with open("architecture.doc", "rb") as f:
+    result = predev.deep_spec(
+        input_text="Create comprehensive specs",
+        file=f
+    )
+
+# Or pass a file-like object
+from io import BytesIO
+
+file_content = BytesIO(b"Design specifications...")
+result = predev.fast_spec(
+    input_text="Generate specs",
+    file=file_content
+)
+```
+
+### Supported File Types
+
+- PDF documents (`*.pdf`)
+- Word documents (`*.doc`, `*.docx`)
+- Text files (`*.txt`)
+- Images (`*.jpg`, `*.png`, `*.jpeg`)
+
+### Response with File Upload
+
+When you upload a file, the response includes:
+
+```python
+result = predev.fast_spec(
+    input_text="Based on the design document",
+    file="design.pdf"
+)
+
+print(result.uploadedFileName)       # "design.pdf"
+print(result.uploadedFileShortUrl)   # "https://api.pre.dev/f/xyz123"
+print(result.codingAgentSpecUrl)     # Spec for AI systems
+print(result.humanSpecUrl)           # Spec for humans
+```
+
 ## Authentication
 
 The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys:

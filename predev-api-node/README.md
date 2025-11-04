@@ -34,6 +34,69 @@ const result = await predev.fastSpec({
 console.log(result);
 ```
 
+## File Upload Support
+
+All `fastSpec`, `deepSpec`, `fastSpecAsync`, and `deepSpecAsync` methods support optional file uploads. This allows you to provide architecture documents, requirements files, design mockups, or other context files to improve specification generation.
+
+### Browser/Web Environment
+
+```typescript
+// Using File input from HTML form
+const fileInput = document.querySelector('input[type="file"]');
+const file = fileInput.files[0];
+
+const result = await predev.fastSpec({
+  input: 'Generate specs based on this design document',
+  file: file // Pass the File object directly
+});
+```
+
+### Node.js Environment
+
+```typescript
+import fs from 'fs';
+
+// Method 1: Using file path (simplest)
+const result = await predev.fastSpec({
+  input: 'Build based on these requirements',
+  file: {
+    data: fs.readFileSync('requirements.pdf'),
+    name: 'requirements.pdf'
+  }
+});
+
+// Method 2: Using file object
+const fileContent = fs.readFileSync('architecture.doc');
+const result = await predev.deepSpec({
+  input: 'Create comprehensive specs',
+  file: {
+    data: fileContent,
+    name: 'architecture.doc'
+  }
+});
+```
+
+### Supported File Types
+
+- PDF documents (`*.pdf`)
+- Word documents (`*.doc`, `*.docx`)
+- Text files (`*.txt`)
+- Images (`*.jpg`, `*.png`, `*.jpeg`)
+
+### Response with File Upload
+
+When you upload a file, the response includes:
+
+```typescript
+{
+  uploadedFileName?: string;      // Name of the uploaded file
+  uploadedFileShortUrl?: string;  // URL to access the file
+  codingAgentSpecUrl?: string;    // Spec optimized for AI systems
+  humanSpecUrl?: string;          // Spec optimized for humans
+  // ... other fields
+}
+```
+
 ## Authentication
 
 The Pre.dev API uses API key authentication. Get your API key from the [pre.dev dashboard](https://pre.dev) under Settings → API Keys:

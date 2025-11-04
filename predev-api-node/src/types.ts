@@ -2,6 +2,8 @@
  * Type definitions for the Pre.dev API client
  */
 
+export type File = Blob | { data: Buffer; name: string };
+
 export interface PredevAPIConfig {
 	apiKey: string;
 	baseUrl?: string;
@@ -11,6 +13,7 @@ export interface SpecGenOptions {
 	input: string;
 	currentContext?: string;
 	docURLs?: string[];
+	file?: File;
 }
 
 // Async mode response interfaces

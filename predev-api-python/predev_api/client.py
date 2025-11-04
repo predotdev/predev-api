@@ -2,7 +2,7 @@
 Client for the Pre.dev Architect API
 """
 
-from typing import Optional, Dict, Any, Literal, List, Union
+from typing import Optional, Dict, Any, Literal, List, Union, BinaryIO
 from dataclasses import dataclass
 import requests
 from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
@@ -105,7 +105,8 @@ class PredevAPI:
         self,
         input_text: str,
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None
+        doc_urls: Optional[List[str]] = None,
+        file: Optional[Union[str, BinaryIO]] = None
     ) -> SpecResponse:
         """
         Generate a fast specification for your project.
@@ -117,6 +118,7 @@ class PredevAPI:
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+            file: Optional file to upload (file path as string or file-like object)
 
         Returns:
             API response as SpecResponse object
@@ -129,21 +131,24 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.fast_spec(
-            ...     input_text="Build a task management app with team collaboration"
+            ...     input_text="Build a task management app with team collaboration",
+            ...     file="path/to/architecture.pdf"
             ... )
         """
         return self._make_request(
             endpoint="/fast-spec",
             input_text=input_text,
             current_context=current_context,
-            doc_urls=doc_urls
+            doc_urls=doc_urls,
+            file=file
         )
 
     def deep_spec(
         self,
         input_text: str,
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None
+        doc_urls: Optional[List[str]] = None,
+        file: Optional[Union[str, BinaryIO]] = None
     ) -> SpecResponse:
         """
         Generate a deep specification for your project.
@@ -156,6 +161,7 @@ class PredevAPI:
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+            file: Optional file to upload (file path as string or file-like object)
 
         Returns:
             API response as SpecResponse object
@@ -168,21 +174,24 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.deep_spec(
-            ...     input_text="Build an enterprise resource planning system"
+            ...     input_text="Build an enterprise resource planning system",
+            ...     file="path/to/requirements.doc"
             ... )
         """
         return self._make_request(
             endpoint="/deep-spec",
             input_text=input_text,
             current_context=current_context,
-            doc_urls=doc_urls
+            doc_urls=doc_urls,
+            file=file
         )
 
     def fast_spec_async(
         self,
         input_text: str,
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None
+        doc_urls: Optional[List[str]] = None,
+        file: Optional[Union[str, BinaryIO]] = None
     ) -> AsyncResponse:
         """
         Generate a fast specification asynchronously for your project.
@@ -195,6 +204,7 @@ class PredevAPI:
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+            file: Optional file to upload (file path as string or file-like object)
 
         Returns:
             API response as AsyncResponse object with specId for polling
@@ -207,7 +217,8 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.fast_spec_async(
-            ...     input_text="Build a task management app with team collaboration"
+            ...     input_text="Build a task management app with team collaboration",
+            ...     file="path/to/architecture.pdf"
             ... )
             >>> # Poll for status using result.specId
             >>> status = client.get_spec_status(result.specId)
@@ -216,14 +227,16 @@ class PredevAPI:
             endpoint="/fast-spec",
             input_text=input_text,
             current_context=current_context,
-            doc_urls=doc_urls
+            doc_urls=doc_urls,
+            file=file
         )
 
     def deep_spec_async(
         self,
         input_text: str,
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None
+        doc_urls: Optional[List[str]] = None,
+        file: Optional[Union[str, BinaryIO]] = None
     ) -> AsyncResponse:
         """
         Generate a deep specification asynchronously for your project.
@@ -236,6 +249,7 @@ class PredevAPI:
             current_context: Existing project/codebase context. When omitted, generates
                            full new project spec. When provided, generates feature addition spec.
             doc_urls: Array of documentation URLs to reference (e.g., API docs, design systems)
+            file: Optional file to upload (file path as string or file-like object)
 
         Returns:
             API response as AsyncResponse object with specId for polling
@@ -248,7 +262,8 @@ class PredevAPI:
         Example:
             >>> client = PredevAPI(api_key="your_key")
             >>> result = client.deep_spec_async(
-            ...     input_text="Build an enterprise resource planning system"
+            ...     input_text="Build an enterprise resource planning system",
+            ...     file="path/to/requirements.doc"
             ... )
             >>> # Poll for status using result.specId
             >>> status = client.get_spec_status(result.specId)
@@ -257,7 +272,8 @@ class PredevAPI:
             endpoint="/deep-spec",
             input_text=input_text,
             current_context=current_context,
-            doc_urls=doc_urls
+            doc_urls=doc_urls,
+            file=file
         )
 
     def get_spec_status(self, spec_id: str) -> SpecResponse:
@@ -400,10 +416,15 @@ class PredevAPI:
         endpoint: str,
         input_text: str,
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None
+        doc_urls: Optional[List[str]] = None,
+        file: Optional[Union[str, BinaryIO]] = None
     ) -> SpecResponse:
         """Make a POST request to the API."""
         url = f"{self.base_url}{endpoint}"
+
+        if file:
+            return self._make_request_with_file(url, input_text, current_context, doc_urls, file)
+
         payload = {
             "input": input_text
         }
@@ -419,7 +440,7 @@ class PredevAPI:
                 url,
                 headers=self.headers,
                 json=payload,
-                timeout=300  # 5 minutes for spec generation
+                timeout=300
             )
             self._handle_response(response)
             return response.json()
@@ -431,10 +452,15 @@ class PredevAPI:
         endpoint: str,
         input_text: str,
         current_context: Optional[str] = None,
-        doc_urls: Optional[List[str]] = None
+        doc_urls: Optional[List[str]] = None,
+        file: Optional[Union[str, BinaryIO]] = None
     ) -> AsyncResponse:
         """Make an async POST request to the API."""
         url = f"{self.base_url}{endpoint}"
+
+        if file:
+            return self._make_request_with_file_async(url, input_text, current_context, doc_urls, file)
+
         payload = {
             "input": input_text,
             "async": True
@@ -451,12 +477,97 @@ class PredevAPI:
                 url,
                 headers=self.headers,
                 json=payload,
-                timeout=300  # 5 minutes for spec generation
+                timeout=300
             )
             self._handle_response(response)
             return response.json()
         except requests.RequestException as e:
             raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def _make_request_with_file(
+        self,
+        url: str,
+        input_text: str,
+        current_context: Optional[str],
+        doc_urls: Optional[List[str]],
+        file: Union[str, BinaryIO]
+    ) -> SpecResponse:
+        """Make a POST request with file upload."""
+        headers = {key: value for key, value in self.headers.items()
+                   if key.lower() != "content-type"}
+
+        data = {
+            "input": input_text
+        }
+
+        if current_context is not None:
+            data["currentContext"] = current_context
+
+        if doc_urls is not None:
+            data["docURLs"] = doc_urls
+
+        files = self._prepare_file(file)
+
+        try:
+            response = requests.post(
+                url,
+                headers=headers,
+                data=data,
+                files=files,
+                timeout=300
+            )
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def _make_request_with_file_async(
+        self,
+        url: str,
+        input_text: str,
+        current_context: Optional[str],
+        doc_urls: Optional[List[str]],
+        file: Union[str, BinaryIO]
+    ) -> AsyncResponse:
+        """Make an async POST request with file upload."""
+        headers = {key: value for key, value in self.headers.items()
+                   if key.lower() != "content-type"}
+
+        data = {
+            "input": input_text,
+            "async": "true"
+        }
+
+        if current_context is not None:
+            data["currentContext"] = current_context
+
+        if doc_urls is not None:
+            data["docURLs"] = doc_urls
+
+        files = self._prepare_file(file)
+
+        try:
+            response = requests.post(
+                url,
+                headers=headers,
+                data=data,
+                files=files,
+                timeout=300
+            )
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def _prepare_file(self, file: Union[str, BinaryIO]) -> Dict[str, Any]:
+        """Prepare file for multipart upload."""
+        if isinstance(file, str):
+            file_handle = open(file, "rb")
+            filename = file.split("/")[-1]
+            return {"file": (filename, file_handle)}
+        else:
+            filename = getattr(file, "name", "upload.txt")
+            return {"file": (filename, file)}
 
     def _handle_response(self, response: requests.Response) -> None:
         """Handle API response and raise appropriate exceptions."""

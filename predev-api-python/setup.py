@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="predev-api",
-    version="0.5.0",
+    version="0.7.0",
     author="Pre.dev",
     author_email="support@pre.dev",
     description="Python client for the Pre.dev Architect API - Generate comprehensive software specifications",

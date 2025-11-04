@@ -315,6 +315,142 @@ async function example9_MarkdownOutput() {
 	}
 }
 
+/**
+ * Example 10: Fast Spec with File Upload (Node.js)
+ *
+ * Generate a specification by uploading a file (requirements, architecture doc, etc.)
+ */
+async function example10_FastSpecWithFileNode() {
+	console.log("\nExample 10: Fast Spec with File Upload (Node.js)");
+	console.log("=".repeat(50));
+
+	try {
+		const fs = await import("fs");
+		const path = await import("path");
+
+		// Create a sample file for this example
+		const sampleFile = path.join(".", "sample_requirements.txt");
+		if (!fs.existsSync(sampleFile)) {
+			fs.writeFileSync(
+				sampleFile,
+				"Build a task management system with real-time collaboration, priorities, and team features"
+			);
+		}
+
+		// Upload file as Node.js Buffer
+		const fileBuffer = fs.readFileSync(sampleFile);
+		const result = await predev.fastSpec({
+			input: "Generate specifications based on the uploaded requirements",
+			file: {
+				data: fileBuffer,
+				name: "requirements.txt",
+			},
+		});
+
+		console.log("✓ Fast spec with file generated successfully!");
+		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
+		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
+		console.log(`Uploaded File: ${result.uploadedFileName}`);
+
+		// Clean up
+		fs.unlinkSync(sampleFile);
+	} catch (error) {
+		console.error("✗ Error:", error instanceof Error ? error.message : error);
+	}
+}
+
+/**
+ * Example 11: Deep Spec with File Upload (Web)
+ *
+ * Generate a specification by uploading a file from web (browser)
+ */
+async function example11_DeepSpecWithFileWeb() {
+	console.log("\nExample 11: Deep Spec with File Upload (Web/Browser)");
+	console.log("=".repeat(50));
+
+	try {
+		// This example would work in a browser environment with File objects
+		// For Node.js simulation, we create a Blob
+		const content = "Enterprise healthcare platform with patient records, HIPAA compliance, and ML diagnostics";
+		const blob = new Blob([content], { type: "text/plain" });
+
+		const result = await predev.deepSpec({
+			input: "Create comprehensive architecture and implementation specs",
+			file: blob,
+		});
+
+		console.log("✓ Deep spec with file generated successfully!");
+		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
+		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
+		console.log(`Total Human Hours: ${result.totalHumanHours}`);
+	} catch (error) {
+		console.error("✗ Error:", error instanceof Error ? error.message : error);
+	}
+}
+
+/**
+ * Example 12: Async Fast Spec with File Upload
+ *
+ * Generate an async fast specification with file upload
+ */
+async function example12_FastSpecAsyncWithFile() {
+	console.log("\nExample 12: Async Fast Spec with File Upload");
+	console.log("=".repeat(50));
+
+	try {
+		const fs = await import("fs");
+		const path = await import("path");
+
+		// Create a sample file
+		const sampleFile = path.join(".", "design_doc.txt");
+		if (!fs.existsSync(sampleFile)) {
+			fs.writeFileSync(sampleFile, "UI/UX design guidelines and component specifications");
+		}
+
+		const fileBuffer = fs.readFileSync(sampleFile);
+		const result = await predev.fastSpecAsync({
+			input: "Generate specs based on the design documentation",
+			file: {
+				data: fileBuffer,
+				name: "design_doc.txt",
+			},
+		});
+
+		console.log("✓ Async request submitted!");
+		console.log(`Spec ID: ${result.specId}`);
+		console.log(`Status: ${result.status}`);
+
+		// Poll for completion
+		console.log("\nPolling for completion...");
+		let attempts = 0;
+		const maxAttempts = 10;
+
+		while (attempts < maxAttempts) {
+			await sleep(3000);
+			attempts++;
+
+			const statusResult = await predev.getSpecStatus(result.specId);
+			console.log(`Attempt ${attempts}: Status = ${statusResult.status}`);
+
+			if (statusResult.status === "completed") {
+				console.log("\n✓ Spec completed!");
+				console.log(`Uploaded File: ${statusResult.uploadedFileName}`);
+				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
+				break;
+			} else if (statusResult.status === "failed") {
+				console.log("\n✗ Spec failed!");
+				console.log(`Error: ${(statusResult as any).errorMessage}`);
+				break;
+			}
+		}
+
+		// Clean up
+		fs.unlinkSync(sampleFile);
+	} catch (error) {
+		console.error("✗ Error:", error instanceof Error ? error.message : error);
+	}
+}
+
 // Main execution - run all examples
 async function main() {
 	console.log("Pre.dev API Basic Examples");
@@ -338,15 +474,20 @@ async function main() {
 	await example5_DeepSpecFeatureAddition();
 	await example9_MarkdownOutput();
 
-	// Run async examples (comment out if you don't want to wait)
+	// File upload examples (optional, requires file I/O access)
+	// Uncomment to run:
+	// await example10_FastSpecWithFileNode();
+	// await example11_DeepSpecWithFileWeb();
+
+	// Async examples (comment out if you don't want to wait)
 	await example6_FastSpecAsync();
 	await example7_DeepSpecAsync();
 
 	// Error handling example
 	await example8_ErrorHandling();
 
-	// Claude Agent SDK example (uncomment if you have the SDK installed)
-	// await example10_ClaudeAgentIntegration();
+	// Async file upload example (uncomment to run)
+	// await example12_FastSpecAsyncWithFile();
 
 	console.log("\n🎉 All examples completed!");
 	console.log("=".repeat(70));
@@ -365,4 +506,7 @@ export {
 	example7_DeepSpecAsync,
 	example8_ErrorHandling,
 	example9_MarkdownOutput,
+	example10_FastSpecWithFileNode,
+	example11_DeepSpecWithFileWeb,
+	example12_FastSpecAsyncWithFile,
 };
