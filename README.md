@@ -46,6 +46,7 @@ Both libraries provide:
 - **Status Tracking**: Check the status of async specification generation requests
 - **Enterprise Support**: Both solo and enterprise authentication methods
 - **Type Safety**: Full type hints (Python) and TypeScript definitions (Node.js)
+- **Direct Spec Data**: JSON + markdown payloads returned inline alongside S3 URLs
 - **Error Handling**: Custom exceptions for different error scenarios
 - **Modern Conventions**: Latest language features and best practices
 

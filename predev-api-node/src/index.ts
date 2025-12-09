@@ -16,4 +16,10 @@ export type {
 	SpecResponse,
 	ZippedDocsUrl,
 	CreditsBalanceResponse,
+	SpecCoreFunctionality,
+	SpecTechStackItem,
+	SpecPersona,
+	SpecRole,
+	CodingAgentSpecJson,
+	HumanSpecJson,
 } from "./types.js";

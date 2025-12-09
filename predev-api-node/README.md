@@ -310,6 +310,11 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   codingAgentSpecUrl?: string;    // Spec optimized for AI/LLM systems
   humanSpecUrl?: string;          // Spec optimized for human readers
   totalHumanHours?: number;       // Estimated hours for human developers
+  // Direct returns (new)
+  codingAgentSpecJson?: CodingAgentSpecJson;   // Simplified JSON for coding tools
+  codingAgentSpecMarkdown?: string;            // Simplified markdown for coding tools
+  humanSpecJson?: HumanSpecJson;               // Full JSON with hours/personas/roles
+  humanSpecMarkdown?: string;                  // Full markdown with all details
   executionTime?: number;         // Processing time in milliseconds
 
   // Integration URLs (when completed)
@@ -329,5 +334,40 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
   // Error handling
   errorMessage?: string;          // Error details if failed
   progress?: string;              // Progress information
+}
+```
+
+### Direct Spec JSON structures
+```typescript
+interface SpecCoreFunctionality { name: string; description: string; priority?: "High" | "Medium" | "Low"; }
+interface SpecTechStackItem { name: string; category: string; }
+interface SpecPersona { title: string; description: string; primaryGoals?: string[]; painPoints?: string[]; keyTasks?: string[]; }
+interface SpecRole { name: string; shortHand: string; }
+
+interface CodingAgentSubTask { id?: string; description: string; complexity: string; }
+interface CodingAgentStory { id?: string; title: string; description?: string; acceptanceCriteria?: string[]; complexity?: string; subTasks: CodingAgentSubTask[]; }
+interface CodingAgentMilestone { milestoneNumber: number; description: string; stories: CodingAgentStory[]; }
+interface CodingAgentSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: CodingAgentMilestone[];
+}
+
+interface HumanSpecSubTask { id?: string; description: string; hours: number; complexity: string; roles?: SpecRole[]; }
+interface HumanSpecStory { id?: string; title: string; description?: string; acceptanceCriteria?: string[]; hours: number; complexity?: string; subTasks: HumanSpecSubTask[]; }
+interface HumanSpecMilestone { milestoneNumber: number; description: string; hours: number; stories: HumanSpecStory[]; }
+interface HumanSpecJson {
+  title?: string;
+  executiveSummary: string;
+  coreFunctionalities: SpecCoreFunctionality[];
+  personas: SpecPersona[];
+  techStack: SpecTechStackItem[];
+  techStackGrouped: Record<string, string[]>;
+  milestones: HumanSpecMilestone[];
+  totalHours: number;
+  roles: SpecRole[];
 }
 ```

@@ -308,6 +308,11 @@ class SpecResponse:
     codingAgentSpecUrl: Optional[str] = None      # Spec optimized for AI/LLM systems
     humanSpecUrl: Optional[str] = None            # Spec optimized for human readers
     totalHumanHours: Optional[int] = None         # Estimated hours for human developers
+    # Direct returns (new)
+    codingAgentSpecJson: Optional[CodingAgentSpecJson] = None   # Simplified JSON for coding tools
+    codingAgentSpecMarkdown: Optional[str] = None               # Simplified markdown for coding tools
+    humanSpecJson: Optional[HumanSpecJson] = None               # Full JSON with hours/personas/roles
+    humanSpecMarkdown: Optional[str] = None                     # Full markdown with all details
     executionTime: Optional[int] = None           # Processing time in milliseconds
 
     # Integration URLs (when completed)
@@ -326,6 +331,100 @@ class SpecResponse:
     # Error handling
     errorMessage: Optional[str] = None            # Error details if failed
     progress: Optional[str] = None                # Progress information
+```
+
+### Direct Spec JSON structures
+```python
+@dataclass
+class SpecCoreFunctionality:
+    name: str
+    description: str
+    priority: Optional[str] = None
+
+@dataclass
+class SpecTechStackItem:
+    name: str
+    category: str
+
+@dataclass
+class SpecPersona:
+    title: str
+    description: str
+    primaryGoals: Optional[List[str]] = None
+    painPoints: Optional[List[str]] = None
+    keyTasks: Optional[List[str]] = None
+
+@dataclass
+class SpecRole:
+    name: str
+    shortHand: str
+
+@dataclass
+class CodingAgentSubTask:
+    id: Optional[str] = None
+    description: str = ""
+    complexity: str = ""
+
+@dataclass
+class CodingAgentStory:
+    id: Optional[str] = None
+    title: str = ""
+    description: Optional[str] = None
+    acceptanceCriteria: Optional[List[str]] = None
+    complexity: Optional[str] = None
+    subTasks: Optional[List[CodingAgentSubTask]] = None
+
+@dataclass
+class CodingAgentMilestone:
+    milestoneNumber: int = 0
+    description: str = ""
+    stories: Optional[List[CodingAgentStory]] = None
+
+@dataclass
+class CodingAgentSpecJson:
+    title: Optional[str] = None
+    executiveSummary: str = ""
+    coreFunctionalities: Optional[List[SpecCoreFunctionality]] = None
+    techStack: Optional[List[SpecTechStackItem]] = None
+    techStackGrouped: Optional[Dict[str, List[str]]] = None
+    milestones: Optional[List[CodingAgentMilestone]] = None
+
+@dataclass
+class HumanSpecSubTask:
+    id: Optional[str] = None
+    description: str = ""
+    hours: float = 0
+    complexity: str = ""
+    roles: Optional[List[SpecRole]] = None
+
+@dataclass
+class HumanSpecStory:
+    id: Optional[str] = None
+    title: str = ""
+    description: Optional[str] = None
+    acceptanceCriteria: Optional[List[str]] = None
+    hours: float = 0
+    complexity: Optional[str] = None
+    subTasks: Optional[List[HumanSpecSubTask]] = None
+
+@dataclass
+class HumanSpecMilestone:
+    milestoneNumber: int = 0
+    description: str = ""
+    hours: float = 0
+    stories: Optional[List[HumanSpecStory]] = None
+
+@dataclass
+class HumanSpecJson:
+    title: Optional[str] = None
+    executiveSummary: str = ""
+    coreFunctionalities: Optional[List[SpecCoreFunctionality]] = None
+    personas: Optional[List[SpecPersona]] = None
+    techStack: Optional[List[SpecTechStackItem]] = None
+    techStackGrouped: Optional[Dict[str, List[str]]] = None
+    milestones: Optional[List[HumanSpecMilestone]] = None
+    totalHours: Optional[float] = None
+    roles: Optional[List[SpecRole]] = None
 ```
 
 ### `ListSpecsResponse`

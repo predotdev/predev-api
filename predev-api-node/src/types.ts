@@ -9,6 +9,97 @@ export interface PredevAPIConfig {
 	baseUrl?: string;
 }
 
+export interface SpecCoreFunctionality {
+	name: string;
+	description: string;
+	priority?: "High" | "Medium" | "Low";
+}
+
+export interface SpecTechStackItem {
+	name: string;
+	category: string;
+}
+
+export interface SpecPersona {
+	title: string;
+	description: string;
+	primaryGoals?: string[];
+	painPoints?: string[];
+	keyTasks?: string[];
+}
+
+export interface SpecRole {
+	name: string;
+	shortHand: string;
+}
+
+export interface CodingAgentSubTask {
+	id?: string;
+	description: string;
+	complexity: string;
+}
+
+export interface CodingAgentStory {
+	id?: string;
+	title: string;
+	description?: string;
+	acceptanceCriteria?: string[];
+	complexity?: string;
+	subTasks: CodingAgentSubTask[];
+}
+
+export interface CodingAgentMilestone {
+	milestoneNumber: number;
+	description: string;
+	stories: CodingAgentStory[];
+}
+
+export interface CodingAgentSpecJson {
+	title?: string;
+	executiveSummary: string;
+	coreFunctionalities: SpecCoreFunctionality[];
+	techStack: SpecTechStackItem[];
+	techStackGrouped: Record<string, string[]>;
+	milestones: CodingAgentMilestone[];
+}
+
+export interface HumanSpecSubTask {
+	id?: string;
+	description: string;
+	hours: number;
+	complexity: string;
+	roles?: SpecRole[];
+}
+
+export interface HumanSpecStory {
+	id?: string;
+	title: string;
+	description?: string;
+	acceptanceCriteria?: string[];
+	hours: number;
+	complexity?: string;
+	subTasks: HumanSpecSubTask[];
+}
+
+export interface HumanSpecMilestone {
+	milestoneNumber: number;
+	description: string;
+	hours: number;
+	stories: HumanSpecStory[];
+}
+
+export interface HumanSpecJson {
+	title?: string;
+	executiveSummary: string;
+	coreFunctionalities: SpecCoreFunctionality[];
+	personas: SpecPersona[];
+	techStack: SpecTechStackItem[];
+	techStackGrouped: Record<string, string[]>;
+	milestones: HumanSpecMilestone[];
+	totalHours: number;
+	roles: SpecRole[];
+}
+
 export interface SpecGenOptions {
 	input: string;
 	currentContext?: string;
@@ -42,6 +133,10 @@ export interface SpecResponse {
 	codingAgentSpecUrl?: string;
 	humanSpecUrl?: string;
 	totalHumanHours?: number;
+	codingAgentSpecJson?: CodingAgentSpecJson;
+	codingAgentSpecMarkdown?: string;
+	humanSpecJson?: HumanSpecJson;
+	humanSpecMarkdown?: string;
 	executionTime?: number;
 
 	predevUrl?: string;
