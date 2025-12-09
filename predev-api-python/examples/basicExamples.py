@@ -43,9 +43,37 @@ async def example1_basic_fast_spec():
         )
 
         print("✓ Fast spec generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
-        print(f"Human Spec URL: {result.humanSpecUrl}")
-        print(f"Total Human Hours: {result.totalHumanHours}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl')}")
+        print(f"Total Human Hours: {result.get('totalHumanHours')}")
+
+        # New: Direct JSON and Markdown returns
+        coding_json = result.get('codingAgentSpecJson')
+        if coding_json:
+            print("\n--- Coding Agent Spec JSON (Preview) ---")
+            print(f"Title: {coding_json.get('title')}")
+            exec_sum = coding_json.get('executiveSummary', '')
+            print(f"Executive Summary: {exec_sum[:100]}..." if exec_sum else "Executive Summary: N/A")
+            tech_stack = coding_json.get('techStack', [])
+            print(f"Tech Stack: {', '.join([t.get('name', '') for t in tech_stack])}")
+            print(f"Milestones: {len(coding_json.get('milestones', []))}")
+
+        human_json = result.get('humanSpecJson')
+        if human_json:
+            print("\n--- Human Spec JSON (Preview) ---")
+            print(f"Title: {human_json.get('title')}")
+            print(f"Total Hours: {human_json.get('totalHours')}")
+            print(f"Personas: {len(human_json.get('personas', []))}")
+            roles = human_json.get('roles', [])
+            print(f"Roles: {', '.join([r.get('name', '') for r in roles])}")
+
+        coding_md = result.get('codingAgentSpecMarkdown')
+        if coding_md:
+            print(f"\nCoding Agent Markdown Length: {len(coding_md)} chars")
+
+        human_md = result.get('humanSpecMarkdown')
+        if human_md:
+            print(f"Human Spec Markdown Length: {len(human_md)} chars")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -66,9 +94,9 @@ async def example2_fast_spec_feature_addition():
         )
 
         print("✓ Fast spec generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
-        print(f"Human Spec URL: {result.humanSpecUrl}")
-        print(f"Total Human Hours: {result.totalHumanHours}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl')}")
+        print(f"Total Human Hours: {result.get('totalHumanHours')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -89,9 +117,9 @@ async def example3_fast_spec_with_doc_urls():
         )
 
         print("✓ Fast spec generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
-        print(f"Human Spec URL: {result.humanSpecUrl}")
-        print(f"Total Human Hours: {result.totalHumanHours}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl')}")
+        print(f"Total Human Hours: {result.get('totalHumanHours')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -111,9 +139,9 @@ async def example4_deep_spec_enterprise():
         )
 
         print("✓ Deep spec generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
-        print(f"Human Spec URL: {result.humanSpecUrl}")
-        print(f"Total Human Hours: {result.totalHumanHours}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl')}")
+        print(f"Total Human Hours: {result.get('totalHumanHours')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -134,9 +162,9 @@ async def example5_deep_spec_feature_addition():
         )
 
         print("✓ Deep spec generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
-        print(f"Human Spec URL: {result.humanSpecUrl}")
-        print(f"Total Human Hours: {result.totalHumanHours}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl')}")
+        print(f"Total Human Hours: {result.get('totalHumanHours')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -156,8 +184,8 @@ async def example6_fast_spec_async():
         )
 
         print("✓ Request submitted!")
-        print(f"Spec ID: {result.specId}")
-        print(f"Status: {result.status}")
+        print(f"Spec ID: {result.get('specId')}")
+        print(f"Status: {result.get('status')}")
 
         # Poll for completion
         print("\nPolling for completion...")
@@ -168,18 +196,18 @@ async def example6_fast_spec_async():
             sleep(3)  # Wait 3 seconds
             attempts += 1
 
-            status_result = predev.get_spec_status(result.specId)
-            print(f"Attempt {attempts}: Status = {status_result.status}")
+            status_result = predev.get_spec_status(result.get('specId'))
+            print(f"Attempt {attempts}: Status = {status_result.get('status')}")
 
-            if status_result.status == "completed":
+            if status_result.get('status') == "completed":
                 print("\n✓ Fast spec completed!")
-                print(f"Coding Agent Spec URL: {status_result.codingAgentSpecUrl}")
-                print(f"Human Spec URL: {status_result.humanSpecUrl}")
-                print(f"Total Human Hours: {status_result.totalHumanHours}")
+                print(f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
+                print(f"Human Spec URL: {status_result.get('humanSpecUrl')}")
+                print(f"Total Human Hours: {status_result.get('totalHumanHours')}")
                 break
-            elif status_result.status == "failed":
+            elif status_result.get('status') == "failed":
                 print("\n✗ Fast spec failed!")
-                print(f"Error: {status_result.errorMessage}")
+                print(f"Error: {status_result.get('errorMessage')}")
                 break
 
         if attempts >= max_attempts:
@@ -203,8 +231,8 @@ async def example7_deep_spec_async():
         )
 
         print("✓ Request submitted!")
-        print(f"Spec ID: {result.specId}")
-        print(f"Status: {result.status}")
+        print(f"Spec ID: {result.get('specId')}")
+        print(f"Status: {result.get('status')}")
         print("Note: Deep specs take 2-3 minutes to process")
 
         # Poll for completion (less frequently for deep specs)
@@ -216,18 +244,18 @@ async def example7_deep_spec_async():
             sleep(10)  # Wait 10 seconds for deep specs
             attempts += 1
 
-            status_result = predev.get_spec_status(result.specId)
-            print(f"Attempt {attempts}: Status = {status_result.status}")
+            status_result = predev.get_spec_status(result.get('specId'))
+            print(f"Attempt {attempts}: Status = {status_result.get('status')}")
 
-            if status_result.status == "completed":
+            if status_result.get('status') == "completed":
                 print("\n✓ Deep spec completed!")
-                print(f"Coding Agent Spec URL: {status_result.codingAgentSpecUrl}")
-                print(f"Human Spec URL: {status_result.humanSpecUrl}")
-                print(f"Total Human Hours: {status_result.totalHumanHours}")
+                print(f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
+                print(f"Human Spec URL: {status_result.get('humanSpecUrl')}")
+                print(f"Total Human Hours: {status_result.get('totalHumanHours')}")
                 break
-            elif status_result.status == "failed":
+            elif status_result.get('status') == "failed":
                 print("\n✗ Deep spec failed!")
-                print(f"Error: {status_result.errorMessage}")
+                print(f"Error: {status_result.get('errorMessage')}")
                 break
 
         if attempts >= max_attempts:
@@ -300,8 +328,8 @@ async def example9_markdown_output():
         )
 
         print("✓ Fast spec generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl or 'N/A'}")
-        print(f"Human Spec URL: {result.humanSpecUrl or 'N/A'}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl') or 'N/A'}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl') or 'N/A'}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -328,9 +356,9 @@ async def example10_fast_spec_with_file():
         )
 
         print("✓ Fast spec with file generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
-        print(f"Human Spec URL: {result.humanSpecUrl}")
-        print(f"Uploaded File: {result.uploadedFileName}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl')}")
+        print(f"Uploaded File: {result.get('uploadedFileName')}")
 
         # Clean up
         os.remove(sample_file)
@@ -361,9 +389,9 @@ async def example11_deep_spec_with_file():
             )
 
         print("✓ Deep spec with file generated successfully!")
-        print(f"Coding Agent Spec URL: {result.codingAgentSpecUrl}")
-        print(f"Human Spec URL: {result.humanSpecUrl}")
-        print(f"Total Human Hours: {result.totalHumanHours}")
+        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
+        print(f"Human Spec URL: {result.get('humanSpecUrl')}")
+        print(f"Total Human Hours: {result.get('totalHumanHours')}")
 
         # Clean up
         os.remove(sample_file)
@@ -392,8 +420,8 @@ async def example12_fast_spec_async_with_file():
         )
 
         print("✓ Async request submitted!")
-        print(f"Spec ID: {result.specId}")
-        print(f"Status: {result.status}")
+        print(f"Spec ID: {result.get('specId')}")
+        print(f"Status: {result.get('status')}")
 
         # Poll for completion
         print("\nPolling for completion...")
@@ -404,17 +432,17 @@ async def example12_fast_spec_async_with_file():
             sleep(3)  # Wait 3 seconds
             attempts += 1
 
-            status_result = predev.get_spec_status(result.specId)
-            print(f"Attempt {attempts}: Status = {status_result.status}")
+            status_result = predev.get_spec_status(result.get('specId'))
+            print(f"Attempt {attempts}: Status = {status_result.get('status')}")
 
-            if status_result.status == "completed":
+            if status_result.get('status') == "completed":
                 print("\n✓ Spec completed!")
-                print(f"Uploaded File: {status_result.uploadedFileName}")
-                print(f"Coding Agent Spec URL: {status_result.codingAgentSpecUrl}")
+                print(f"Uploaded File: {status_result.get('uploadedFileName')}")
+                print(f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
                 break
-            elif status_result.status == "failed":
+            elif status_result.get('status') == "failed":
                 print("\n✗ Spec failed!")
-                print(f"Error: {status_result.errorMessage}")
+                print(f"Error: {status_result.get('errorMessage')}")
                 break
 
         # Clean up

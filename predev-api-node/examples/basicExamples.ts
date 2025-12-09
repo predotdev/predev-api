@@ -51,9 +51,20 @@ async function example1_BasicFastSpec() {
 		if (result.codingAgentSpecJson) {
 			console.log("\n--- Coding Agent Spec JSON (Preview) ---");
 			console.log(`Title: ${result.codingAgentSpecJson.title}`);
-			console.log(`Executive Summary: ${result.codingAgentSpecJson.executiveSummary?.substring(0, 100)}...`);
-			console.log(`Tech Stack: ${result.codingAgentSpecJson.techStack?.map(t => t.name).join(", ")}`);
-			console.log(`Milestones: ${result.codingAgentSpecJson.milestones?.length || 0}`);
+			console.log(
+				`Executive Summary: ${result.codingAgentSpecJson.executiveSummary?.substring(
+					0,
+					100
+				)}...`
+			);
+			console.log(
+				`Tech Stack: ${result.codingAgentSpecJson.techStack
+					?.map((t) => t.name)
+					.join(", ")}`
+			);
+			console.log(
+				`Milestones: ${result.codingAgentSpecJson.milestones?.length || 0}`
+			);
 		}
 
 		if (result.humanSpecJson) {
@@ -61,15 +72,21 @@ async function example1_BasicFastSpec() {
 			console.log(`Title: ${result.humanSpecJson.title}`);
 			console.log(`Total Hours: ${result.humanSpecJson.totalHours}`);
 			console.log(`Personas: ${result.humanSpecJson.personas?.length || 0}`);
-			console.log(`Roles: ${result.humanSpecJson.roles?.map(r => r.name).join(", ")}`);
+			console.log(
+				`Roles: ${result.humanSpecJson.roles?.map((r) => r.name).join(", ")}`
+			);
 		}
 
 		if (result.codingAgentSpecMarkdown) {
-			console.log(`\nCoding Agent Markdown Length: ${result.codingAgentSpecMarkdown.length} chars`);
+			console.log(
+				`\nCoding Agent Markdown Length: ${result.codingAgentSpecMarkdown.length} chars`
+			);
 		}
 
 		if (result.humanSpecMarkdown) {
-			console.log(`Human Spec Markdown Length: ${result.humanSpecMarkdown.length} chars`);
+			console.log(
+				`Human Spec Markdown Length: ${result.humanSpecMarkdown.length} chars`
+			);
 		}
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
@@ -209,7 +226,9 @@ async function example6_FastSpecAsync() {
 
 			if (statusResult.status === "completed") {
 				console.log("\n✓ Fast spec completed!");
-				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
+				console.log(
+					`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`
+				);
 				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
 				console.log(`Total Human Hours: ${statusResult.totalHumanHours}`);
 				break;
@@ -264,7 +283,9 @@ async function example7_DeepSpecAsync() {
 
 			if (statusResult.status === "completed") {
 				console.log("\n✓ Deep spec completed!");
-				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
+				console.log(
+					`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`
+				);
 				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
 				console.log(`Total Human Hours: ${statusResult.totalHumanHours}`);
 				break;
@@ -338,10 +359,7 @@ async function example13_GetCreditsBalance() {
 		} else if (error instanceof PredevAPIError) {
 			console.log("✗ API error:", error.message);
 		} else {
-			console.log(
-				"✗ Error:",
-				error instanceof Error ? error.message : error
-			);
+			console.log("✗ Error:", error instanceof Error ? error.message : error);
 		}
 	}
 }
@@ -362,7 +380,9 @@ async function example9_MarkdownOutput() {
 		});
 
 		console.log("✓ Fast spec generated successfully!");
-		console.log("Coding Agent Spec URL: " + (result.codingAgentSpecUrl || "N/A"));
+		console.log(
+			"Coding Agent Spec URL: " + (result.codingAgentSpecUrl || "N/A")
+		);
 		console.log("Human Spec URL: " + (result.humanSpecUrl || "N/A"));
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
@@ -425,7 +445,8 @@ async function example11_DeepSpecWithFileWeb() {
 	try {
 		// This example would work in a browser environment with File objects
 		// For Node.js simulation, we create a Blob
-		const content = "Enterprise healthcare platform with patient records, HIPAA compliance, and ML diagnostics";
+		const content =
+			"Enterprise healthcare platform with patient records, HIPAA compliance, and ML diagnostics";
 		const blob = new Blob([content], { type: "text/plain" });
 
 		const result = await predev.deepSpec({
@@ -458,7 +479,10 @@ async function example12_FastSpecAsyncWithFile() {
 		// Create a sample file
 		const sampleFile = path.join(".", "design_doc.txt");
 		if (!fs.existsSync(sampleFile)) {
-			fs.writeFileSync(sampleFile, "UI/UX design guidelines and component specifications");
+			fs.writeFileSync(
+				sampleFile,
+				"UI/UX design guidelines and component specifications"
+			);
 		}
 
 		const fileBuffer = fs.readFileSync(sampleFile);
@@ -489,7 +513,9 @@ async function example12_FastSpecAsyncWithFile() {
 			if (statusResult.status === "completed") {
 				console.log("\n✓ Spec completed!");
 				console.log(`Uploaded File: ${statusResult.uploadedFileName}`);
-				console.log(`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`);
+				console.log(
+					`Coding Agent Spec URL: ${statusResult.codingAgentSpecUrl}`
+				);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Spec failed!");
