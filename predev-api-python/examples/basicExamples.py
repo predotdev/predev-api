@@ -53,9 +53,11 @@ async def example1_basic_fast_spec():
             print("\n--- Coding Agent Spec JSON (Preview) ---")
             print(f"Title: {coding_json.get('title')}")
             exec_sum = coding_json.get('executiveSummary', '')
-            print(f"Executive Summary: {exec_sum[:100]}..." if exec_sum else "Executive Summary: N/A")
+            print(
+                f"Executive Summary: {exec_sum[:100]}..." if exec_sum else "Executive Summary: N/A")
             tech_stack = coding_json.get('techStack', [])
-            print(f"Tech Stack: {', '.join([t.get('name', '') for t in tech_stack])}")
+            print(
+                f"Tech Stack: {', '.join([t.get('name', '') for t in tech_stack])}")
             print(f"Milestones: {len(coding_json.get('milestones', []))}")
 
         human_json = result.get('humanSpecJson')
@@ -197,13 +199,16 @@ async def example6_fast_spec_async():
             attempts += 1
 
             status_result = predev.get_spec_status(result.get('specId'))
-            print(f"Attempt {attempts}: Status = {status_result.get('status')}")
+            print(
+                f"Attempt {attempts}: Status = {status_result.get('status')}")
 
             if status_result.get('status') == "completed":
                 print("\n✓ Fast spec completed!")
-                print(f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
+                print(
+                    f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
                 print(f"Human Spec URL: {status_result.get('humanSpecUrl')}")
-                print(f"Total Human Hours: {status_result.get('totalHumanHours')}")
+                print(
+                    f"Total Human Hours: {status_result.get('totalHumanHours')}")
                 break
             elif status_result.get('status') == "failed":
                 print("\n✗ Fast spec failed!")
@@ -245,13 +250,16 @@ async def example7_deep_spec_async():
             attempts += 1
 
             status_result = predev.get_spec_status(result.get('specId'))
-            print(f"Attempt {attempts}: Status = {status_result.get('status')}")
+            print(
+                f"Attempt {attempts}: Status = {status_result.get('status')}")
 
             if status_result.get('status') == "completed":
                 print("\n✓ Deep spec completed!")
-                print(f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
+                print(
+                    f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
                 print(f"Human Spec URL: {status_result.get('humanSpecUrl')}")
-                print(f"Total Human Hours: {status_result.get('totalHumanHours')}")
+                print(
+                    f"Total Human Hours: {status_result.get('totalHumanHours')}")
                 break
             elif status_result.get('status') == "failed":
                 print("\n✗ Deep spec failed!")
@@ -328,7 +336,8 @@ async def example9_markdown_output():
         )
 
         print("✓ Fast spec generated successfully!")
-        print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl') or 'N/A'}")
+        print(
+            f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl') or 'N/A'}")
         print(f"Human Spec URL: {result.get('humanSpecUrl') or 'N/A'}")
     except Exception as error:
         print(f"✗ Error: {error}")
@@ -347,7 +356,8 @@ async def example10_fast_spec_with_file():
         # Create a sample file for this example
         sample_file = "sample_requirements.txt"
         with open(sample_file, "w") as f:
-            f.write("Build a task management system with real-time collaboration, priorities, and team features")
+            f.write(
+                "Build a task management system with real-time collaboration, priorities, and team features")
 
         # Upload file by path
         result = predev.fast_spec(
@@ -379,7 +389,8 @@ async def example11_deep_spec_with_file():
         # Create a sample file
         sample_file = "architecture_doc.txt"
         with open(sample_file, "w") as f:
-            f.write("Enterprise healthcare platform with patient records, HIPAA compliance, and ML diagnostics")
+            f.write(
+                "Enterprise healthcare platform with patient records, HIPAA compliance, and ML diagnostics")
 
         # Upload file using file object
         with open(sample_file, "rb") as f:
@@ -433,12 +444,15 @@ async def example12_fast_spec_async_with_file():
             attempts += 1
 
             status_result = predev.get_spec_status(result.get('specId'))
-            print(f"Attempt {attempts}: Status = {status_result.get('status')}")
+            print(
+                f"Attempt {attempts}: Status = {status_result.get('status')}")
 
             if status_result.get('status') == "completed":
                 print("\n✓ Spec completed!")
-                print(f"Uploaded File: {status_result.get('uploadedFileName')}")
-                print(f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
+                print(
+                    f"Uploaded File: {status_result.get('uploadedFileName')}")
+                print(
+                    f"Coding Agent Spec URL: {status_result.get('codingAgentSpecUrl')}")
                 break
             elif status_result.get('status') == "failed":
                 print("\n✗ Spec failed!")
