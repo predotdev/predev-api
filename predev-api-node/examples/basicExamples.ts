@@ -46,6 +46,31 @@ async function example1_BasicFastSpec() {
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 		console.log(`Total Human Hours: ${result.totalHumanHours}`);
+
+		// New: Direct JSON and Markdown returns
+		if (result.codingAgentSpecJson) {
+			console.log("\n--- Coding Agent Spec JSON (Preview) ---");
+			console.log(`Title: ${result.codingAgentSpecJson.title}`);
+			console.log(`Executive Summary: ${result.codingAgentSpecJson.executiveSummary?.substring(0, 100)}...`);
+			console.log(`Tech Stack: ${result.codingAgentSpecJson.techStack?.map(t => t.name).join(", ")}`);
+			console.log(`Milestones: ${result.codingAgentSpecJson.milestones?.length || 0}`);
+		}
+
+		if (result.humanSpecJson) {
+			console.log("\n--- Human Spec JSON (Preview) ---");
+			console.log(`Title: ${result.humanSpecJson.title}`);
+			console.log(`Total Hours: ${result.humanSpecJson.totalHours}`);
+			console.log(`Personas: ${result.humanSpecJson.personas?.length || 0}`);
+			console.log(`Roles: ${result.humanSpecJson.roles?.map(r => r.name).join(", ")}`);
+		}
+
+		if (result.codingAgentSpecMarkdown) {
+			console.log(`\nCoding Agent Markdown Length: ${result.codingAgentSpecMarkdown.length} chars`);
+		}
+
+		if (result.humanSpecMarkdown) {
+			console.log(`Human Spec Markdown Length: ${result.humanSpecMarkdown.length} chars`);
+		}
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
