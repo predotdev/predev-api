@@ -139,6 +139,8 @@ export interface SpecResponse {
 	humanSpecMarkdown?: string;
 	executionTime?: number;
 
+	architectureInfographicUrl?: string;
+
 	predevUrl?: string;
 	lovableUrl?: string;
 	cursorUrl?: string;

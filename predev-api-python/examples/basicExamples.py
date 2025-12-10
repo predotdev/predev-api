@@ -46,6 +46,8 @@ async def example1_basic_fast_spec():
         print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
         print(f"Human Spec URL: {result.get('humanSpecUrl')}")
         print(f"Total Human Hours: {result.get('totalHumanHours')}")
+        print(
+            f"Architecture Infographic: {result.get('architectureInfographicUrl')}")
 
         # New: Direct JSON and Markdown returns
         coding_json = result.get('codingAgentSpecJson')
@@ -99,6 +101,8 @@ async def example2_fast_spec_feature_addition():
         print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
         print(f"Human Spec URL: {result.get('humanSpecUrl')}")
         print(f"Total Human Hours: {result.get('totalHumanHours')}")
+        print(
+            f"Architecture Infographic: {result.get('architectureInfographicUrl')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -122,6 +126,8 @@ async def example3_fast_spec_with_doc_urls():
         print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
         print(f"Human Spec URL: {result.get('humanSpecUrl')}")
         print(f"Total Human Hours: {result.get('totalHumanHours')}")
+        print(
+            f"Architecture Infographic: {result.get('architectureInfographicUrl')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -144,6 +150,8 @@ async def example4_deep_spec_enterprise():
         print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
         print(f"Human Spec URL: {result.get('humanSpecUrl')}")
         print(f"Total Human Hours: {result.get('totalHumanHours')}")
+        print(
+            f"Architecture Infographic: {result.get('architectureInfographicUrl')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -167,6 +175,8 @@ async def example5_deep_spec_feature_addition():
         print(f"Coding Agent Spec URL: {result.get('codingAgentSpecUrl')}")
         print(f"Human Spec URL: {result.get('humanSpecUrl')}")
         print(f"Total Human Hours: {result.get('totalHumanHours')}")
+        print(
+            f"Architecture Infographic: {result.get('architectureInfographicUrl')}")
     except Exception as error:
         print(f"✗ Error: {error}")
 
@@ -209,6 +219,8 @@ async def example6_fast_spec_async():
                 print(f"Human Spec URL: {status_result.get('humanSpecUrl')}")
                 print(
                     f"Total Human Hours: {status_result.get('totalHumanHours')}")
+                print(
+                    f"Architecture Infographic: {status_result.get('architectureInfographicUrl')}")
                 break
             elif status_result.get('status') == "failed":
                 print("\n✗ Fast spec failed!")
@@ -260,6 +272,8 @@ async def example7_deep_spec_async():
                 print(f"Human Spec URL: {status_result.get('humanSpecUrl')}")
                 print(
                     f"Total Human Hours: {status_result.get('totalHumanHours')}")
+                print(
+                    f"Architecture Infographic: {status_result.get('architectureInfographicUrl')}")
                 break
             elif status_result.get('status') == "failed":
                 print("\n✗ Deep spec failed!")

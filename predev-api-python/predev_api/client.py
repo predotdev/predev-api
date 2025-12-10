@@ -148,6 +148,8 @@ class SpecResponse:
     humanSpecMarkdown: Optional[str] = None
     executionTime: Optional[int] = None
 
+    architectureInfographicUrl: Optional[str] = None
+
     predevUrl: Optional[str] = None
     lovableUrl: Optional[str] = None
     cursorUrl: Optional[str] = None

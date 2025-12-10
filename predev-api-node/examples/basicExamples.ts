@@ -46,6 +46,9 @@ async function example1_BasicFastSpec() {
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 		console.log(`Total Human Hours: ${result.totalHumanHours}`);
+		console.log(
+			`Architecture Infographic: ${result.architectureInfographicUrl}`
+		);
 
 		// New: Direct JSON and Markdown returns
 		if (result.codingAgentSpecJson) {
@@ -113,6 +116,9 @@ async function example2_FastSpecFeatureAddition() {
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 		console.log(`Total Human Hours: ${result.totalHumanHours}`);
+		console.log(
+			`Architecture Infographic: ${result.architectureInfographicUrl}`
+		);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -138,6 +144,9 @@ async function example3_FastSpecWithDocURLs() {
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 		console.log(`Total Human Hours: ${result.totalHumanHours}`);
+		console.log(
+			`Architecture Infographic: ${result.architectureInfographicUrl}`
+		);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -162,6 +171,9 @@ async function example4_DeepSpecEnterprise() {
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 		console.log(`Total Human Hours: ${result.totalHumanHours}`);
+		console.log(
+			`Architecture Infographic: ${result.architectureInfographicUrl}`
+		);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -188,6 +200,9 @@ async function example5_DeepSpecFeatureAddition() {
 		console.log(`Coding Agent Spec URL: ${result.codingAgentSpecUrl}`);
 		console.log(`Human Spec URL: ${result.humanSpecUrl}`);
 		console.log(`Total Human Hours: ${result.totalHumanHours}`);
+		console.log(
+			`Architecture Infographic: ${result.architectureInfographicUrl}`
+		);
 	} catch (error) {
 		console.error("✗ Error:", error instanceof Error ? error.message : error);
 	}
@@ -231,6 +246,9 @@ async function example6_FastSpecAsync() {
 				);
 				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
 				console.log(`Total Human Hours: ${statusResult.totalHumanHours}`);
+				console.log(
+					`Architecture Infographic: ${statusResult.architectureInfographicUrl}`
+				);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Fast spec failed!");
@@ -288,6 +306,9 @@ async function example7_DeepSpecAsync() {
 				);
 				console.log(`Human Spec URL: ${statusResult.humanSpecUrl}`);
 				console.log(`Total Human Hours: ${statusResult.totalHumanHours}`);
+				console.log(
+					`Architecture Infographic: ${statusResult.architectureInfographicUrl}`
+				);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Deep spec failed!");
