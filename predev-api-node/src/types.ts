@@ -150,7 +150,8 @@ export interface SpecResponse {
 	zippedDocsUrls?: ZippedDocsUrl[];
 
 	errorMessage?: string;
-	progress?: string;
+	progress?: number; // Overall progress percentage (0-100)
+	progressMessage?: string; // Detailed progress message (e.g., "Generating User Stories...")
 }
 
 // Error response interface

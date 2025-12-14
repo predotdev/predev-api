@@ -159,7 +159,8 @@ class SpecResponse:
     zippedDocsUrls: Optional[List['ZippedDocsUrl']] = None
 
     errorMessage: Optional[str] = None
-    progress: Optional[str] = None
+    progress: Optional[int] = None  # Overall progress percentage (0-100)
+    progressMessage: Optional[str] = None  # Detailed progress message (e.g., "Generating User Stories...")
 
 
 @dataclass
