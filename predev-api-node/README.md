@@ -111,7 +111,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
 #### `fastSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
-Generate a fast specification (30-40 seconds, 10 credits).
+Generate a fast specification (30-40 seconds, ~3-8 credits).
 
 **Parameters:**
 - `options.input` **(required)**: `string` - Description of what you want to build
@@ -147,7 +147,7 @@ const result = await predev.fastSpec({
 
 #### `deepSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
-Generate a deep specification (2-3 minutes, 50 credits).
+Generate a deep specification (2-3 minutes, ~15-40 credits).
 
 **Parameters:** Same as `fastSpec`
 

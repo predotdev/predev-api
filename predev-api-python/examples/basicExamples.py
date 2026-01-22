@@ -32,7 +32,7 @@ async def example1_basic_fast_spec():
     """
     Example 1: Basic Fast Spec - New Project
 
-    Generate a fast specification for a new project (30-40 seconds, 10 credits)
+    Generate a fast specification for a new project (30-40 seconds, ~3-8 credits)
     """
     print("Example 1: Basic Fast Spec - New Project")
     print("=" * 50)
@@ -136,7 +136,7 @@ async def example4_deep_spec_enterprise():
     """
     Example 4: Deep Spec - Enterprise Project
 
-    Generate a comprehensive deep specification (2-3 minutes, 50 credits)
+    Generate a comprehensive deep specification (2-3 minutes, ~15-40 credits)
     """
     print("\nExample 4: Deep Spec - Enterprise Healthcare Platform")
     print("=" * 50)

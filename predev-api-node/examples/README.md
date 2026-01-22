@@ -34,8 +34,8 @@ await example1_BasicFastSpec();
 The `basicExamples.ts` file contains comprehensive examples demonstrating all Pre.dev API features:
 
 ### Synchronous Methods
-- **Fast Spec**: Generate specifications quickly (30-40 seconds, 10 credits)
-- **Deep Spec**: Generate comprehensive specifications (2-3 minutes, 50 credits)
+- **Fast Spec**: Generate specifications quickly (30-40 seconds, ~3-8 credits)
+- **Deep Spec**: Generate comprehensive specifications (2-3 minutes, ~15-40 credits)
 - **Feature Addition**: Add features to existing projects using `currentContext`
 - **Documentation References**: Include external docs with `docURLs`
 - **Output Formats**: URL format (default) and markdown format

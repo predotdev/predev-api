@@ -30,7 +30,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 /**
  * Example 1: Basic Fast Spec - New Project
  *
- * Generate a fast specification for a new project (30-40 seconds, 10 credits)
+ * Generate a fast specification for a new project (30-40 seconds, ~3-8 credits)
  */
 async function example1_BasicFastSpec() {
 	console.log("Example 1: Basic Fast Spec - New Project");
@@ -155,7 +155,7 @@ async function example3_FastSpecWithDocURLs() {
 /**
  * Example 4: Deep Spec - Enterprise Project
  *
- * Generate a comprehensive deep specification (2-3 minutes, 50 credits)
+ * Generate a comprehensive deep specification (2-3 minutes, ~15-40 credits)
  */
 async function example4_DeepSpecEnterprise() {
 	console.log("\nExample 4: Deep Spec - Enterprise Healthcare Platform");
