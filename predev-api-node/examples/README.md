@@ -34,8 +34,8 @@ await example1_BasicFastSpec();
 The `basicExamples.ts` file contains comprehensive examples demonstrating all Pre.dev API features:
 
 ### Synchronous Methods
-- **Fast Spec**: Generate specifications quickly (30-40 seconds, ~3-8 credits)
-- **Deep Spec**: Generate comprehensive specifications (2-3 minutes, ~15-40 credits)
+- **Fast Spec**: Generate specifications quickly (30-40 seconds, ~5-10 credits)
+- **Deep Spec**: Generate comprehensive specifications (2-3 minutes, ~10-50 credits)
 - **Feature Addition**: Add features to existing projects using `currentContext`
 - **Documentation References**: Include external docs with `docURLs`
 - **Output Formats**: URL format (default) and markdown format
@@ -93,9 +93,11 @@ console.log(`Spec ID: ${result.specId}`);
 while (true) {
   const status = await predev.getSpecStatus(result.specId);
   console.log(`Status: ${status.status}`);
+  console.log(`Credits Used: ${status.creditsUsed}`); // Real-time credit accumulation
 
   if (status.status === "completed") {
     console.log("Spec completed!");
+    console.log(`Total Credits Used: ${status.creditsUsed}`);
     break;
   }
 

@@ -62,9 +62,11 @@ print(f"Spec ID: {result.specId}")
 while True:
     status = predev.get_spec_status(result.specId)
     print(f"Status: {status.get('status')}")
+    print(f"Credits Used: {status.get('creditsUsed')}")  # Real-time credit accumulation
 
     if status.get("status") == "completed":
         print("Spec completed!")
+        print(f"Total Credits Used: {status.get('creditsUsed')}")
         break
 
     time.sleep(2)
@@ -88,9 +90,11 @@ print(f"Spec ID: {result.specId}")
 while True:
     status = predev.get_spec_status(result.specId)
     print(f"Status: {status.get('status')}")
+    print(f"Credits Used: {status.get('creditsUsed')}")  # Real-time credit accumulation
 
     if status.get("status") == "completed":
         print("Spec completed!")
+        print(f"Total Credits Used: {status.get('creditsUsed')}")
         break
 
     time.sleep(2)

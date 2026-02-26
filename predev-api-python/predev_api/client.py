@@ -162,6 +162,10 @@ class SpecResponse:
     progress: Optional[int] = None  # Overall progress percentage (0-100)
     progressMessage: Optional[str] = None  # Detailed progress message (e.g., "Generating User Stories...")
 
+    # Credit usage - available during processing (real-time accumulation) and on completion
+    # Fast spec: typically ~5-10 credits, Deep spec: typically ~10-50 credits
+    creditsUsed: Optional[float] = None  # Total credits consumed by this spec generation
+
 
 @dataclass
 class ErrorResponse:

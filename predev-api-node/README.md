@@ -111,7 +111,7 @@ const predev = new PredevAPI({ apiKey: 'your_api_key' });
 
 #### `fastSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
-Generate a fast specification (30-40 seconds, ~3-8 credits).
+Generate a fast specification (30-40 seconds, ~5-10 credits).
 
 **Parameters:**
 - `options.input` **(required)**: `string` - Description of what you want to build
@@ -147,7 +147,7 @@ const result = await predev.fastSpec({
 
 #### `deepSpec(options: SpecGenOptions): Promise<SpecResponse>`
 
-Generate a deep specification (2-3 minutes, ~15-40 credits).
+Generate a deep specification (2-3 minutes, ~10-50 credits).
 
 **Parameters:** Same as `fastSpec`
 
@@ -333,7 +333,12 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
 
   // Error handling
   errorMessage?: string;          // Error details if failed
-  progress?: string;              // Progress information
+  progress?: number;              // Overall progress percentage (0-100)
+  progressMessage?: string;       // Detailed progress message
+
+  // Credit usage - available during processing (real-time) and on completion
+  // Fast spec: ~5-10 credits, Deep spec: ~10-50 credits
+  creditsUsed?: number;           // Total credits consumed by this spec generation
 }
 ```
 

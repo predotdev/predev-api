@@ -152,6 +152,10 @@ export interface SpecResponse {
 	errorMessage?: string;
 	progress?: number; // Overall progress percentage (0-100)
 	progressMessage?: string; // Detailed progress message (e.g., "Generating User Stories...")
+
+	// Credit usage - available during processing (real-time accumulation) and on completion
+	// Fast spec: typically ~5-10 credits, Deep spec: typically ~10-50 credits
+	creditsUsed?: number; // Total credits consumed by this spec generation
 }
 
 // Error response interface

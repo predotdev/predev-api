@@ -108,7 +108,7 @@ predev = PredevAPI(api_key="your_api_key")
 
 #### `fast_spec(input_text: str, current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
-Generate a fast specification (30-40 seconds, ~3-8 credits).
+Generate a fast specification (30-40 seconds, ~5-10 credits).
 
 **Parameters:**
 - `input_text` **(required)**: `str` - Description of what you want to build
@@ -144,7 +144,7 @@ result = predev.fast_spec(
 
 #### `deep_spec(input_text: str, current_context: Optional[str] = None, doc_urls: Optional[List[str]] = None) -> SpecResponse`
 
-Generate a deep specification (2-3 minutes, ~15-40 credits).
+Generate a deep specification (2-3 minutes, ~10-50 credits).
 
 **Parameters:** Same as `fast_spec`
 
@@ -330,7 +330,12 @@ class SpecResponse:
 
     # Error handling
     errorMessage: Optional[str] = None            # Error details if failed
-    progress: Optional[str] = None                # Progress information
+    progress: Optional[int] = None                # Overall progress percentage (0-100)
+    progressMessage: Optional[str] = None         # Detailed progress message
+
+    # Credit usage - available during processing (real-time) and on completion
+    # Fast spec: ~5-10 credits, Deep spec: ~10-50 credits
+    creditsUsed: Optional[float] = None           # Total credits consumed by this spec generation
 ```
 
 ### Direct Spec JSON structures

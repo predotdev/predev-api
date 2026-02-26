@@ -30,7 +30,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 /**
  * Example 1: Basic Fast Spec - New Project
  *
- * Generate a fast specification for a new project (30-40 seconds, ~3-8 credits)
+ * Generate a fast specification for a new project (30-40 seconds, ~5-10 credits)
  */
 async function example1_BasicFastSpec() {
 	console.log("Example 1: Basic Fast Spec - New Project");
@@ -155,7 +155,7 @@ async function example3_FastSpecWithDocURLs() {
 /**
  * Example 4: Deep Spec - Enterprise Project
  *
- * Generate a comprehensive deep specification (2-3 minutes, ~15-40 credits)
+ * Generate a comprehensive deep specification (2-3 minutes, ~10-50 credits)
  */
 async function example4_DeepSpecEnterprise() {
 	console.log("\nExample 4: Deep Spec - Enterprise Healthcare Platform");
@@ -237,7 +237,7 @@ async function example6_FastSpecAsync() {
 			attempts++;
 
 			const statusResult = await predev.getSpecStatus(result.specId);
-			console.log(`Attempt ${attempts}: Status = ${statusResult.status}`);
+			console.log(`Attempt ${attempts}: Status = ${statusResult.status}, Credits Used = ${statusResult.creditsUsed}`);
 
 			if (statusResult.status === "completed") {
 				console.log("\n✓ Fast spec completed!");
@@ -249,6 +249,7 @@ async function example6_FastSpecAsync() {
 				console.log(
 					`Architecture Infographic: ${statusResult.architectureInfographicUrl}`
 				);
+				console.log(`Credits Used: ${statusResult.creditsUsed}`);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Fast spec failed!");
@@ -297,7 +298,7 @@ async function example7_DeepSpecAsync() {
 			attempts++;
 
 			const statusResult = await predev.getSpecStatus(result.specId);
-			console.log(`Attempt ${attempts}: Status = ${statusResult.status}`);
+			console.log(`Attempt ${attempts}: Status = ${statusResult.status}, Credits Used = ${statusResult.creditsUsed}`);
 
 			if (statusResult.status === "completed") {
 				console.log("\n✓ Deep spec completed!");
@@ -309,6 +310,7 @@ async function example7_DeepSpecAsync() {
 				console.log(
 					`Architecture Infographic: ${statusResult.architectureInfographicUrl}`
 				);
+				console.log(`Credits Used: ${statusResult.creditsUsed}`);
 				break;
 			} else if (statusResult.status === "failed") {
 				console.log("\n✗ Deep spec failed!");

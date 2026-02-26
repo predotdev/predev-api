@@ -32,7 +32,7 @@ async def example1_basic_fast_spec():
     """
     Example 1: Basic Fast Spec - New Project
 
-    Generate a fast specification for a new project (30-40 seconds, ~3-8 credits)
+    Generate a fast specification for a new project (30-40 seconds, ~5-10 credits)
     """
     print("Example 1: Basic Fast Spec - New Project")
     print("=" * 50)
@@ -136,7 +136,7 @@ async def example4_deep_spec_enterprise():
     """
     Example 4: Deep Spec - Enterprise Project
 
-    Generate a comprehensive deep specification (2-3 minutes, ~15-40 credits)
+    Generate a comprehensive deep specification (2-3 minutes, ~10-50 credits)
     """
     print("\nExample 4: Deep Spec - Enterprise Healthcare Platform")
     print("=" * 50)
@@ -210,7 +210,7 @@ async def example6_fast_spec_async():
 
             status_result = predev.get_spec_status(result.get('specId'))
             print(
-                f"Attempt {attempts}: Status = {status_result.get('status')}")
+                f"Attempt {attempts}: Status = {status_result.get('status')}, Credits Used = {status_result.get('creditsUsed')}")
 
             if status_result.get('status') == "completed":
                 print("\n✓ Fast spec completed!")
@@ -221,6 +221,8 @@ async def example6_fast_spec_async():
                     f"Total Human Hours: {status_result.get('totalHumanHours')}")
                 print(
                     f"Architecture Infographic: {status_result.get('architectureInfographicUrl')}")
+                print(
+                    f"Credits Used: {status_result.get('creditsUsed')}")
                 break
             elif status_result.get('status') == "failed":
                 print("\n✗ Fast spec failed!")
@@ -263,7 +265,7 @@ async def example7_deep_spec_async():
 
             status_result = predev.get_spec_status(result.get('specId'))
             print(
-                f"Attempt {attempts}: Status = {status_result.get('status')}")
+                f"Attempt {attempts}: Status = {status_result.get('status')}, Credits Used = {status_result.get('creditsUsed')}")
 
             if status_result.get('status') == "completed":
                 print("\n✓ Deep spec completed!")
@@ -274,6 +276,8 @@ async def example7_deep_spec_async():
                     f"Total Human Hours: {status_result.get('totalHumanHours')}")
                 print(
                     f"Architecture Infographic: {status_result.get('architectureInfographicUrl')}")
+                print(
+                    f"Credits Used: {status_result.get('creditsUsed')}")
                 break
             elif status_result.get('status') == "failed":
                 print("\n✗ Deep spec failed!")
