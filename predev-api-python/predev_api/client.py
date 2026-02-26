@@ -126,6 +126,54 @@ class HumanSpecJson:
 
 
 @dataclass
+class SpecGraphNode:
+    id: str = ""
+    label: str = ""
+    type: Optional[str] = None
+    description: Optional[str] = None
+    level: Optional[str] = None
+    hours: Optional[float] = None
+
+
+@dataclass
+class SpecGraphEdge:
+    source: str = ""
+    target: str = ""
+    description: Optional[str] = None
+    edgeType: Optional[str] = None
+
+
+@dataclass
+class SpecGraph:
+    nodes: Optional[List['SpecGraphNode']] = None
+    edges: Optional[List['SpecGraphEdge']] = None
+
+
+@dataclass
+class HelpfulLink:
+    url: str = ""
+    description: str = ""
+
+
+@dataclass
+class AlternativeTechStackItemApi:
+    name: str = ""
+    link: str = ""
+    description: str = ""
+
+
+@dataclass
+class SpecEnrichedTechStackItem:
+    name: str = ""
+    useFor: str = ""
+    reason: str = ""
+    description: str = ""
+    link: Optional[str] = None
+    helpfulLinks: Optional[List['HelpfulLink']] = None
+    alternatives: Optional[List['AlternativeTechStackItemApi']] = None
+
+
+@dataclass
 class SpecResponse:
     """Status check response class"""
     _id: Optional[str] = None
@@ -165,6 +213,11 @@ class SpecResponse:
     # Credit usage - available during processing (real-time accumulation) and on completion
     # Fast spec: typically ~5-10 credits, Deep spec: typically ~10-50 credits
     creditsUsed: Optional[float] = None  # Total credits consumed by this spec generation
+
+    # Graph data (only when completed)
+    userFlowGraph: Optional['SpecGraph'] = None
+    architectureGraph: Optional['SpecGraph'] = None
+    enrichedTechStack: Optional[List['SpecEnrichedTechStackItem']] = None
 
 
 @dataclass

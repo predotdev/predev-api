@@ -100,6 +100,38 @@ export interface HumanSpecJson {
 	roles: SpecRole[];
 }
 
+// Graph data interfaces
+export interface SpecGraphNode {
+	id: string;
+	label: string;
+	type?: string;
+	description?: string;
+	level?: string;
+	hours?: number;
+}
+
+export interface SpecGraphEdge {
+	source: string;
+	target: string;
+	description?: string;
+	edgeType?: string;
+}
+
+export interface SpecGraph {
+	nodes: SpecGraphNode[];
+	edges: SpecGraphEdge[];
+}
+
+export interface SpecEnrichedTechStackItem {
+	name: string;
+	useFor: string;
+	reason: string;
+	description: string;
+	link?: string;
+	helpfulLinks?: Array<{ url: string; description: string }>;
+	alternatives?: Array<{ name: string; link: string; description: string }>;
+}
+
 export interface SpecGenOptions {
 	input: string;
 	currentContext?: string;
@@ -156,6 +188,11 @@ export interface SpecResponse {
 	// Credit usage - available during processing (real-time accumulation) and on completion
 	// Fast spec: typically ~5-10 credits, Deep spec: typically ~10-50 credits
 	creditsUsed?: number; // Total credits consumed by this spec generation
+
+	// Graph data (only when completed)
+	userFlowGraph?: SpecGraph;
+	architectureGraph?: SpecGraph;
+	enrichedTechStack?: SpecEnrichedTechStackItem[];
 }
 
 // Error response interface

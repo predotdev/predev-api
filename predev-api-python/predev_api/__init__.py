@@ -20,10 +20,16 @@ from .client import (
     HumanSpecMilestone,
     HumanSpecJson,
     SpecResponse,
+    SpecGraphNode,
+    SpecGraphEdge,
+    SpecGraph,
+    HelpfulLink,
+    AlternativeTechStackItemApi,
+    SpecEnrichedTechStackItem,
 )
 from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
 
-__version__ = "0.9.0"
+__version__ = "0.11.0"
 __all__ = [
     "PredevAPI",
     "PredevAPIError",
@@ -43,4 +49,10 @@ __all__ = [
     "HumanSpecMilestone",
     "HumanSpecJson",
     "SpecResponse",
+    "SpecGraphNode",
+    "SpecGraphEdge",
+    "SpecGraph",
+    "HelpfulLink",
+    "AlternativeTechStackItemApi",
+    "SpecEnrichedTechStackItem",
 ]

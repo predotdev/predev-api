@@ -22,4 +22,8 @@ export type {
 	SpecRole,
 	CodingAgentSpecJson,
 	HumanSpecJson,
+	SpecGraphNode,
+	SpecGraphEdge,
+	SpecGraph,
+	SpecEnrichedTechStackItem,
 } from "./types.js";
