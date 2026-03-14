@@ -131,7 +131,7 @@ class SpecGraphNode:
     label: str = ""
     type: Optional[str] = None
     description: Optional[str] = None
-    level: Optional[str] = None
+    level: Optional[int] = None
     hours: Optional[float] = None
 
 

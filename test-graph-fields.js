@@ -39,6 +39,8 @@ async function pollUntilComplete(specId, label, timeoutMs = 300000) {
 	throw new Error(`[${label}] Timed out after ${timeoutMs / 1000}s`);
 }
 
+const VALID_ARCH_TYPES = new Set(["frontend", "api-services", "databases", "external-services"]);
+
 function validateGraph(graph, label) {
 	if (!graph) {
 		console.log(`   ⚠️  ${label}: missing`);
@@ -64,8 +66,40 @@ function validateGraph(graph, label) {
 	if (nodeOk && graph.nodes.length > 0) {
 		const sample = graph.nodes[0];
 		console.log(
-			`      Sample node: { id: "${sample.id}", label: "${sample.label}", type: "${sample.type ?? ""}", level: "${sample.level ?? ""}" }`
+			`      Sample node: { id: "${sample.id}", label: "${sample.label}", type: "${sample.type ?? ""}", level: ${sample.level ?? "N/A"} }`
 		);
+	}
+
+	// Validate architecture graph specific: type categories and no level
+	if (label === "architectureGraph") {
+		for (const n of graph.nodes) {
+			if (!VALID_ARCH_TYPES.has(n.type)) {
+				console.log(`      ❌ Architecture node "${n.id}" has invalid type: "${n.type}" (expected one of: ${[...VALID_ARCH_TYPES].join(", ")})`);
+				nodeOk = false;
+			}
+			if (n.level !== undefined) {
+				console.log(`      ❌ Architecture node "${n.id}" should not have level, got: ${n.level}`);
+				nodeOk = false;
+			}
+		}
+		if (nodeOk) {
+			const types = [...new Set(graph.nodes.map(n => n.type))];
+			console.log(`      ✅ Architecture types: ${types.join(", ")}`);
+		}
+	}
+
+	// Validate user flow graph specific: numeric levels
+	if (label === "userFlowGraph") {
+		for (const n of graph.nodes) {
+			if (typeof n.level !== "number" || n.level < 1) {
+				console.log(`      ❌ UserFlow node "${n.id}" has invalid level: ${JSON.stringify(n.level)} (expected positive number)`);
+				nodeOk = false;
+			}
+		}
+		if (nodeOk) {
+			const levels = [...new Set(graph.nodes.map(n => n.level))].sort((a, b) => a - b);
+			console.log(`      ✅ UserFlow levels: ${levels.join(", ")}`);
+		}
 	}
 
 	// Validate edge shape

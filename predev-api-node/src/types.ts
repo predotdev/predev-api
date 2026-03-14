@@ -106,7 +106,7 @@ export interface SpecGraphNode {
 	label: string;
 	type?: string;
 	description?: string;
-	level?: string;
+	level?: number;
 	hours?: number;
 }
 
