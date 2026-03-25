@@ -174,10 +174,6 @@ export interface SpecResponse {
 	architectureInfographicUrl?: string;
 
 	predevUrl?: string;
-	lovableUrl?: string;
-	cursorUrl?: string;
-	v0Url?: string;
-	boltUrl?: string;
 
 	zippedDocsUrls?: ZippedDocsUrl[];
 

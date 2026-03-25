@@ -199,10 +199,6 @@ class SpecResponse:
     architectureInfographicUrl: Optional[str] = None
 
     predevUrl: Optional[str] = None
-    lovableUrl: Optional[str] = None
-    cursorUrl: Optional[str] = None
-    v0Url: Optional[str] = None
-    boltUrl: Optional[str] = None
 
     zippedDocsUrls: Optional[List['ZippedDocsUrl']] = None
 

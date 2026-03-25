@@ -317,10 +317,6 @@ class SpecResponse:
 
     # Integration URLs (when completed)
     predevUrl: Optional[str] = None               # Link to pre.dev project
-    lovableUrl: Optional[str] = None              # Link to generate with Lovable
-    cursorUrl: Optional[str] = None               # Link to generate with Cursor
-    v0Url: Optional[str] = None                   # Link to generate with v0
-    boltUrl: Optional[str] = None                 # Link to generate with Bolt
 
     # Documentation (when doc_urls provided)
     zippedDocsUrls: Optional[List[ZippedDocsUrl]] = None

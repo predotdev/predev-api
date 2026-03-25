@@ -319,10 +319,6 @@ const saasSpecs = await predev.findSpecs({ query: 'saas|sass' });
 
   // Integration URLs (when completed)
   predevUrl?: string;             // Link to pre.dev project
-  lovableUrl?: string;            // Link to generate with Lovable
-  cursorUrl?: string;             // Link to generate with Cursor
-  v0Url?: string;                 // Link to generate with v0
-  boltUrl?: string;               // Link to generate with Bolt
 
   // Documentation (when docURLs provided)
   zippedDocsUrls?: Array<{
