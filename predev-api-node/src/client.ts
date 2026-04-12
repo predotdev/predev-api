@@ -13,6 +13,9 @@ import type {
 	File,
 	SpecGenOptions,
 	CreditsBalanceResponse,
+	BrowserTask,
+	BrowserTasksResponse,
+	BrowserTaskSSEMessage,
 } from "./types.js";
 import {
 	PredevAPIError,
@@ -417,6 +420,165 @@ export class PredevAPI {
 					error instanceof Error ? error.message : String(error)
 				}`
 			);
+		}
+	}
+
+	/**
+	 * Run browser automation tasks — scrape data, fill forms, navigate pages.
+	 *
+	 * Always pass an array of tasks (even for a single task). Each task has a URL
+	 * and optional instruction, input data, and output schema.
+	 *
+	 * @param tasks - Array of tasks to run
+	 * @param options - Options for execution
+	 * @param options.concurrency - Number of parallel browsers (default 5, max 20)
+	 * @returns Promise resolving to batch result with per-task results
+	 *
+	 * @example
+	 * ```typescript
+	 * // Single scrape
+	 * const result = await client.browserTasks([
+	 *   { url: 'https://example.com', output: { type: 'object', properties: { heading: { type: 'string' } } } }
+	 * ]);
+	 *
+	 * // Batch with concurrency
+	 * const result = await client.browserTasks([
+	 *   { url: 'https://a.com', instruction: 'Extract pricing', output: { ... } },
+	 *   { url: 'https://b.com', instruction: 'Fill contact form', input: { name: 'Alice' } },
+	 * ], { concurrency: 10 });
+	 *
+	 * console.log(result.results[0].data);       // extracted data
+	 * console.log(result.results[0].creditsUsed); // credits charged
+	 *
+	 * // Stream mode — pass stream: true to get real-time SSE events
+	 * for await (const msg of client.browserTasks([
+	 *   { url: 'https://example.com', output: { type: 'object', properties: { heading: { type: 'string' } } } }
+	 * ], { stream: true })) {
+	 *   if (msg.event === 'task_event') console.log(`[${msg.data.type}]`, msg.data.data);
+	 *   if (msg.event === 'done') console.log('Done:', msg.data.totalCreditsUsed, 'credits');
+	 * }
+	 * ```
+	 */
+	browserTasks(
+		tasks: BrowserTask[],
+		options: { concurrency?: number; stream: true; async?: boolean }
+	): AsyncGenerator<BrowserTaskSSEMessage>;
+	browserTasks(
+		tasks: BrowserTask[],
+		options?: { concurrency?: number; stream?: false; async?: boolean }
+	): Promise<BrowserTasksResponse>;
+	browserTasks(
+		tasks: BrowserTask[],
+		options?: { concurrency?: number; stream?: boolean; async?: boolean }
+	): Promise<BrowserTasksResponse> | AsyncGenerator<BrowserTaskSSEMessage> {
+		if (options?.stream) {
+			return this._browserTasksStream(tasks, options);
+		}
+
+		const url = `${this.baseUrl}/api/v1/browser-tasks`;
+
+		return (async () => {
+			try {
+				const response = await fetch(url, {
+					method: "POST",
+					headers: this.headers,
+					body: JSON.stringify({
+						tasks,
+						concurrency: options?.concurrency,
+						async: options?.async,
+					}),
+				});
+
+				return this.handleResponse(response) as unknown as Promise<BrowserTasksResponse>;
+			} catch (error) {
+				if (error instanceof PredevAPIError) {
+					throw error;
+				}
+				throw new PredevAPIError(
+					`Request failed: ${error instanceof Error ? error.message : String(error)}`
+				);
+			}
+		})();
+	}
+
+	/**
+	 * Get the status + results of a browser tasks batch by ID.
+	 * Works for both in-progress and completed batches — use with async: true submissions
+	 * to poll for progress. Pass includeEvents=true to get the full timeline (screenshots,
+	 * plans, actions, validations) for each task.
+	 */
+	async getBrowserTasks(
+		id: string,
+		options?: { includeEvents?: boolean }
+	): Promise<BrowserTasksResponse> {
+		const qs = options?.includeEvents ? "?includeEvents=true" : "";
+		const url = `${this.baseUrl}/api/v1/browser-tasks/${id}${qs}`;
+		try {
+			const response = await fetch(url, {
+				method: "GET",
+				headers: this.headers,
+			});
+			return this.handleResponse(response) as unknown as Promise<BrowserTasksResponse>;
+		} catch (error) {
+			if (error instanceof PredevAPIError) throw error;
+			throw new PredevAPIError(
+				`Request failed: ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
+
+	/** @private SSE streaming implementation */
+	private async *_browserTasksStream(
+		tasks: BrowserTask[],
+		options?: { concurrency?: number }
+	): AsyncGenerator<BrowserTaskSSEMessage> {
+		const url = `${this.baseUrl}/api/v1/browser-tasks`;
+
+		const response = await fetch(url, {
+			method: "POST",
+			headers: this.headers,
+			body: JSON.stringify({
+				tasks,
+				concurrency: options?.concurrency,
+				stream: true,
+			}),
+		});
+
+		if (!response.ok) {
+			if (response.status === 401) throw new AuthenticationError("Invalid API key");
+			if (response.status === 429) throw new RateLimitError("Rate limit exceeded");
+			const text = await response.text().catch(() => `HTTP ${response.status}`);
+			throw new PredevAPIError(`API request failed with status ${response.status}: ${text}`);
+		}
+
+		const reader = response.body?.getReader();
+		if (!reader) throw new PredevAPIError("No response body");
+
+		const decoder = new TextDecoder();
+		let buffer = "";
+
+		try {
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				buffer += decoder.decode(value, { stream: true });
+				const lines = buffer.split("\n");
+				buffer = lines.pop() || "";
+
+				let currentEvent = "";
+				for (const line of lines) {
+					if (line.startsWith("event: ")) {
+						currentEvent = line.slice(7).trim();
+					} else if (line.startsWith("data: ") && currentEvent) {
+						const data = JSON.parse(line.slice(6));
+						yield { event: currentEvent, data } as BrowserTaskSSEMessage;
+						currentEvent = "";
+					}
+				}
+			}
+		} finally {
+			reader.releaseLock();
 		}
 	}
 

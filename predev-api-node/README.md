@@ -1,16 +1,24 @@
-# pre.dev Architect API
+# pre.dev API
 
-A TypeScript/Node.js client library for the [Pre.dev Architect API](https://docs.pre.dev). Generate comprehensive software specifications using AI-powered analysis.
+TypeScript/Node.js client for the [Pre.dev API](https://docs.pre.dev) — AI-powered software specs + browser automation.
 
 ## Features
 
-- 🚀 **Fast Spec**: Generate comprehensive specifications quickly - perfect for MVPs and prototypes
-- 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
-- ⚡ **Async Spec**: Non-blocking async methods for long-running requests
-- 📊 **Status Tracking**: Check the status of async specification generation requests
-- ✨ **Full TypeScript Support**: Complete type definitions for better IDE support
-- 🛡️ **Error Handling**: Custom exceptions for different error scenarios
-- 🌐 **Modern ES Modules**: Uses ES6+ import/export syntax
+**Specs**
+- 🚀 **Fast Spec**: Comprehensive specifications for MVPs and prototypes
+- 🔍 **Deep Spec**: Ultra-detailed specifications for complex systems
+- ⚡ **Async Spec**: Non-blocking async methods with status polling
+- 📄 File upload support (PDFs, docs, images as reference context)
+
+**Browser automation (NEW)**
+- 🌐 **Browser Tasks**: Scrape, fill forms, navigate pages with structured JSON output
+- 📡 **SSE streaming**: Watch execution live — screenshots, plans, actions as they happen
+- ⏱ **Async mode**: Fire-and-forget, poll for progress
+- 🔁 **Retrieval**: Get any past task with full timeline for audit/replay
+
+**Quality of life**
+- ✨ Full TypeScript types, modern ES modules
+- 🛡 Custom exceptions for auth / rate limit / API errors
 
 ## Installation
 
@@ -372,3 +380,157 @@ interface HumanSpecJson {
   roles: SpecRole[];
 }
 ```
+## Browser Tasks
+
+Run browser automation — scrape data, fill forms, navigate pages, extract structured data. Each task navigates a URL, optionally performs actions, and returns typed JSON.
+
+### Quick start
+
+```typescript
+import { PredevAPI } from 'predev-api';
+
+const client = new PredevAPI({ apiKey: 'your_api_key' });
+
+const result = await client.browserTasks([
+  {
+    url: 'https://news.ycombinator.com',
+    instruction: 'Extract the top 5 stories',
+    output: {
+      type: 'object',
+      properties: {
+        stories: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: { title: { type: 'string' }, points: { type: 'number' } },
+          },
+        },
+      },
+    },
+  },
+]);
+
+console.log(result.results[0].data.stories);
+```
+
+### Three execution modes
+
+#### 1. Sync (default) — wait for completion
+
+```typescript
+const result = await client.browserTasks([
+  { url: 'https://example.com', output: { type: 'object', properties: { heading: { type: 'string' } } } }
+]);
+console.log(result.results[0].data);  // { heading: "Example Domain" }
+console.log(result.totalCreditsUsed); // 0.1
+```
+
+#### 2. Stream (`stream: true`) — live timeline via SSE
+
+Returns an async iterator yielding events as the agent runs. Good for showing progress in a UI.
+
+```typescript
+for await (const msg of client.browserTasks([...tasks], { stream: true })) {
+  switch (msg.event) {
+    case 'task_event':
+      // navigation | screenshot | plan | action | validation | done
+      console.log(`[${msg.data.type}]`, msg.data.data);
+      break;
+    case 'task_result':
+      console.log(`Task ${msg.data.taskIndex} done:`, msg.data.data);
+      break;
+    case 'done':
+      console.log('Batch complete:', msg.data.totalCreditsUsed, 'credits');
+      break;
+    case 'error':
+      console.error('Batch error:', msg.data);
+      break;
+  }
+}
+```
+
+#### 3. Async (`async: true`) — fire-and-forget, poll for progress
+
+Returns the batch ID immediately. Use for long-running batches or background jobs.
+
+```typescript
+const r = await client.browserTasks([...tasks], { async: true });
+// { id: "batch_abc", status: "processing", completed: 0, total: 3 }
+
+while (true) {
+  const state = await client.getBrowserTasks(r.id);
+  console.log(`${state.completed}/${state.total}`);
+  for (const done of state.results) {
+    console.log(`  ✓ ${done.url} → ${JSON.stringify(done.data)}`);
+  }
+  if (state.status === 'completed') break;
+  await new Promise(res => setTimeout(res, 1000));
+}
+```
+
+### Task shapes
+
+Each task's behavior is determined by which fields are set:
+
+| Fields | Shape | Example |
+|---|---|---|
+| `url` + `output` | **Scrape** | Extract structured data from a page |
+| `url` + `instruction` | **Act** | Click, navigate, search |
+| `url` + `instruction` + `input` | **Form fill** | Fill & submit a form |
+| `url` + `instruction` + `output` | **Act + extract** | Navigate then extract data |
+
+### Retrieving a batch with the full timeline
+
+Every task records navigation, screenshots, LLM plans, actions, and validations. Retrieve for audit, replay, or debugging:
+
+```typescript
+const details = await client.getBrowserTasks(batchId, { includeEvents: true });
+for (const result of details.results) {
+  for (const ev of result.events || []) {
+    if (ev.type === 'screenshot') {
+      fs.writeFileSync(`screenshot_iter${ev.iteration}.jpg`, Buffer.from(ev.data.base64, 'base64'));
+    }
+    if (ev.type === 'plan') console.log(`Iter ${ev.iteration} plan: ${ev.data.notes}`);
+    if (ev.type === 'action') console.log(`  action: ${ev.data.type} ${ev.data.selector || ''}`);
+  }
+}
+```
+
+### Parallel batch example
+
+```typescript
+// Scrape 100 URLs with 20 browsers in parallel
+const urls = [...100 urls...];
+const result = await client.browserTasks(
+  urls.map(url => ({ url, output: { type: 'object', properties: { title: { type: 'string' } } } })),
+  { concurrency: 20 }
+);
+console.log(`${result.completed}/${result.total} done in ${result.totalCreditsUsed} credits`);
+```
+
+### Browser task methods
+
+| Method | Returns | Use when |
+|---|---|---|
+| `browserTasks(tasks, { stream: false, async: false })` | `Promise<BrowserTasksResponse>` | Default — wait for completion |
+| `browserTasks(tasks, { stream: true })` | `AsyncGenerator<BrowserTaskSSEMessage>` | Live UI showing execution timeline |
+| `browserTasks(tasks, { async: true })` | `Promise<BrowserTasksResponse>` (empty results, returned immediately) | Long batches, background jobs |
+| `getBrowserTasks(id, { includeEvents?: boolean })` | `Promise<BrowserTasksResponse>` | Poll progress or retrieve a completed batch |
+
+### Task result statuses
+
+| Status | Meaning |
+|---|---|
+| `SUCCESS` | Task completed, data extracted |
+| `BLOCKED` | Page blocked automation (bot detection) |
+| `TIMEOUT` | Task exceeded time limit |
+| `LOOP` | Agent detected it was stuck in a loop |
+| `ERROR` | Unexpected error |
+| `NO_TARGET` | Could not find target elements |
+| `CAPTCHA_FAILED` | CAPTCHA solve failed |
+
+### Pricing
+
+- Minimum: **0.1 credits per task** ($0.01)
+- 10x margin on underlying LLM + sandbox compute
+- 1 credit = $0.10

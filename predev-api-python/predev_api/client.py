@@ -2,8 +2,9 @@
 Client for the Pre.dev Architect API
 """
 
-from typing import Optional, Dict, Any, Literal, List, Union, BinaryIO
+from typing import Optional, Dict, Any, Literal, List, Union, BinaryIO, Iterator
 from dataclasses import dataclass
+import json
 import requests
 from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
 
@@ -604,6 +605,135 @@ class PredevAPI:
             self._handle_response(response)
             data = response.json()
             return CreditsBalanceResponse(success=data['success'], creditsRemaining=data['creditsRemaining'])
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def get_browser_tasks(
+        self,
+        batch_id: str,
+        include_events: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Get the status + results of a browser tasks batch by ID.
+
+        Works for both in-progress and completed batches - use with async=True
+        submissions to poll for progress. Set include_events=True to get the
+        full timeline (screenshots, plans, actions, validations) for each task.
+
+        Args:
+            batch_id: The batch ID returned from browser_tasks
+            include_events: Include full event timeline (can be large due to screenshots)
+
+        Returns:
+            Dict with id, total, completed, results, totalCost, totalCreditsUsed, status
+        """
+        qs = "?includeEvents=true" if include_events else ""
+        url = f"{self.base_url}/api/v1/browser-tasks/{batch_id}{qs}"
+        try:
+            response = requests.get(url, headers=self.headers, timeout=60)
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def browser_tasks(
+        self,
+        tasks: List[Dict[str, Any]],
+        concurrency: Optional[int] = None,
+        stream: bool = False,
+        run_async: bool = False
+    ) -> Union[Dict[str, Any], Iterator[Dict[str, Any]]]:
+        """
+        Run browser automation tasks - scrape data, fill forms, navigate pages.
+
+        Always pass an array of tasks (even for a single task). Each task has a
+        url and optional instruction, input, and output schema.
+
+        Args:
+            tasks: Array of tasks. Each task has:
+                - url (str, required): URL to navigate to
+                - instruction (str, optional): What to do on the page
+                - input (dict, optional): Form values / input data
+                - output (dict, optional): JSON Schema for structured output
+            concurrency: Parallel browsers (default 5, max 20)
+            stream: If True, returns an iterator of SSE events instead of
+                    waiting for all tasks to complete
+
+        Returns:
+            Without stream: Dict with id, total, completed, results, totalCost, totalCreditsUsed
+            With stream: Iterator yielding dicts with 'event' and 'data' keys:
+                - event='task_event': real-time events (navigation, screenshot, plan, action, etc.)
+                - event='task_result': a single task completed
+                - event='done': batch complete (data is the full result)
+                - event='error': fatal error
+
+        Example:
+            >>> # Standard mode
+            >>> result = client.browser_tasks([
+            ...     {"url": "https://example.com", "output": {"type": "object", "properties": {"heading": {"type": "string"}}}}
+            ... ])
+            >>> print(result["results"][0]["data"])
+            >>>
+            >>> # Stream mode
+            >>> for msg in client.browser_tasks([...], stream=True):
+            ...     if msg["event"] == "done":
+            ...         print("Done:", msg["data"]["totalCreditsUsed"], "credits")
+        """
+        if stream:
+            return self._browser_tasks_stream(tasks, concurrency)
+
+        url = f"{self.base_url}/api/v1/browser-tasks"
+        payload: Dict[str, Any] = {"tasks": tasks}
+        if concurrency is not None:
+            payload["concurrency"] = concurrency
+        if run_async:
+            payload["async"] = True
+
+        try:
+            response = requests.post(
+                url,
+                headers=self.headers,
+                json=payload,
+                timeout=300
+            )
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def _browser_tasks_stream(
+        self,
+        tasks: List[Dict[str, Any]],
+        concurrency: Optional[int] = None
+    ) -> Iterator[Dict[str, Any]]:
+        """SSE streaming implementation for browser_tasks."""
+        url = f"{self.base_url}/api/v1/browser-tasks"
+        payload: Dict[str, Any] = {"tasks": tasks, "stream": True}
+        if concurrency is not None:
+            payload["concurrency"] = concurrency
+
+        try:
+            response = requests.post(
+                url,
+                headers=self.headers,
+                json=payload,
+                stream=True,
+                timeout=300
+            )
+            self._handle_response(response)
+
+            current_event = ""
+            for line in response.iter_lines(decode_unicode=True):
+                if not line:
+                    continue
+                if line.startswith(":"):
+                    continue
+                if line.startswith("event: "):
+                    current_event = line[7:].strip()
+                elif line.startswith("data: ") and current_event:
+                    data = json.loads(line[6:])
+                    yield {"event": current_event, "data": data}
+                    current_event = ""
         except requests.RequestException as e:
             raise PredevAPIError(f"Request failed: {str(e)}") from e
 

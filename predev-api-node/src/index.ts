@@ -1,7 +1,7 @@
 /**
- * predev-api - TypeScript/Node.js client for the Pre.dev Architect API
+ * predev-api - TypeScript/Node.js client for the Pre.dev API
  *
- * Generate comprehensive software specifications using AI.
+ * AI-powered software specs + browser automation.
  */
 
 export { PredevAPI } from "./client.js";
@@ -26,4 +26,11 @@ export type {
 	SpecGraphEdge,
 	SpecGraph,
 	SpecEnrichedTechStackItem,
+	BrowserTask,
+	BrowserTaskResult,
+	BrowserTasksResponse,
+	BrowserTaskEventType,
+	BrowserTaskStreamEvent,
+	BrowserTaskStreamResult,
+	BrowserTaskSSEMessage,
 } from "./types.js";

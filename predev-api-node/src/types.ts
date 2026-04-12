@@ -225,3 +225,76 @@ export interface CreditsBalanceResponse {
 	success: boolean;
 	creditsRemaining: number;
 }
+
+// ── Browser Tasks ─────────────────────────────────────
+
+export interface BrowserTask {
+	/** URL to navigate to */
+	url: string;
+	/** What to do on the page (natural language) */
+	instruction?: string;
+	/** Form values / input data */
+	input?: Record<string, string>;
+	/** JSON Schema describing the expected output shape */
+	output?: Record<string, any>;
+}
+
+export interface BrowserTaskResult {
+	url: string;
+	status: string;
+	data?: any;
+	cost: number;
+	creditsUsed: number;
+	durationMs: number;
+	error?: string;
+}
+
+export interface BrowserTasksResponse {
+	id: string;
+	total: number;
+	completed: number;
+	results: BrowserTaskResult[];
+	totalCost: number;
+	totalCreditsUsed: number;
+	status: string;
+}
+
+// ── Streaming events ────────────────────────────────────
+
+export type BrowserTaskEventType =
+	| 'navigation'
+	| 'screenshot'
+	| 'plan'
+	| 'validation'
+	| 'action'
+	| 'fallback'
+	| 'done'
+	| 'error';
+
+/** A real-time event from a running task (SSE event: task_event) */
+export interface BrowserTaskStreamEvent {
+	taskIndex: number;
+	type: BrowserTaskEventType;
+	timestamp: number;
+	iteration?: number;
+	data: any;
+}
+
+/** Emitted when a single task completes (SSE event: task_result) */
+export interface BrowserTaskStreamResult {
+	taskIndex: number;
+	url: string;
+	status: string;
+	data?: any;
+	cost: number;
+	creditsUsed: number;
+	durationMs: number;
+	error?: string;
+}
+
+/** Union of all SSE message types from browserTasksStream() */
+export type BrowserTaskSSEMessage =
+	| { event: 'task_event'; data: BrowserTaskStreamEvent }
+	| { event: 'task_result'; data: BrowserTaskStreamResult }
+	| { event: 'done'; data: BrowserTasksResponse }
+	| { event: 'error'; data: { error: string } };

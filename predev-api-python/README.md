@@ -1,15 +1,24 @@
-# pre.dev Architect API - Python Client
+# pre.dev API — Python Client
 
-A Python client library for the [Pre.dev Architect API](https://docs.pre.dev). Generate comprehensive software specifications using AI-powered analysis.
+Python client for the [Pre.dev API](https://docs.pre.dev) — AI-powered software specs + browser automation.
 
 ## Features
 
-- 🚀 **Fast Spec**: Generate comprehensive specifications quickly - perfect for MVPs and prototypes
-- 🔍 **Deep Spec**: Generate ultra-detailed specifications for complex systems with enterprise-grade depth
-- ⚡ **Async Spec**: Non-blocking async methods for long-running requests
-- 📊 **Status Tracking**: Check the status of async specification generation requests
-- ✨ **Type Hints**: Full type annotations for better IDE support
-- 🛡️ **Error Handling**: Custom exceptions for different error scenarios
+**Specs**
+- 🚀 **Fast Spec**: Comprehensive specifications for MVPs and prototypes
+- 🔍 **Deep Spec**: Ultra-detailed specifications for complex systems
+- ⚡ **Async Spec**: Non-blocking async methods with status polling
+- 📄 File upload support (PDFs, docs, images as reference context)
+
+**Browser automation (NEW)**
+- 🌐 **Browser Tasks**: Scrape, fill forms, navigate pages with structured JSON output
+- 📡 **SSE streaming**: Watch execution live — screenshots, plans, actions
+- ⏱ **Async mode**: Fire-and-forget, poll for progress
+- 🔁 **Retrieval**: Get any past task with full timeline for audit/replay
+
+**Quality of life**
+- ✨ Full type hints
+- 🛡 Custom exceptions for auth / rate limit / API errors
 
 ## Installation
 
@@ -450,3 +459,157 @@ For more information about the Pre.dev Architect API, visit:
 ## Support
 
 For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/predotdev/predev-api).
+
+## Browser Tasks
+
+Run browser automation — scrape data, fill forms, navigate pages, extract structured data. Each task navigates a URL, optionally performs actions, and returns typed JSON.
+
+### Quick start
+
+```python
+from predev_api import PredevAPI
+
+client = PredevAPI(api_key="your_api_key")
+
+result = client.browser_tasks([
+    {
+        "url": "https://news.ycombinator.com",
+        "instruction": "Extract the top 5 stories",
+        "output": {
+            "type": "object",
+            "properties": {
+                "stories": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "points": {"type": "number"},
+                        },
+                    },
+                },
+            },
+        },
+    }
+])
+
+for story in result["results"][0]["data"]["stories"]:
+    print(f"{story['title']} ({story['points']} pts)")
+```
+
+### Three execution modes
+
+#### 1. Sync (default) — wait for completion
+
+```python
+result = client.browser_tasks([
+    {"url": "https://example.com", "output": {"type": "object", "properties": {"heading": {"type": "string"}}}}
+])
+print(result["results"][0]["data"])  # {'heading': 'Example Domain'}
+print(result["totalCreditsUsed"])    # 0.1
+```
+
+#### 2. Stream (`stream=True`) — live timeline via SSE
+
+Yields events as the agent runs. Good for showing progress in a UI.
+
+```python
+for msg in client.browser_tasks(tasks, stream=True):
+    e, d = msg["event"], msg["data"]
+    if e == "task_event":
+        # navigation | screenshot | plan | action | validation | done
+        print(f"[{d['type']}]", d.get("data"))
+    elif e == "task_result":
+        print(f"Task {d['taskIndex']} done:", d.get("data"))
+    elif e == "done":
+        print("Batch complete:", d["totalCreditsUsed"], "credits")
+    elif e == "error":
+        print("Batch error:", d)
+```
+
+#### 3. Async (`run_async=True`) — fire-and-forget, poll for progress
+
+Returns the batch ID immediately. Use for long-running batches or background jobs.
+
+```python
+import time
+
+r = client.browser_tasks(tasks, run_async=True)
+# {"id": "batch_abc", "status": "processing", "completed": 0, "total": 3}
+
+while True:
+    state = client.get_browser_tasks(r["id"])
+    print(f"{state['completed']}/{state['total']}")
+    for done in state["results"]:
+        print(f"  ✓ {done['url']} -> {done.get('data')}")
+    if state["status"] == "completed":
+        break
+    time.sleep(1)
+```
+
+### Task shapes
+
+Each task's behavior is determined by which fields are set:
+
+| Fields | Shape | Example |
+|---|---|---|
+| `url` + `output` | **Scrape** | Extract structured data from a page |
+| `url` + `instruction` | **Act** | Click, navigate, search |
+| `url` + `instruction` + `input` | **Form fill** | Fill & submit a form |
+| `url` + `instruction` + `output` | **Act + extract** | Navigate then extract data |
+
+### Retrieving a batch with the full timeline
+
+Every task records navigation, screenshots, LLM plans, actions, validations. Retrieve for audit, replay, or debugging:
+
+```python
+import base64
+
+details = client.get_browser_tasks(batch_id, include_events=True)
+for result in details["results"]:
+    for ev in result.get("events", []):
+        if ev["type"] == "screenshot":
+            with open(f"screenshot_iter{ev.get('iteration')}.jpg", "wb") as f:
+                f.write(base64.b64decode(ev["data"]["base64"]))
+        elif ev["type"] == "plan":
+            print(f"Iter {ev.get('iteration')} plan: {ev['data'].get('notes')}")
+```
+
+### Parallel batch example
+
+```python
+# Scrape 100 URLs with 20 browsers in parallel
+urls = [...100 urls...]
+result = client.browser_tasks(
+    [{"url": u, "output": {"type": "object", "properties": {"title": {"type": "string"}}}} for u in urls],
+    concurrency=20
+)
+print(f"{result['completed']}/{result['total']} done in {result['totalCreditsUsed']} credits")
+```
+
+### Browser task methods
+
+| Method | Returns | Use when |
+|---|---|---|
+| `browser_tasks(tasks, concurrency=N)` | dict | Default — wait for completion |
+| `browser_tasks(tasks, stream=True)` | iterator of SSE dicts | Live UI showing execution timeline |
+| `browser_tasks(tasks, run_async=True)` | dict (empty results, returned immediately) | Long batches, background jobs |
+| `get_browser_tasks(batch_id, include_events=False)` | dict | Poll progress or retrieve a completed batch |
+
+### Task result statuses
+
+| Status | Meaning |
+|---|---|
+| `SUCCESS` | Task completed, data extracted |
+| `BLOCKED` | Page blocked automation (bot detection) |
+| `TIMEOUT` | Task exceeded time limit |
+| `LOOP` | Agent detected it was stuck in a loop |
+| `ERROR` | Unexpected error |
+| `NO_TARGET` | Could not find target elements |
+| `CAPTCHA_FAILED` | CAPTCHA solve failed |
+
+### Pricing
+
+- Minimum: **0.1 credits per task** ($0.01)
+- 10x margin on underlying LLM + sandbox compute
+- 1 credit = $0.10
