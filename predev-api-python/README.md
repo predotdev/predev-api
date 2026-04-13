@@ -560,20 +560,20 @@ Each task's behavior is determined by which fields are set:
 
 ### Retrieving a batch with the full timeline
 
-Every task records navigation, screenshots, LLM plans, actions, validations. Retrieve for audit, replay, or debugging:
+Every task records navigation, screenshots, LLM plans, actions, validations. Retrieve for audit, replay, or debugging. Screenshots are uploaded to a CDN during execution — retrieved events contain `data["url"]`, not base64.
 
 ```python
-import base64
-
 details = client.get_browser_tasks(batch_id, include_events=True)
 for result in details["results"]:
     for ev in result.get("events", []):
         if ev["type"] == "screenshot":
-            with open(f"screenshot_iter{ev.get('iteration')}.jpg", "wb") as f:
-                f.write(base64.b64decode(ev["data"]["base64"]))
+            # ev["data"]["url"] is a permanent CDN URL. Use directly in an <img>.
+            print(f"Iter {ev.get('iteration')} screenshot:", ev["data"]["url"])
         elif ev["type"] == "plan":
             print(f"Iter {ev.get('iteration')} plan: {ev['data'].get('notes')}")
 ```
+
+> **Note:** The live SSE stream (`stream=True`) still sends screenshots inline as base64 (`ev["data"]["base64"]`) so live UIs render instantly. The retrieval path (`get_browser_tasks`) always returns CDN URLs.
 
 ### Parallel batch example
 

@@ -481,20 +481,23 @@ Each task's behavior is determined by which fields are set:
 
 ### Retrieving a batch with the full timeline
 
-Every task records navigation, screenshots, LLM plans, actions, and validations. Retrieve for audit, replay, or debugging:
+Every task records navigation, screenshots, LLM plans, actions, and validations. Retrieve for audit, replay, or debugging. Screenshots are uploaded to a CDN during execution — retrieved events contain `data.url`, not base64.
 
 ```typescript
 const details = await client.getBrowserTasks(batchId, { includeEvents: true });
 for (const result of details.results) {
   for (const ev of result.events || []) {
     if (ev.type === 'screenshot') {
-      fs.writeFileSync(`screenshot_iter${ev.iteration}.jpg`, Buffer.from(ev.data.base64, 'base64'));
+      // ev.data.url is a permanent CDN URL. Use directly in an <img> tag.
+      console.log(`Iter ${ev.iteration} screenshot:`, ev.data.url);
     }
     if (ev.type === 'plan') console.log(`Iter ${ev.iteration} plan: ${ev.data.notes}`);
     if (ev.type === 'action') console.log(`  action: ${ev.data.type} ${ev.data.selector || ''}`);
   }
 }
 ```
+
+> **Note:** The live SSE stream (`stream: true`) still sends screenshots inline as base64 (`ev.data.base64`) so live UIs render instantly. The retrieval path (`getBrowserTasks`) always returns CDN URLs.
 
 ### Parallel batch example
 
