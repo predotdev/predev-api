@@ -462,7 +462,7 @@ For issues, questions, or contributions, please visit the [GitHub repository](ht
 
 ## Browser Tasks
 
-Run browser automation — scrape data, fill forms, navigate pages, extract structured data. Each task navigates a URL, optionally performs actions, and returns typed JSON.
+Run browser automation — navigate, interact, and/or extract data from any web page. Each task navigates a URL, performs actions, and optionally returns typed JSON.
 
 ### Quick start
 

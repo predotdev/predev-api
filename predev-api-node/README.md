@@ -382,7 +382,7 @@ interface HumanSpecJson {
 ```
 ## Browser Tasks
 
-Run browser automation — scrape data, fill forms, navigate pages, extract structured data. Each task navigates a URL, optionally performs actions, and returns typed JSON.
+Run browser automation — navigate to, interact with, and/or extract data from any web page. Each task navigates a URL, optionally performs actions, and returns typed JSON.
 
 ### Quick start
 
