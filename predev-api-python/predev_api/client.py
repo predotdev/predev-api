@@ -608,27 +608,27 @@ class PredevAPI:
         except requests.RequestException as e:
             raise PredevAPIError(f"Request failed: {str(e)}") from e
 
-    def get_browser_tasks(
+    def get_browser_agent(
         self,
         batch_id: str,
         include_events: bool = False
     ) -> Dict[str, Any]:
         """
-        Get the status + results of a browser tasks batch by ID.
+        Get the status + results of a browser-agent batch by ID.
 
-        Works for both in-progress and completed batches - use with async=True
+        Works for both in-progress and completed batches - use with run_async=True
         submissions to poll for progress. Set include_events=True to get the
         full timeline (screenshots, plans, actions, validations) for each task.
 
         Args:
-            batch_id: The batch ID returned from browser_tasks
+            batch_id: The batch ID returned from browser_agent()
             include_events: Include full event timeline (can be large due to screenshots)
 
         Returns:
-            Dict with id, total, completed, results, totalCost, totalCreditsUsed, status
+            Dict with id, total, completed, results, totalCreditsUsed, status
         """
         qs = "?includeEvents=true" if include_events else ""
-        url = f"{self.base_url}/api/v1/browser-tasks/{batch_id}{qs}"
+        url = f"{self.base_url}/browser-agent/{batch_id}{qs}"
         try:
             response = requests.get(url, headers=self.headers, timeout=60)
             self._handle_response(response)
@@ -636,7 +636,55 @@ class PredevAPI:
         except requests.RequestException as e:
             raise PredevAPIError(f"Request failed: {str(e)}") from e
 
-    def browser_tasks(
+    def list_browser_agents(
+        self,
+        limit: Optional[int] = None,
+        skip: Optional[int] = None,
+        status: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        List browser-agent runs for the authenticated caller. Sorted by most recent.
+
+        Args:
+            limit: Page size (1-100, default 20)
+            skip: Offset for pagination
+            status: Optional filter ('processing' | 'completed')
+
+        Returns:
+            Dict with keys: batches, total, hasMore
+        """
+        params: Dict[str, Any] = {}
+        if limit is not None:
+            params["limit"] = limit
+        if skip is not None:
+            params["skip"] = skip
+        if status is not None:
+            params["status"] = status
+        url = f"{self.base_url}/list-browser-agents"
+        try:
+            response = requests.get(url, headers=self.headers, params=params, timeout=60)
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def browser_agent_status(self) -> Dict[str, Any]:
+        """
+        Caller's live queue snapshot. Useful for watching in-flight work
+        against the per-user queue cap (1000 live tasks).
+
+        Returns:
+            Dict with keys: userId, running, claimed, pending, total, cap
+        """
+        url = f"{self.base_url}/browser-agent-status"
+        try:
+            response = requests.get(url, headers=self.headers, timeout=30)
+            self._handle_response(response)
+            return response.json()
+        except requests.RequestException as e:
+            raise PredevAPIError(f"Request failed: {str(e)}") from e
+
+    def browser_agent(
         self,
         tasks: List[Dict[str, Any]],
         concurrency: Optional[int] = None,
@@ -644,7 +692,7 @@ class PredevAPI:
         run_async: bool = False
     ) -> Union[Dict[str, Any], Iterator[Dict[str, Any]]]:
         """
-        Run browser automation tasks - scrape data, fill forms, navigate pages.
+        Run browser-agent automation tasks - scrape data, fill forms, navigate pages.
 
         Always pass an array of tasks (even for a single task). Each task has a
         url and optional instruction, input, and output schema.
@@ -658,9 +706,11 @@ class PredevAPI:
             concurrency: Parallel browsers (default 5, max 20)
             stream: If True, returns an iterator of SSE events instead of
                     waiting for all tasks to complete
+            run_async: If True, returns immediately with the batch id; poll
+                    get_browser_agent(id) for progress.
 
         Returns:
-            Without stream: Dict with id, total, completed, results, totalCost, totalCreditsUsed
+            Without stream: Dict with id, total, completed, results, totalCreditsUsed
             With stream: Iterator yielding dicts with 'event' and 'data' keys:
                 - event='task_event': real-time events (navigation, screenshot, plan, action, etc.)
                 - event='task_result': a single task completed
@@ -669,20 +719,20 @@ class PredevAPI:
 
         Example:
             >>> # Standard mode
-            >>> result = client.browser_tasks([
+            >>> result = client.browser_agent([
             ...     {"url": "https://example.com", "output": {"type": "object", "properties": {"heading": {"type": "string"}}}}
             ... ])
             >>> print(result["results"][0]["data"])
             >>>
             >>> # Stream mode
-            >>> for msg in client.browser_tasks([...], stream=True):
+            >>> for msg in client.browser_agent([...], stream=True):
             ...     if msg["event"] == "done":
             ...         print("Done:", msg["data"]["totalCreditsUsed"], "credits")
         """
         if stream:
-            return self._browser_tasks_stream(tasks, concurrency)
+            return self._browser_agent_stream(tasks, concurrency)
 
-        url = f"{self.base_url}/api/v1/browser-tasks"
+        url = f"{self.base_url}/browser-agent"
         payload: Dict[str, Any] = {"tasks": tasks}
         if concurrency is not None:
             payload["concurrency"] = concurrency
@@ -701,13 +751,13 @@ class PredevAPI:
         except requests.RequestException as e:
             raise PredevAPIError(f"Request failed: {str(e)}") from e
 
-    def _browser_tasks_stream(
+    def _browser_agent_stream(
         self,
         tasks: List[Dict[str, Any]],
         concurrency: Optional[int] = None
     ) -> Iterator[Dict[str, Any]]:
-        """SSE streaming implementation for browser_tasks."""
-        url = f"{self.base_url}/api/v1/browser-tasks"
+        """SSE streaming implementation for browser_agent."""
+        url = f"{self.base_url}/browser-agent"
         payload: Dict[str, Any] = {"tasks": tasks, "stream": True}
         if concurrency is not None:
             payload["concurrency"] = concurrency

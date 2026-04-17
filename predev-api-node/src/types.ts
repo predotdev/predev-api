@@ -226,9 +226,9 @@ export interface CreditsBalanceResponse {
 	creditsRemaining: number;
 }
 
-// ── Browser Tasks ─────────────────────────────────────
+// ── Browser Agents ────────────────────────────────────
 
-export interface BrowserTask {
+export interface BrowserAgentTask {
 	/** URL to navigate to */
 	url: string;
 	/** What to do on the page (natural language) */
@@ -239,29 +239,29 @@ export interface BrowserTask {
 	output?: Record<string, any>;
 }
 
-export interface BrowserTaskResult {
+export interface BrowserAgentTaskResult {
 	url: string;
 	status: string;
 	data?: any;
-	cost: number;
+	/** Credits billed for this task. 1 credit = $0.10 if you need a USD conversion. */
 	creditsUsed: number;
 	durationMs: number;
 	error?: string;
 }
 
-export interface BrowserTasksResponse {
+export interface BrowserAgentResponse {
 	id: string;
 	total: number;
 	completed: number;
-	results: BrowserTaskResult[];
-	totalCost: number;
+	results: BrowserAgentTaskResult[];
+	/** Sum of `creditsUsed` across all tasks in the batch. */
 	totalCreditsUsed: number;
 	status: string;
 }
 
 // ── Streaming events ────────────────────────────────────
 
-export type BrowserTaskEventType =
+export type BrowserAgentEventType =
 	| 'navigation'
 	| 'screenshot'
 	| 'plan'
@@ -272,29 +272,39 @@ export type BrowserTaskEventType =
 	| 'error';
 
 /** A real-time event from a running task (SSE event: task_event) */
-export interface BrowserTaskStreamEvent {
+export interface BrowserAgentStreamEvent {
 	taskIndex: number;
-	type: BrowserTaskEventType;
+	type: BrowserAgentEventType;
 	timestamp: number;
 	iteration?: number;
 	data: any;
 }
 
 /** Emitted when a single task completes (SSE event: task_result) */
-export interface BrowserTaskStreamResult {
+export interface BrowserAgentStreamResult {
 	taskIndex: number;
 	url: string;
 	status: string;
 	data?: any;
-	cost: number;
+	/** Credits billed for this task. 1 credit = $0.10 if you need a USD conversion. */
 	creditsUsed: number;
 	durationMs: number;
 	error?: string;
 }
 
-/** Union of all SSE message types from browserTasksStream() */
-export type BrowserTaskSSEMessage =
-	| { event: 'task_event'; data: BrowserTaskStreamEvent }
-	| { event: 'task_result'; data: BrowserTaskStreamResult }
-	| { event: 'done'; data: BrowserTasksResponse }
-	| { event: 'error'; data: { error: string } };
+/** Union of all SSE message types from a streaming browser-agent run */
+export type BrowserAgentSSEMessage =
+	| { event: 'task_event'; data: BrowserAgentStreamEvent }
+	| { event: 'task_result'; data: BrowserAgentStreamResult }
+	| { event: 'done'; data: BrowserAgentResponse }
+	| { event: 'error'; data: { error: string; code?: string; actionUrl?: string } };
+
+/** Per-user queue snapshot from GET /browser-agent-status. */
+export interface BrowserAgentStatus {
+	userId: string;
+	running: number;
+	claimed: number;
+	pending: number;
+	total: number;
+	cap: number;
+}

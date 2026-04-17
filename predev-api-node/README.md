@@ -391,7 +391,7 @@ import { PredevAPI } from 'predev-api';
 
 const client = new PredevAPI({ apiKey: 'your_api_key' });
 
-const result = await client.browserTasks([
+const result = await client.browserAgent([
   {
     url: 'https://news.ycombinator.com',
     instruction: 'Extract the top 5 stories',
@@ -418,7 +418,7 @@ console.log(result.results[0].data.stories);
 #### 1. Sync (default) — wait for completion
 
 ```typescript
-const result = await client.browserTasks([
+const result = await client.browserAgent([
   { url: 'https://example.com', output: { type: 'object', properties: { heading: { type: 'string' } } } }
 ]);
 console.log(result.results[0].data);  // { heading: "Example Domain" }
@@ -430,7 +430,7 @@ console.log(result.totalCreditsUsed); // 0.1
 Returns an async iterator yielding events as the agent runs. Good for showing progress in a UI.
 
 ```typescript
-for await (const msg of client.browserTasks([...tasks], { stream: true })) {
+for await (const msg of client.browserAgent([...tasks], { stream: true })) {
   switch (msg.event) {
     case 'task_event':
       // navigation | screenshot | plan | action | validation | done
@@ -454,11 +454,11 @@ for await (const msg of client.browserTasks([...tasks], { stream: true })) {
 Returns the batch ID immediately. Use for long-running batches or background jobs.
 
 ```typescript
-const r = await client.browserTasks([...tasks], { async: true });
+const r = await client.browserAgent([...tasks], { async: true });
 // { id: "batch_abc", status: "processing", completed: 0, total: 3 }
 
 while (true) {
-  const state = await client.getBrowserTasks(r.id);
+  const state = await client.getBrowserAgent(r.id);
   console.log(`${state.completed}/${state.total}`);
   for (const done of state.results) {
     console.log(`  ✓ ${done.url} → ${JSON.stringify(done.data)}`);
@@ -484,7 +484,7 @@ Each task's behavior is determined by which fields are set:
 Every task records navigation, screenshots, LLM plans, actions, and validations. Retrieve for audit, replay, or debugging. Screenshots are uploaded to a CDN during execution — retrieved events contain `data.url`, not base64.
 
 ```typescript
-const details = await client.getBrowserTasks(batchId, { includeEvents: true });
+const details = await client.getBrowserAgent(batchId, { includeEvents: true });
 for (const result of details.results) {
   for (const ev of result.events || []) {
     if (ev.type === 'screenshot') {
@@ -497,14 +497,14 @@ for (const result of details.results) {
 }
 ```
 
-> **Note:** The live SSE stream (`stream: true`) still sends screenshots inline as base64 (`ev.data.base64`) so live UIs render instantly. The retrieval path (`getBrowserTasks`) always returns CDN URLs.
+> **Note:** The live SSE stream (`stream: true`) still sends screenshots inline as base64 (`ev.data.base64`) so live UIs render instantly. The retrieval path (`getBrowserAgent`) always returns CDN URLs.
 
 ### Parallel batch example
 
 ```typescript
 // Scrape 100 URLs with 20 browsers in parallel
 const urls = [...100 urls...];
-const result = await client.browserTasks(
+const result = await client.browserAgent(
   urls.map(url => ({ url, output: { type: 'object', properties: { title: { type: 'string' } } } })),
   { concurrency: 20 }
 );
@@ -515,10 +515,10 @@ console.log(`${result.completed}/${result.total} done in ${result.totalCreditsUs
 
 | Method | Returns | Use when |
 |---|---|---|
-| `browserTasks(tasks, { stream: false, async: false })` | `Promise<BrowserTasksResponse>` | Default — wait for completion |
-| `browserTasks(tasks, { stream: true })` | `AsyncGenerator<BrowserTaskSSEMessage>` | Live UI showing execution timeline |
-| `browserTasks(tasks, { async: true })` | `Promise<BrowserTasksResponse>` (empty results, returned immediately) | Long batches, background jobs |
-| `getBrowserTasks(id, { includeEvents?: boolean })` | `Promise<BrowserTasksResponse>` | Poll progress or retrieve a completed batch |
+| `browserAgent(tasks, { stream: false, async: false })` | `Promise<BrowserAgentResponse>` | Default — wait for completion |
+| `browserAgent(tasks, { stream: true })` | `AsyncGenerator<BrowserAgentSSEMessage>` | Live UI showing execution timeline |
+| `browserAgent(tasks, { async: true })` | `Promise<BrowserAgentResponse>` (empty results, returned immediately) | Long batches, background jobs |
+| `getBrowserAgent(id, { includeEvents?: boolean })` | `Promise<BrowserAgentResponse>` | Poll progress or retrieve a completed batch |
 
 ### Task result statuses
 

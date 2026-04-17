@@ -13,9 +13,10 @@ import type {
 	File,
 	SpecGenOptions,
 	CreditsBalanceResponse,
-	BrowserTask,
-	BrowserTasksResponse,
-	BrowserTaskSSEMessage,
+	BrowserAgentTask,
+	BrowserAgentResponse,
+	BrowserAgentSSEMessage,
+	BrowserAgentStatus,
 } from "./types.js";
 import {
 	PredevAPIError,
@@ -424,7 +425,7 @@ export class PredevAPI {
 	}
 
 	/**
-	 * Run browser automation tasks — scrape data, fill forms, navigate pages.
+	 * Run browser-agent automation tasks — scrape data, fill forms, navigate pages.
 	 *
 	 * Always pass an array of tasks (even for a single task). Each task has a URL
 	 * and optional instruction, input data, and output schema.
@@ -437,45 +438,40 @@ export class PredevAPI {
 	 * @example
 	 * ```typescript
 	 * // Single scrape
-	 * const result = await client.browserTasks([
+	 * const result = await client.browserAgent([
 	 *   { url: 'https://example.com', output: { type: 'object', properties: { heading: { type: 'string' } } } }
 	 * ]);
 	 *
 	 * // Batch with concurrency
-	 * const result = await client.browserTasks([
+	 * const result = await client.browserAgent([
 	 *   { url: 'https://a.com', instruction: 'Extract pricing', output: { ... } },
 	 *   { url: 'https://b.com', instruction: 'Fill contact form', input: { name: 'Alice' } },
 	 * ], { concurrency: 10 });
 	 *
-	 * console.log(result.results[0].data);       // extracted data
-	 * console.log(result.results[0].creditsUsed); // credits charged
-	 *
 	 * // Stream mode — pass stream: true to get real-time SSE events
-	 * for await (const msg of client.browserTasks([
-	 *   { url: 'https://example.com', output: { type: 'object', properties: { heading: { type: 'string' } } } }
-	 * ], { stream: true })) {
+	 * for await (const msg of client.browserAgent([...], { stream: true })) {
 	 *   if (msg.event === 'task_event') console.log(`[${msg.data.type}]`, msg.data.data);
 	 *   if (msg.event === 'done') console.log('Done:', msg.data.totalCreditsUsed, 'credits');
 	 * }
 	 * ```
 	 */
-	browserTasks(
-		tasks: BrowserTask[],
+	browserAgent(
+		tasks: BrowserAgentTask[],
 		options: { concurrency?: number; stream: true; async?: boolean }
-	): AsyncGenerator<BrowserTaskSSEMessage>;
-	browserTasks(
-		tasks: BrowserTask[],
+	): AsyncGenerator<BrowserAgentSSEMessage>;
+	browserAgent(
+		tasks: BrowserAgentTask[],
 		options?: { concurrency?: number; stream?: false; async?: boolean }
-	): Promise<BrowserTasksResponse>;
-	browserTasks(
-		tasks: BrowserTask[],
+	): Promise<BrowserAgentResponse>;
+	browserAgent(
+		tasks: BrowserAgentTask[],
 		options?: { concurrency?: number; stream?: boolean; async?: boolean }
-	): Promise<BrowserTasksResponse> | AsyncGenerator<BrowserTaskSSEMessage> {
+	): Promise<BrowserAgentResponse> | AsyncGenerator<BrowserAgentSSEMessage> {
 		if (options?.stream) {
-			return this._browserTasksStream(tasks, options);
+			return this._browserAgentStream(tasks, options);
 		}
 
-		const url = `${this.baseUrl}/api/v1/browser-tasks`;
+		const url = `${this.baseUrl}/browser-agent`;
 
 		return (async () => {
 			try {
@@ -489,7 +485,7 @@ export class PredevAPI {
 					}),
 				});
 
-				return this.handleResponse(response) as unknown as Promise<BrowserTasksResponse>;
+				return this.handleResponse(response) as unknown as Promise<BrowserAgentResponse>;
 			} catch (error) {
 				if (error instanceof PredevAPIError) {
 					throw error;
@@ -502,23 +498,70 @@ export class PredevAPI {
 	}
 
 	/**
-	 * Get the status + results of a browser tasks batch by ID.
-	 * Works for both in-progress and completed batches — use with async: true submissions
-	 * to poll for progress. Pass includeEvents=true to get the full timeline (screenshots,
-	 * plans, actions, validations) for each task.
+	 * Get the status + results of a browser-agent batch by ID. Works for both
+	 * in-progress and completed batches — use with `async: true` submissions
+	 * to poll for progress. Pass `includeEvents: true` to get the full timeline
+	 * (screenshots, plans, actions, validations) for each task.
 	 */
-	async getBrowserTasks(
+	async getBrowserAgent(
 		id: string,
 		options?: { includeEvents?: boolean }
-	): Promise<BrowserTasksResponse> {
+	): Promise<BrowserAgentResponse> {
 		const qs = options?.includeEvents ? "?includeEvents=true" : "";
-		const url = `${this.baseUrl}/api/v1/browser-tasks/${id}${qs}`;
+		const url = `${this.baseUrl}/browser-agent/${id}${qs}`;
 		try {
 			const response = await fetch(url, {
 				method: "GET",
 				headers: this.headers,
 			});
-			return this.handleResponse(response) as unknown as Promise<BrowserTasksResponse>;
+			return this.handleResponse(response) as unknown as Promise<BrowserAgentResponse>;
+		} catch (error) {
+			if (error instanceof PredevAPIError) throw error;
+			throw new PredevAPIError(
+				`Request failed: ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
+
+	/**
+	 * List browser-agent runs for the authenticated caller. Results are sorted
+	 * by most recent. Filter by status (`'processing'` | `'completed'`) or
+	 * paginate with `limit` / `skip`.
+	 */
+	async listBrowserAgents(params?: {
+		limit?: number;
+		skip?: number;
+		status?: 'processing' | 'completed';
+	}): Promise<{ batches: BrowserAgentResponse[]; total: number; hasMore: boolean }> {
+		const qs = new URLSearchParams();
+		if (params?.limit != null) qs.set('limit', String(params.limit));
+		if (params?.skip != null) qs.set('skip', String(params.skip));
+		if (params?.status) qs.set('status', params.status);
+		const url = `${this.baseUrl}/list-browser-agents${qs.toString() ? `?${qs}` : ''}`;
+		try {
+			const response = await fetch(url, { method: 'GET', headers: this.headers });
+			return this.handleResponse(response) as unknown as Promise<{
+				batches: BrowserAgentResponse[];
+				total: number;
+				hasMore: boolean;
+			}>;
+		} catch (error) {
+			if (error instanceof PredevAPIError) throw error;
+			throw new PredevAPIError(
+				`Request failed: ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
+
+	/**
+	 * Caller's live queue snapshot — useful for watching in-flight work
+	 * against the per-user queue cap (1000 live tasks).
+	 */
+	async browserAgentStatus(): Promise<BrowserAgentStatus> {
+		const url = `${this.baseUrl}/browser-agent-status`;
+		try {
+			const response = await fetch(url, { method: 'GET', headers: this.headers });
+			return this.handleResponse(response) as unknown as Promise<BrowserAgentStatus>;
 		} catch (error) {
 			if (error instanceof PredevAPIError) throw error;
 			throw new PredevAPIError(
@@ -528,11 +571,11 @@ export class PredevAPI {
 	}
 
 	/** @private SSE streaming implementation */
-	private async *_browserTasksStream(
-		tasks: BrowserTask[],
+	private async *_browserAgentStream(
+		tasks: BrowserAgentTask[],
 		options?: { concurrency?: number }
-	): AsyncGenerator<BrowserTaskSSEMessage> {
-		const url = `${this.baseUrl}/api/v1/browser-tasks`;
+	): AsyncGenerator<BrowserAgentSSEMessage> {
+		const url = `${this.baseUrl}/browser-agent`;
 
 		const response = await fetch(url, {
 			method: "POST",
@@ -572,7 +615,7 @@ export class PredevAPI {
 						currentEvent = line.slice(7).trim();
 					} else if (line.startsWith("data: ") && currentEvent) {
 						const data = JSON.parse(line.slice(6));
-						yield { event: currentEvent, data } as BrowserTaskSSEMessage;
+						yield { event: currentEvent, data } as BrowserAgentSSEMessage;
 						currentEvent = "";
 					}
 				}

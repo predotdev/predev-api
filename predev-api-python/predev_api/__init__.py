@@ -29,7 +29,7 @@ from .client import (
 )
 from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
 
-__version__ = "0.11.1"
+__version__ = "1.0.0"
 __all__ = [
     "PredevAPI",
     "PredevAPIError",

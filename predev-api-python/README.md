@@ -471,7 +471,7 @@ from predev_api import PredevAPI
 
 client = PredevAPI(api_key="your_api_key")
 
-result = client.browser_tasks([
+result = client.browser_agent([
     {
         "url": "https://news.ycombinator.com",
         "instruction": "Extract the top 5 stories",
@@ -502,7 +502,7 @@ for story in result["results"][0]["data"]["stories"]:
 #### 1. Sync (default) — wait for completion
 
 ```python
-result = client.browser_tasks([
+result = client.browser_agent([
     {"url": "https://example.com", "output": {"type": "object", "properties": {"heading": {"type": "string"}}}}
 ])
 print(result["results"][0]["data"])  # {'heading': 'Example Domain'}
@@ -514,7 +514,7 @@ print(result["totalCreditsUsed"])    # 0.1
 Yields events as the agent runs. Good for showing progress in a UI.
 
 ```python
-for msg in client.browser_tasks(tasks, stream=True):
+for msg in client.browser_agent(tasks, stream=True):
     e, d = msg["event"], msg["data"]
     if e == "task_event":
         # navigation | screenshot | plan | action | validation | done
@@ -534,11 +534,11 @@ Returns the batch ID immediately. Use for long-running batches or background job
 ```python
 import time
 
-r = client.browser_tasks(tasks, run_async=True)
+r = client.browser_agent(tasks, run_async=True)
 # {"id": "batch_abc", "status": "processing", "completed": 0, "total": 3}
 
 while True:
-    state = client.get_browser_tasks(r["id"])
+    state = client.get_browser_agent(r["id"])
     print(f"{state['completed']}/{state['total']}")
     for done in state["results"]:
         print(f"  ✓ {done['url']} -> {done.get('data')}")
@@ -563,7 +563,7 @@ Each task's behavior is determined by which fields are set:
 Every task records navigation, screenshots, LLM plans, actions, validations. Retrieve for audit, replay, or debugging. Screenshots are uploaded to a CDN during execution — retrieved events contain `data["url"]`, not base64.
 
 ```python
-details = client.get_browser_tasks(batch_id, include_events=True)
+details = client.get_browser_agent(batch_id, include_events=True)
 for result in details["results"]:
     for ev in result.get("events", []):
         if ev["type"] == "screenshot":
@@ -573,14 +573,14 @@ for result in details["results"]:
             print(f"Iter {ev.get('iteration')} plan: {ev['data'].get('notes')}")
 ```
 
-> **Note:** The live SSE stream (`stream=True`) still sends screenshots inline as base64 (`ev["data"]["base64"]`) so live UIs render instantly. The retrieval path (`get_browser_tasks`) always returns CDN URLs.
+> **Note:** The live SSE stream (`stream=True`) still sends screenshots inline as base64 (`ev["data"]["base64"]`) so live UIs render instantly. The retrieval path (`get_browser_agent`) always returns CDN URLs.
 
 ### Parallel batch example
 
 ```python
 # Scrape 100 URLs with 20 browsers in parallel
 urls = [...100 urls...]
-result = client.browser_tasks(
+result = client.browser_agent(
     [{"url": u, "output": {"type": "object", "properties": {"title": {"type": "string"}}}} for u in urls],
     concurrency=20
 )
@@ -591,10 +591,10 @@ print(f"{result['completed']}/{result['total']} done in {result['totalCreditsUse
 
 | Method | Returns | Use when |
 |---|---|---|
-| `browser_tasks(tasks, concurrency=N)` | dict | Default — wait for completion |
-| `browser_tasks(tasks, stream=True)` | iterator of SSE dicts | Live UI showing execution timeline |
-| `browser_tasks(tasks, run_async=True)` | dict (empty results, returned immediately) | Long batches, background jobs |
-| `get_browser_tasks(batch_id, include_events=False)` | dict | Poll progress or retrieve a completed batch |
+| `browser_agent(tasks, concurrency=N)` | dict | Default — wait for completion |
+| `browser_agent(tasks, stream=True)` | iterator of SSE dicts | Live UI showing execution timeline |
+| `browser_agent(tasks, run_async=True)` | dict (empty results, returned immediately) | Long batches, background jobs |
+| `get_browser_agent(batch_id, include_events=False)` | dict | Poll progress or retrieve a completed batch |
 
 ### Task result statuses
 
