@@ -613,3 +613,51 @@ print(f"{result['completed']}/{result['total']} done in {result['totalCreditsUse
 - Minimum: **0.1 credits per task** ($0.01)
 - 10x margin on underlying LLM + sandbox compute
 - 1 credit = $0.10
+
+### Error handling
+
+The browser-task endpoints raise typed exceptions for the most common
+gating cases. Every billing-gate exception carries an `action_url` — a
+deep link back to pre.dev that auto-opens the right modal (subscribe /
+buy credits) when the user lands there:
+
+```python
+from predev_api import (
+    PredevAPI,
+    InsufficientCreditsError,
+    SubscriptionRequiredError,
+    RateLimitError,
+    QueueFullError,
+)
+import webbrowser
+
+client = PredevAPI(api_key="your_pre.dev_api_key")
+
+try:
+    client.browser_agent([{"url": "https://example.com", "instruction": "extract h1"}])
+except InsufficientCreditsError as e:
+    # Send the user to the credits modal — `action_url` is the canonical link.
+    if e.action_url:
+        webbrowser.open(e.action_url)
+except SubscriptionRequiredError as e:
+    if e.action_url:
+        webbrowser.open(e.action_url)
+except RateLimitError:
+    pass  # back off and retry
+except QueueFullError:
+    pass  # wait for in-flight tasks to drain
+```
+
+Mid-stream errors on the SSE stream raise the same typed exceptions, so a
+`for msg in client.browser_agent(..., stream=True):` loop wrapped in
+`try/except` is enough — no special event handling required.
+
+| Exception | HTTP | `code` |
+|---|---|---|
+| `SubscriptionRequiredError` | 402 | `SUBSCRIPTION_REQUIRED` |
+| `InsufficientCreditsError` | 402 | `INSUFFICIENT_CREDITS` |
+| `RateLimitError` | 429 | `RATE_LIMITED` |
+| `QueueFullError` | 429 | `QUEUE_FULL` |
+| `BatchTooLargeError` | 400 | `BATCH_TOO_LARGE` |
+| `AuthenticationError` | 401 | — |
+| `PredevAPIError` | other | — |

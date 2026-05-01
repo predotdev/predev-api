@@ -22,6 +22,7 @@ import {
 	PredevAPIError,
 	AuthenticationError,
 	RateLimitError,
+	exceptionForCode,
 } from "./exceptions.js";
 
 /**
@@ -588,10 +589,31 @@ export class PredevAPI {
 		});
 
 		if (!response.ok) {
+			// Mirror handleResponse: parse the structured `{ error, code, actionUrl? }`
+			// body so a 402 SSE rejection becomes the right typed exception instead
+			// of a generic PredevAPIError with a status string.
+			let errorBody: ErrorResponse | undefined;
+			let errorMessage = `HTTP ${response.status}`;
+			try {
+				errorBody = (await response.json()) as ErrorResponse;
+				errorMessage =
+					errorBody.error || errorBody.message || JSON.stringify(errorBody);
+			} catch {
+				try {
+					const text = await response.text();
+					if (text) errorMessage = text;
+				} catch {
+					/* keep `HTTP <status>` fallback */
+				}
+			}
+			if (errorBody?.code) {
+				throw exceptionForCode(errorBody.code, errorMessage, errorBody.actionUrl);
+			}
 			if (response.status === 401) throw new AuthenticationError("Invalid API key");
-			if (response.status === 429) throw new RateLimitError("Rate limit exceeded");
-			const text = await response.text().catch(() => `HTTP ${response.status}`);
-			throw new PredevAPIError(`API request failed with status ${response.status}: ${text}`);
+			if (response.status === 429) throw new RateLimitError(errorMessage);
+			throw new PredevAPIError(
+				`API request failed with status ${response.status}: ${errorMessage}`,
+			);
 		}
 
 		const reader = response.body?.getReader();
@@ -615,6 +637,15 @@ export class PredevAPI {
 						currentEvent = line.slice(7).trim();
 					} else if (line.startsWith("data: ") && currentEvent) {
 						const data = JSON.parse(line.slice(6));
+						// Mid-stream `error` events carry the same `{ error, code, actionUrl? }`
+						// shape as a non-2xx body — surface them as typed exceptions so
+						// `for await (const ev of stream)` callers get a clean catch site.
+						if (currentEvent === "error" && data && typeof data === "object") {
+							const body = data as ErrorResponse;
+							const msg =
+								body.error || body.message || "Browser agent error";
+							throw exceptionForCode(body.code, msg, body.actionUrl);
+						}
 						yield { event: currentEvent, data } as BrowserAgentSSEMessage;
 						currentEvent = "";
 					}
@@ -859,26 +890,41 @@ export class PredevAPI {
 				| CreditsBalanceResponse;
 		}
 
+		// Try to parse the structured error body the backend serializes for
+		// gating errors: `{ error, code, actionUrl? }`. We do this BEFORE
+		// short-circuiting on status code so a 402 with `code: SUBSCRIPTION_REQUIRED`
+		// becomes the right typed exception (instead of a generic PredevAPIError).
+		let errorBody: ErrorResponse | undefined;
+		let errorMessage = "Unknown error";
+		try {
+			errorBody = (await response.json()) as ErrorResponse;
+			errorMessage =
+				errorBody.error ||
+				errorBody.message ||
+				JSON.stringify(errorBody);
+		} catch {
+			try {
+				const textError = await response.text();
+				if (textError) errorMessage = textError;
+				else errorMessage = `HTTP ${response.status}`;
+			} catch {
+				errorMessage = `HTTP ${response.status}`;
+			}
+		}
+
+		// Structured `code` wins — covers SUBSCRIPTION_REQUIRED / INSUFFICIENT_CREDITS /
+		// QUEUE_FULL / BATCH_TOO_LARGE / RATE_LIMITED with the right typed exception
+		// and an `actionUrl` the consumer can open.
+		if (errorBody?.code) {
+			throw exceptionForCode(errorBody.code, errorMessage, errorBody.actionUrl);
+		}
+
 		if (response.status === 401) {
 			throw new AuthenticationError("Invalid API key");
 		}
 
 		if (response.status === 429) {
-			throw new RateLimitError("Rate limit exceeded");
-		}
-
-		let errorMessage = "Unknown error";
-		try {
-			const errorData = (await response.json()) as ErrorResponse;
-			errorMessage =
-				errorData.error || errorData.message || JSON.stringify(errorData);
-		} catch {
-			try {
-				const textError = await response.text();
-				errorMessage = textError || errorMessage;
-			} catch {
-				errorMessage = `HTTP ${response.status}`;
-			}
+			throw new RateLimitError(errorMessage);
 		}
 
 		throw new PredevAPIError(

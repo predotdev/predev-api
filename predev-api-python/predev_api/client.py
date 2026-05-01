@@ -6,7 +6,16 @@ from typing import Optional, Dict, Any, Literal, List, Union, BinaryIO, Iterator
 from dataclasses import dataclass
 import json
 import requests
-from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
+from .exceptions import (
+    PredevAPIError,
+    AuthenticationError,
+    RateLimitError,
+    SubscriptionRequiredError,
+    InsufficientCreditsError,
+    QueueFullError,
+    BatchTooLargeError,
+    exception_for_code,
+)
 
 
 @dataclass
@@ -782,6 +791,18 @@ class PredevAPI:
                     current_event = line[7:].strip()
                 elif line.startswith("data: ") and current_event:
                     data = json.loads(line[6:])
+                    # Mid-stream `error` events carry the same
+                    # `{ error, code, actionUrl? }` shape the REST endpoints
+                    # do — surface them as typed exceptions so callers can
+                    # `except InsufficientCreditsError` cleanly.
+                    if current_event == "error" and isinstance(data, dict):
+                        raise exception_for_code(
+                            data.get("code"),
+                            data.get("error")
+                            or data.get("message")
+                            or "Browser agent error",
+                            data.get("actionUrl") or data.get("action_url"),
+                        )
                     yield {"event": current_event, "data": data}
                     current_event = ""
         except requests.RequestException as e:
@@ -946,22 +967,45 @@ class PredevAPI:
             return {"file": (filename, file)}
 
     def _handle_response(self, response: requests.Response) -> None:
-        """Handle API response and raise appropriate exceptions."""
+        """Handle API response and raise appropriate exceptions.
+
+        Browser-task gating errors come back as a structured body
+        ``{"error": ..., "code": ..., "actionUrl": ...}`` (HTTP 402 / 429 /
+        400). We parse the body before short-circuiting on status code so
+        ``code: SUBSCRIPTION_REQUIRED`` becomes :class:`SubscriptionRequiredError`
+        with its ``action_url`` populated, instead of a generic
+        :class:`PredevAPIError`.
+        """
         if response.status_code == 200:
             return
+
+        # Try to parse the structured error body up front.
+        error_body = None
+        error_message = "Unknown error"
+        try:
+            error_body = response.json()
+            error_message = (
+                error_body.get("error")
+                or error_body.get("message")
+                or str(error_body)
+            )
+        except Exception:
+            error_message = response.text or f"HTTP {response.status_code}"
+
+        # Structured `code` wins — covers SUBSCRIPTION_REQUIRED /
+        # INSUFFICIENT_CREDITS / QUEUE_FULL / BATCH_TOO_LARGE / RATE_LIMITED.
+        if isinstance(error_body, dict) and error_body.get("code"):
+            raise exception_for_code(
+                error_body["code"],
+                error_message,
+                error_body.get("actionUrl") or error_body.get("action_url"),
+            )
 
         if response.status_code == 401:
             raise AuthenticationError("Invalid API key")
 
         if response.status_code == 429:
-            raise RateLimitError("Rate limit exceeded")
-
-        try:
-            error_data = response.json()
-            error_message = error_data.get("error") or error_data.get(
-                "message") or str(error_data)
-        except Exception:
-            error_message = response.text or "Unknown error"
+            raise RateLimitError(error_message)
 
         raise PredevAPIError(
             f"API request failed with status {response.status_code}: {error_message}"

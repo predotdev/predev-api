@@ -537,3 +537,54 @@ console.log(`${result.completed}/${result.total} done in ${result.totalCreditsUs
 - Minimum: **0.1 credits per task** ($0.01)
 - 10x margin on underlying LLM + sandbox compute
 - 1 credit = $0.10
+
+### Error handling
+
+The browser-task endpoints throw typed exceptions for the most common
+gating cases so callers can react without parsing strings. Every billing-
+gate exception carries an `actionUrl` — a deep link back to pre.dev that
+auto-opens the right modal (subscribe / buy credits) when the user lands
+there:
+
+```ts
+import {
+  PredevAPI,
+  InsufficientCreditsError,
+  SubscriptionRequiredError,
+  RateLimitError,
+  QueueFullError,
+} from 'predev-api';
+
+const client = new PredevAPI({ apiKey: process.env.PREDEV_API_KEY! });
+
+try {
+  await client.browserAgent([{ url: 'https://example.com', instruction: 'extract h1' }]);
+} catch (e) {
+  if (e instanceof InsufficientCreditsError) {
+    // Send the user to the credits modal — `actionUrl` is the canonical link.
+    window.open(e.actionUrl, '_blank');
+  } else if (e instanceof SubscriptionRequiredError) {
+    window.open(e.actionUrl, '_blank');
+  } else if (e instanceof RateLimitError) {
+    // Back off and retry.
+  } else if (e instanceof QueueFullError) {
+    // Wait for in-flight tasks to drain.
+  } else {
+    throw e;
+  }
+}
+```
+
+Mid-stream errors on the SSE stream throw the same typed exceptions, so a
+`for await` loop wrapped in `try/catch` is enough — no special event
+handling required.
+
+| Exception | HTTP | `code` |
+|---|---|---|
+| `SubscriptionRequiredError` | 402 | `SUBSCRIPTION_REQUIRED` |
+| `InsufficientCreditsError` | 402 | `INSUFFICIENT_CREDITS` |
+| `RateLimitError` | 429 | `RATE_LIMITED` |
+| `QueueFullError` | 429 | `QUEUE_FULL` |
+| `BatchTooLargeError` | 400 | `BATCH_TOO_LARGE` |
+| `AuthenticationError` | 401 | — |
+| `PredevAPIError` | other | — |

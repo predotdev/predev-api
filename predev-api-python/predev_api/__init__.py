@@ -27,14 +27,28 @@ from .client import (
     AlternativeTechStackItemApi,
     SpecEnrichedTechStackItem,
 )
-from .exceptions import PredevAPIError, AuthenticationError, RateLimitError
+from .exceptions import (
+    PredevAPIError,
+    AuthenticationError,
+    RateLimitError,
+    SubscriptionRequiredError,
+    InsufficientCreditsError,
+    QueueFullError,
+    BatchTooLargeError,
+    exception_for_code,
+)
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __all__ = [
     "PredevAPI",
     "PredevAPIError",
     "AuthenticationError",
     "RateLimitError",
+    "SubscriptionRequiredError",
+    "InsufficientCreditsError",
+    "QueueFullError",
+    "BatchTooLargeError",
+    "exception_for_code",
     "ZippedDocsUrl",
     "SpecCoreFunctionality",
     "SpecTechStackItem",

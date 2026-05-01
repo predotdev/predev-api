@@ -192,9 +192,18 @@ export interface SpecResponse {
 }
 
 // Error response interface
+//
+// The browser-task gating endpoints serialize structured errors as
+// `{ error, code, actionUrl? }` (HTTP 402 / 429 / 400). `code` lets the
+// SDK throw a typed exception (`InsufficientCreditsError`, etc.) and
+// `actionUrl` is a deep link the consumer can open to resolve the gate
+// (e.g. open the credit-purchase modal). Older endpoints just return
+// `{ error, message }`, so all the new fields are optional.
 export interface ErrorResponse {
 	error: string;
-	message: string;
+	message?: string;
+	code?: string;
+	actionUrl?: string;
 }
 
 // List specs query parameters

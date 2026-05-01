@@ -9,6 +9,11 @@ export {
 	PredevAPIError,
 	AuthenticationError,
 	RateLimitError,
+	SubscriptionRequiredError,
+	InsufficientCreditsError,
+	QueueFullError,
+	BatchTooLargeError,
+	exceptionForCode,
 } from "./exceptions.js";
 export type {
 	PredevAPIConfig,
