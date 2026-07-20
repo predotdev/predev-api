@@ -39,7 +39,27 @@ async function pollUntilComplete(specId, label, timeoutMs = 300000) {
 	throw new Error(`[${label}] Timed out after ${timeoutMs / 1000}s`);
 }
 
-const VALID_ARCH_TYPES = new Set(["frontend", "api-services", "databases", "external-services"]);
+// Actual production vocabulary emitted by predev-agent formatSpecOutput.ts:
+// passthrough of persisted node types plus the derivation ladder
+// (main_system / external_system / containerType values / bare C1='system' /
+// bare C2='container'). The old set (frontend/api-services/databases/
+// external-services) was aspirational — no producer ever emitted it.
+const VALID_ARCH_TYPES = new Set([
+	"main_system",
+	"external_system",
+	"system",
+	"container",
+	"frontend_web",
+	"frontend_mobile",
+	"backend_api",
+	"backend_worker",
+	"backend_auth",
+	"database",
+	"infrastructure_cache",
+	"infrastructure_queue",
+	"infrastructure_gateway",
+	"infrastructure_storage",
+]);
 
 function validateGraph(graph, label) {
 	if (!graph) {
@@ -70,15 +90,17 @@ function validateGraph(graph, label) {
 		);
 	}
 
-	// Validate architecture graph specific: type categories and no level
+	// Validate architecture graph specific: type categories and C1/C2 level
 	if (label === "architectureGraph") {
 		for (const n of graph.nodes) {
 			if (!VALID_ARCH_TYPES.has(n.type)) {
 				console.log(`      ❌ Architecture node "${n.id}" has invalid type: "${n.type}" (expected one of: ${[...VALID_ARCH_TYPES].join(", ")})`);
 				nodeOk = false;
 			}
-			if (n.level !== undefined) {
-				console.log(`      ❌ Architecture node "${n.id}" should not have level, got: ${n.level}`);
+			// Production emits level 'C1' | 'C2' on architecture nodes (the
+			// diagram levels); anything else is a projection regression.
+			if (n.level !== "C1" && n.level !== "C2") {
+				console.log(`      ❌ Architecture node "${n.id}" has invalid level: ${JSON.stringify(n.level)} (expected "C1" or "C2")`);
 				nodeOk = false;
 			}
 		}
@@ -88,11 +110,14 @@ function validateGraph(graph, label) {
 		}
 	}
 
-	// Validate user flow graph specific: numeric levels
+	// Validate user flow graph specific: numeric levels. BFS roots (role
+	// nodes) are level 0; flows are 1+; nodes unreachable from any role are
+	// null — all three occur in production output.
 	if (label === "userFlowGraph") {
 		for (const n of graph.nodes) {
-			if (typeof n.level !== "number" || n.level < 1) {
-				console.log(`      ❌ UserFlow node "${n.id}" has invalid level: ${JSON.stringify(n.level)} (expected positive number)`);
+			const validLevel = n.level === null || (typeof n.level === "number" && n.level >= 0);
+			if (!validLevel) {
+				console.log(`      ❌ UserFlow node "${n.id}" has invalid level: ${JSON.stringify(n.level)} (expected number >= 0 or null)`);
 				nodeOk = false;
 			}
 		}

@@ -106,7 +106,12 @@ export interface SpecGraphNode {
 	label: string;
 	type?: string;
 	description?: string;
-	level?: number;
+	/**
+	 * userFlowGraph: BFS depth from role nodes (roles = 0, flows >= 1,
+	 * null when unreachable). architectureGraph: C4 diagram level
+	 * ("C1" | "C2").
+	 */
+	level?: number | string | null;
 	hours?: number;
 }
 

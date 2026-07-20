@@ -141,7 +141,9 @@ class SpecGraphNode:
     label: str = ""
     type: Optional[str] = None
     description: Optional[str] = None
-    level: Optional[int] = None
+    # userFlowGraph: BFS depth from roles (roles = 0, flows >= 1, None when
+    # unreachable). architectureGraph: C4 diagram level ("C1" | "C2").
+    level: Optional[Union[int, str]] = None
     hours: Optional[float] = None
 
 
