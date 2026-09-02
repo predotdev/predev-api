@@ -1,0 +1,21 @@
+# CI runs exactly what `make check` runs locally — no CI-only logic
+# (ADR-0003 in predev-brain). Ruff is pinned inside scripts/lint_changed.sh.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: the changed-files diff needs the merge-base with main.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v10
+
+      - run: make check
