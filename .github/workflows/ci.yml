@@ -7,9 +7,15 @@ on:
   push:
     branches: [main]
 
+# A newer push to the same pull request supersedes the running check.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       # Full history: the changed-files diff needs the merge-base with main.
       - uses: actions/checkout@v4
